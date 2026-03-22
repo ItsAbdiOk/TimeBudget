@@ -1,0 +1,611 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A10001000000000000000001 /* TimeBudgetApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002000000000000000001 /* TimeBudgetApp.swift */; };
+		A10001000000000000000002 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002000000000000000002 /* ContentView.swift */; };
+		A10001000000000000000003 /* TimeEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002000000000000000003 /* TimeEntry.swift */; };
+		A10001000000000000000004 /* ActivityCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002000000000000000004 /* ActivityCategory.swift */; };
+		A10001000000000000000005 /* HealthSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002000000000000000005 /* HealthSnapshot.swift */; };
+		A10001000000000000000006 /* HealthKitService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002000000000000000006 /* HealthKitService.swift */; };
+		A10001000000000000000007 /* TimeClassifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002000000000000000007 /* TimeClassifier.swift */; };
+		A10001000000000000000008 /* DashboardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002000000000000000008 /* DashboardViewModel.swift */; };
+		A10001000000000000000009 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002000000000000000009 /* DashboardView.swift */; };
+		A1000100000000000000000A /* OnboardingFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000200000000000000000A /* OnboardingFlow.swift */; };
+		A1000100000000000000000B /* ColorExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000200000000000000000B /* ColorExtensions.swift */; };
+		A1000100000000000000000C /* DateExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000200000000000000000C /* DateExtensions.swift */; };
+		A10001000000000000000020 /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A10002000000000000000020 /* HealthKit.framework */; };
+		A1000100000000000000000D /* MotionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000200000000000000000D /* MotionService.swift */; };
+		A1000100000000000000000E /* LocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000200000000000000000E /* LocationService.swift */; };
+		A1000100000000000000000F /* CalendarService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000200000000000000000F /* CalendarService.swift */; };
+		A10001000000000000000013 /* LocationPlace.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002000000000000000013 /* LocationPlace.swift */; };
+		A10001000000000000000014 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002000000000000000014 /* SettingsView.swift */; };
+		A10001000000000000000015 /* PlaceManagementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002000000000000000015 /* PlaceManagementView.swift */; };
+		A10001000000000000000016 /* FocusSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002000000000000000016 /* FocusSession.swift */; };
+		A10001000000000000000017 /* IdealDay.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002000000000000000017 /* IdealDay.swift */; };
+		A10001000000000000000018 /* DailyScore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002000000000000000018 /* DailyScore.swift */; };
+		A10001000000000000000019 /* FocusViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002000000000000000019 /* FocusViewModel.swift */; };
+		A1000100000000000000001A /* FocusStopwatchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000200000000000000001A /* FocusStopwatchView.swift */; };
+		A1000100000000000000001B /* IdealDaySetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000200000000000000001B /* IdealDaySetupView.swift */; };
+		A1000100000000000000001C /* TimelineRingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000200000000000000001C /* TimelineRingView.swift */; };
+		A1000100000000000000001D /* PieChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000200000000000000001D /* PieChartView.swift */; };
+		A1000100000000000000001E /* WeekComparisonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000200000000000000001E /* WeekComparisonView.swift */; };
+		A1000100000000000000001F /* InsightsTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000200000000000000001F /* InsightsTabView.swift */; };
+		A10001000000000000000030 /* TimeBudgetModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002000000000000000030 /* TimeBudgetModel.swift */; };
+		A10001000000000000000031 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002000000000000000031 /* NotificationService.swift */; };
+		A10001000000000000000032 /* CorrelationEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002000000000000000032 /* CorrelationEngine.swift */; };
+		A10001000000000000000033 /* BudgetViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002000000000000000033 /* BudgetViewModel.swift */; };
+		A10001000000000000000034 /* InsightsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002000000000000000034 /* InsightsViewModel.swift */; };
+		A10001000000000000000035 /* BudgetListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002000000000000000035 /* BudgetListView.swift */; };
+		A10001000000000000000036 /* BudgetEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002000000000000000036 /* BudgetEditView.swift */; };
+		A10001000000000000000037 /* TrendsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002000000000000000037 /* TrendsView.swift */; };
+		A10001000000000000000038 /* HeatmapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002000000000000000038 /* HeatmapView.swift */; };
+		A10001000000000000000039 /* AniListService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002000000000000000039 /* AniListService.swift */; };
+		A1000100000000000000003A /* DesignSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000200000000000000003A /* DesignSystem.swift */; };
+		A1000100000000000000003B /* BackgroundTaskService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000200000000000000003B /* BackgroundTaskService.swift */; };
+		A1000100000000000000003C /* AniListHeatmapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000200000000000000003C /* AniListHeatmapView.swift */; };
+		A1000100000000000000003D /* LeetCodeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000200000000000000003D /* LeetCodeService.swift */; };
+		A1000100000000000000003E /* LeetCodeHeatmapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000200000000000000003E /* LeetCodeHeatmapView.swift */; };
+		A1000100000000000000003F /* ContributionCalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000200000000000000003F /* ContributionCalendarView.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		A10002000000000000000001 /* TimeBudgetApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeBudgetApp.swift; sourceTree = "<group>"; };
+		A10002000000000000000002 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		A10002000000000000000003 /* TimeEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeEntry.swift; sourceTree = "<group>"; };
+		A10002000000000000000004 /* ActivityCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityCategory.swift; sourceTree = "<group>"; };
+		A10002000000000000000005 /* HealthSnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthSnapshot.swift; sourceTree = "<group>"; };
+		A10002000000000000000006 /* HealthKitService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitService.swift; sourceTree = "<group>"; };
+		A10002000000000000000007 /* TimeClassifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeClassifier.swift; sourceTree = "<group>"; };
+		A10002000000000000000008 /* DashboardViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardViewModel.swift; sourceTree = "<group>"; };
+		A10002000000000000000009 /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
+		A1000200000000000000000A /* OnboardingFlow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingFlow.swift; sourceTree = "<group>"; };
+		A1000200000000000000000B /* ColorExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorExtensions.swift; sourceTree = "<group>"; };
+		A1000200000000000000000C /* DateExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateExtensions.swift; sourceTree = "<group>"; };
+		A10002000000000000000010 /* TimeBudget.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TimeBudget.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A10002000000000000000011 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A10002000000000000000012 /* TimeBudget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TimeBudget.entitlements; sourceTree = "<group>"; };
+		A10002000000000000000020 /* HealthKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HealthKit.framework; path = System/Library/Frameworks/HealthKit.framework; sourceTree = SDKROOT; };
+		A1000200000000000000000D /* MotionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MotionService.swift; sourceTree = "<group>"; };
+		A1000200000000000000000E /* LocationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationService.swift; sourceTree = "<group>"; };
+		A1000200000000000000000F /* CalendarService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarService.swift; sourceTree = "<group>"; };
+		A10002000000000000000013 /* LocationPlace.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationPlace.swift; sourceTree = "<group>"; };
+		A10002000000000000000014 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		A10002000000000000000015 /* PlaceManagementView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceManagementView.swift; sourceTree = "<group>"; };
+		A10002000000000000000016 /* FocusSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusSession.swift; sourceTree = "<group>"; };
+		A10002000000000000000017 /* IdealDay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdealDay.swift; sourceTree = "<group>"; };
+		A10002000000000000000018 /* DailyScore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyScore.swift; sourceTree = "<group>"; };
+		A10002000000000000000019 /* FocusViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusViewModel.swift; sourceTree = "<group>"; };
+		A1000200000000000000001A /* FocusStopwatchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusStopwatchView.swift; sourceTree = "<group>"; };
+		A1000200000000000000001B /* IdealDaySetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdealDaySetupView.swift; sourceTree = "<group>"; };
+		A1000200000000000000001C /* TimelineRingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineRingView.swift; sourceTree = "<group>"; };
+		A1000200000000000000001D /* PieChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PieChartView.swift; sourceTree = "<group>"; };
+		A1000200000000000000001E /* WeekComparisonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeekComparisonView.swift; sourceTree = "<group>"; };
+		A1000200000000000000001F /* InsightsTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InsightsTabView.swift; sourceTree = "<group>"; };
+		A10002000000000000000030 /* TimeBudgetModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeBudgetModel.swift; sourceTree = "<group>"; };
+		A10002000000000000000031 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
+		A10002000000000000000032 /* CorrelationEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CorrelationEngine.swift; sourceTree = "<group>"; };
+		A10002000000000000000033 /* BudgetViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BudgetViewModel.swift; sourceTree = "<group>"; };
+		A10002000000000000000034 /* InsightsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InsightsViewModel.swift; sourceTree = "<group>"; };
+		A10002000000000000000035 /* BudgetListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BudgetListView.swift; sourceTree = "<group>"; };
+		A10002000000000000000036 /* BudgetEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BudgetEditView.swift; sourceTree = "<group>"; };
+		A10002000000000000000037 /* TrendsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrendsView.swift; sourceTree = "<group>"; };
+		A10002000000000000000038 /* HeatmapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeatmapView.swift; sourceTree = "<group>"; };
+		A10002000000000000000039 /* AniListService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AniListService.swift; sourceTree = "<group>"; };
+		A1000200000000000000003A /* DesignSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesignSystem.swift; sourceTree = "<group>"; };
+		A1000200000000000000003B /* BackgroundTaskService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundTaskService.swift; sourceTree = "<group>"; };
+		A1000200000000000000003C /* AniListHeatmapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AniListHeatmapView.swift; sourceTree = "<group>"; };
+		A1000200000000000000003D /* LeetCodeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeetCodeService.swift; sourceTree = "<group>"; };
+		A1000200000000000000003E /* LeetCodeHeatmapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeetCodeHeatmapView.swift; sourceTree = "<group>"; };
+		A1000200000000000000003F /* ContributionCalendarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContributionCalendarView.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A10003000000000000000001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A10001000000000000000020 /* HealthKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		A10004000000000000000001 = {
+			isa = PBXGroup;
+			children = (
+				A10004000000000000000002 /* TimeBudget */,
+				A10004000000000000000010 /* Frameworks */,
+				A10004000000000000000011 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		A10004000000000000000002 /* TimeBudget */ = {
+			isa = PBXGroup;
+			children = (
+				A10002000000000000000001 /* TimeBudgetApp.swift */,
+				A10002000000000000000002 /* ContentView.swift */,
+				A10004000000000000000003 /* Models */,
+				A10004000000000000000004 /* Services */,
+				A10004000000000000000005 /* ViewModels */,
+				A10004000000000000000006 /* Views */,
+				A10004000000000000000009 /* Utilities */,
+				A10002000000000000000011 /* Info.plist */,
+				A10002000000000000000012 /* TimeBudget.entitlements */,
+			);
+			path = TimeBudget;
+			sourceTree = "<group>";
+		};
+		A10004000000000000000003 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				A10002000000000000000003 /* TimeEntry.swift */,
+				A10002000000000000000004 /* ActivityCategory.swift */,
+				A10002000000000000000005 /* HealthSnapshot.swift */,
+				A10002000000000000000013 /* LocationPlace.swift */,
+				A10002000000000000000016 /* FocusSession.swift */,
+				A10002000000000000000017 /* IdealDay.swift */,
+				A10002000000000000000018 /* DailyScore.swift */,
+				A10002000000000000000030 /* TimeBudgetModel.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		A10004000000000000000004 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				A10002000000000000000006 /* HealthKitService.swift */,
+				A10002000000000000000007 /* TimeClassifier.swift */,
+				A1000200000000000000000D /* MotionService.swift */,
+				A1000200000000000000000E /* LocationService.swift */,
+				A1000200000000000000000F /* CalendarService.swift */,
+				A10002000000000000000031 /* NotificationService.swift */,
+				A10002000000000000000032 /* CorrelationEngine.swift */,
+				A10002000000000000000039 /* AniListService.swift */,
+				A1000200000000000000003D /* LeetCodeService.swift */,
+				A1000200000000000000003B /* BackgroundTaskService.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		A10004000000000000000005 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				A10002000000000000000008 /* DashboardViewModel.swift */,
+				A10002000000000000000019 /* FocusViewModel.swift */,
+				A10002000000000000000033 /* BudgetViewModel.swift */,
+				A10002000000000000000034 /* InsightsViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		A10004000000000000000006 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				A10004000000000000000007 /* Dashboard */,
+				A10004000000000000000008 /* Onboarding */,
+				A1000400000000000000000B /* Focus */,
+				A1000400000000000000000D /* Budget */,
+				A1000400000000000000000C /* Insights */,
+				A1000400000000000000000A /* Settings */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		A1000400000000000000000B /* Focus */ = {
+			isa = PBXGroup;
+			children = (
+				A1000200000000000000001A /* FocusStopwatchView.swift */,
+			);
+			path = Focus;
+			sourceTree = "<group>";
+		};
+		A1000400000000000000000D /* Budget */ = {
+			isa = PBXGroup;
+			children = (
+				A10002000000000000000035 /* BudgetListView.swift */,
+				A10002000000000000000036 /* BudgetEditView.swift */,
+			);
+			path = Budget;
+			sourceTree = "<group>";
+		};
+		A1000400000000000000000C /* Insights */ = {
+			isa = PBXGroup;
+			children = (
+				A1000200000000000000001E /* WeekComparisonView.swift */,
+				A1000200000000000000001F /* InsightsTabView.swift */,
+				A10002000000000000000037 /* TrendsView.swift */,
+				A10002000000000000000038 /* HeatmapView.swift */,
+				A1000200000000000000003C /* AniListHeatmapView.swift */,
+				A1000200000000000000003E /* LeetCodeHeatmapView.swift */,
+				A1000200000000000000003F /* ContributionCalendarView.swift */,
+			);
+			path = Insights;
+			sourceTree = "<group>";
+		};
+		A1000400000000000000000A /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				A10002000000000000000014 /* SettingsView.swift */,
+				A10002000000000000000015 /* PlaceManagementView.swift */,
+				A1000200000000000000001B /* IdealDaySetupView.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		A10004000000000000000007 /* Dashboard */ = {
+			isa = PBXGroup;
+			children = (
+				A10002000000000000000009 /* DashboardView.swift */,
+				A1000200000000000000001C /* TimelineRingView.swift */,
+				A1000200000000000000001D /* PieChartView.swift */,
+			);
+			path = Dashboard;
+			sourceTree = "<group>";
+		};
+		A10004000000000000000008 /* Onboarding */ = {
+			isa = PBXGroup;
+			children = (
+				A1000200000000000000000A /* OnboardingFlow.swift */,
+			);
+			path = Onboarding;
+			sourceTree = "<group>";
+		};
+		A10004000000000000000009 /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				A1000200000000000000000B /* ColorExtensions.swift */,
+				A1000200000000000000000C /* DateExtensions.swift */,
+				A1000200000000000000003A /* DesignSystem.swift */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
+		A10004000000000000000010 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				A10002000000000000000020 /* HealthKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		A10004000000000000000011 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A10002000000000000000010 /* TimeBudget.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		A10005000000000000000001 /* TimeBudget */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A10007000000000000000003 /* Build configuration list for PBXNativeTarget "TimeBudget" */;
+			buildPhases = (
+				A10006000000000000000001 /* Sources */,
+				A10003000000000000000001 /* Frameworks */,
+				A10008000000000000000001 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = TimeBudget;
+			productName = TimeBudget;
+			productReference = A10002000000000000000010 /* TimeBudget.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A10009000000000000000001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1500;
+				LastUpgradeCheck = 2630;
+				TargetAttributes = {
+					A10005000000000000000001 = {
+						CreatedOnToolsVersion = 15.0;
+					};
+				};
+			};
+			buildConfigurationList = A10007000000000000000001 /* Build configuration list for PBXProject "TimeBudget" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = A10004000000000000000001;
+			productRefGroup = A10004000000000000000011 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A10005000000000000000001 /* TimeBudget */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		A10008000000000000000001 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A10006000000000000000001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A10001000000000000000001 /* TimeBudgetApp.swift in Sources */,
+				A10001000000000000000002 /* ContentView.swift in Sources */,
+				A10001000000000000000003 /* TimeEntry.swift in Sources */,
+				A10001000000000000000004 /* ActivityCategory.swift in Sources */,
+				A10001000000000000000005 /* HealthSnapshot.swift in Sources */,
+				A10001000000000000000006 /* HealthKitService.swift in Sources */,
+				A10001000000000000000007 /* TimeClassifier.swift in Sources */,
+				A10001000000000000000008 /* DashboardViewModel.swift in Sources */,
+				A10001000000000000000009 /* DashboardView.swift in Sources */,
+				A1000100000000000000000A /* OnboardingFlow.swift in Sources */,
+				A1000100000000000000000B /* ColorExtensions.swift in Sources */,
+				A1000100000000000000000C /* DateExtensions.swift in Sources */,
+				A1000100000000000000000D /* MotionService.swift in Sources */,
+				A1000100000000000000000E /* LocationService.swift in Sources */,
+				A1000100000000000000000F /* CalendarService.swift in Sources */,
+				A10001000000000000000013 /* LocationPlace.swift in Sources */,
+				A10001000000000000000014 /* SettingsView.swift in Sources */,
+				A10001000000000000000015 /* PlaceManagementView.swift in Sources */,
+				A10001000000000000000016 /* FocusSession.swift in Sources */,
+				A10001000000000000000017 /* IdealDay.swift in Sources */,
+				A10001000000000000000018 /* DailyScore.swift in Sources */,
+				A10001000000000000000019 /* FocusViewModel.swift in Sources */,
+				A1000100000000000000001A /* FocusStopwatchView.swift in Sources */,
+				A1000100000000000000001B /* IdealDaySetupView.swift in Sources */,
+				A1000100000000000000001C /* TimelineRingView.swift in Sources */,
+				A1000100000000000000001D /* PieChartView.swift in Sources */,
+				A1000100000000000000001E /* WeekComparisonView.swift in Sources */,
+				A1000100000000000000001F /* InsightsTabView.swift in Sources */,
+				A10001000000000000000030 /* TimeBudgetModel.swift in Sources */,
+				A10001000000000000000031 /* NotificationService.swift in Sources */,
+				A10001000000000000000032 /* CorrelationEngine.swift in Sources */,
+				A10001000000000000000033 /* BudgetViewModel.swift in Sources */,
+				A10001000000000000000034 /* InsightsViewModel.swift in Sources */,
+				A10001000000000000000035 /* BudgetListView.swift in Sources */,
+				A10001000000000000000036 /* BudgetEditView.swift in Sources */,
+				A10001000000000000000037 /* TrendsView.swift in Sources */,
+				A10001000000000000000038 /* HeatmapView.swift in Sources */,
+				A10001000000000000000039 /* AniListService.swift in Sources */,
+				A1000100000000000000003A /* DesignSystem.swift in Sources */,
+				A1000100000000000000003B /* BackgroundTaskService.swift in Sources */,
+				A1000100000000000000003C /* AniListHeatmapView.swift in Sources */,
+				A1000100000000000000003D /* LeetCodeService.swift in Sources */,
+				A1000100000000000000003E /* LeetCodeHeatmapView.swift in Sources */,
+				A1000100000000000000003F /* ContributionCalendarView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		A1000A000000000000000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 5AF2LBU5A3;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		A1000A000000000000000002 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 5AF2LBU5A3;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_VERSION = 5.0;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		A1000A000000000000000003 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = TimeBudget/TimeBudget.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = TimeBudget/Info.plist;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.timebudget.app;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		A1000A000000000000000004 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = TimeBudget/TimeBudget.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = TimeBudget/Info.plist;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.timebudget.app;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A10007000000000000000001 /* Build configuration list for PBXProject "TimeBudget" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A1000A000000000000000001 /* Debug */,
+				A1000A000000000000000002 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A10007000000000000000003 /* Build configuration list for PBXNativeTarget "TimeBudget" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A1000A000000000000000003 /* Debug */,
+				A1000A000000000000000004 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = A10009000000000000000001 /* Project object */;
+}
