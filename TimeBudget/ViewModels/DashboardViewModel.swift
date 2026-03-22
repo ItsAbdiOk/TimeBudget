@@ -70,60 +70,58 @@ final class DashboardViewModel {
         return parts.joined(separator: " ")
     }
 
+    private var lastLoadDate: Date?
+
     func loadTodayData(context: ModelContext) async {
+        // Throttle: don't reload if we loaded less than 30 seconds ago
+        if let last = lastLoadDate, Date().timeIntervalSince(last) < 30, !isLoading {
+            return
+        }
+
         isLoading = true
         errorMessage = nil
+        lastLoadDate = Date()
 
         let today = Date()
 
-        // Fetch health data
-        do {
-            steps = try await healthKit.fetchSteps(for: today)
-        } catch {
-            steps = 0
-        }
+        // Fetch all health data in parallel — one round-trip instead of sequential
+        async let stepsTask = try? healthKit.fetchSteps(for: today)
+        async let caloriesTask = try? healthKit.fetchActiveCalories(for: today)
+        async let sleepTask = try? healthKit.fetchSleepSamples(for: today)
+        async let workoutsTask = try? healthKit.fetchWorkouts(for: today)
+        async let motionTask: () = motion.fetchCurrentActivity()
 
-        do {
-            activeCalories = try await healthKit.fetchActiveCalories(for: today)
-        } catch {
-            activeCalories = 0
-        }
+        // AniList sync (throttled to once per hour, runs in parallel with HealthKit)
+        let aniList = AniListService.shared
+        async let aniListTask: () = {
+            if aniList.shouldSync {
+                await aniList.syncReadingActivity(for: today)
+            }
+        }()
 
-        do {
-            sleepMinutes = try await healthKit.fetchTotalSleepMinutes(for: today)
-            sleepSamples = try await healthKit.fetchSleepSamples(for: today)
-        } catch {
-            sleepMinutes = 0
-            sleepSamples = []
-        }
+        // Await all in parallel
+        steps = await stepsTask ?? 0
+        activeCalories = await caloriesTask ?? 0
+        sleepSamples = await sleepTask ?? []
+        sleepMinutes = sleepSamples.filter { $0.stage != .awake }
+            .reduce(0) { $0 + $1.durationMinutes }
+        workouts = await workoutsTask ?? []
+        await motionTask
+        await aniListTask
 
-        do {
-            workouts = try await healthKit.fetchWorkouts(for: today)
-        } catch {
-            workouts = []
-        }
-
-        // Calendar meetings
-        meetingMinutes = calendarService.totalMeetingMinutes(for: today)
-
-        // Current activity: one-shot query (no persistent sensor subscription)
-        await motion.fetchCurrentActivity()
         currentActivity = motion.currentActivity
 
-        // Current place
+        // Calendar meetings (synchronous, fast)
+        meetingMinutes = calendarService.totalMeetingMinutes(for: today)
+
+        // Current place (synchronous, uses cached location)
         if let place = location.detectCurrentPlace(context: context) {
             currentPlaceName = place.name
         } else {
             currentPlaceName = nil
         }
 
-        // Sync AniList reading data (throttled to once per hour)
-        let aniList = AniListService.shared
-        if aniList.shouldSync {
-            await aniList.syncReadingActivity(for: today)
-        }
-
-        // Classify the day into TimeEntries (uses cached AniList data, batch motion query)
+        // Classify the day into TimeEntries
         do {
             try await classifier.classifyDay(date: today, context: context)
         } catch {
