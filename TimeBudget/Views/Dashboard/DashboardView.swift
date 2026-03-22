@@ -353,7 +353,7 @@ struct TimeEntryRow: View {
                 .frame(width: 4, height: 36)
 
             VStack(alignment: .leading, spacing: 2) {
-                Text(entry.category?.name ?? "Unknown")
+                Text(entry.displayName)
                     .font(.subheadline.weight(.semibold))
                 Text(entry.durationFormatted)
                     .font(.caption)

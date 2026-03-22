@@ -158,6 +158,7 @@ struct SettingsRow: View {
                     .foregroundStyle(.tertiary)
             }
             .padding(14)
+            .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
     }

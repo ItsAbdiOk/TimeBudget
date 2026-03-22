@@ -125,69 +125,91 @@ final class AniListService {
     }
 
     private func fetchActivities(userId: Int, from startTimestamp: Int, to endTimestamp: Int) async throws -> [AniListActivity] {
-        let query = """
-        query ($userId: Int, $createdAtGreater: Int, $createdAtLesser: Int) {
-            Page(perPage: 50) {
-                activities(userId: $userId, type: MEDIA_LIST, createdAt_greater: $createdAtGreater, createdAt_lesser: $createdAtLesser, sort: ID_DESC) {
-                    ... on ListActivity {
-                        id
-                        status
-                        progress
-                        createdAt
-                        media {
-                            title {
-                                userPreferred
+        var allActivities: [AniListActivity] = []
+        var page = 1
+        let perPage = 50
+
+        while true {
+            let query = """
+            query ($userId: Int, $createdAtGreater: Int, $createdAtLesser: Int, $page: Int, $perPage: Int) {
+                Page(page: $page, perPage: $perPage) {
+                    pageInfo { hasNextPage }
+                    activities(userId: $userId, type: MEDIA_LIST, createdAt_greater: $createdAtGreater, createdAt_lesser: $createdAtLesser, sort: ID_DESC) {
+                        ... on ListActivity {
+                            id
+                            status
+                            progress
+                            createdAt
+                            media {
+                                title {
+                                    english
+                                    userPreferred
+                                }
+                                type
+                                format
                             }
-                            type
-                            format
                         }
                     }
                 }
             }
-        }
-        """
+            """
 
-        let variables: [String: Any] = [
-            "userId": userId,
-            "createdAtGreater": startTimestamp,
-            "createdAtLesser": endTimestamp
-        ]
+            let variables: [String: Any] = [
+                "userId": userId,
+                "createdAtGreater": startTimestamp,
+                "createdAtLesser": endTimestamp,
+                "page": page,
+                "perPage": perPage
+            ]
 
-        let data = try await executeQuery(query, variables: variables)
+            let data = try await executeQuery(query, variables: variables)
 
-        guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
-              let dataObj = json["data"] as? [String: Any],
-              let page = dataObj["Page"] as? [String: Any],
-              let activities = page["activities"] as? [[String: Any]] else {
-            return []
-        }
-
-        return activities.compactMap { activity -> AniListActivity? in
-            guard let id = activity["id"] as? Int,
-                  let createdAtInt = activity["createdAt"] as? Int,
-                  let media = activity["media"] as? [String: Any],
-                  let title = media["title"] as? [String: Any],
-                  let mediaTitle = title["userPreferred"] as? String,
-                  let mediaType = media["type"] as? String else {
-                return nil
+            guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+                  let dataObj = json["data"] as? [String: Any],
+                  let pageObj = dataObj["Page"] as? [String: Any],
+                  let activities = pageObj["activities"] as? [[String: Any]] else {
+                break
             }
 
-            let isManga = mediaType == "MANGA"
-            guard isManga else { return nil }
+            let parsed = activities.compactMap { activity -> AniListActivity? in
+                guard let id = activity["id"] as? Int,
+                      let createdAtInt = activity["createdAt"] as? Int,
+                      let media = activity["media"] as? [String: Any],
+                      let title = media["title"] as? [String: Any],
+                      let mediaType = media["type"] as? String else {
+                    return nil
+                }
 
-            let status = activity["status"] as? String ?? ""
-            let progress = activity["progress"] as? String ?? ""
-            let chapters = parseChapters(progress: progress, status: status)
+                let isManga = mediaType == "MANGA"
+                guard isManga else { return nil }
 
-            return AniListActivity(
-                id: id,
-                mediaTitle: mediaTitle,
-                progress: "\(status) \(progress)",
-                chaptersRead: max(chapters, 1),
-                createdAt: Date(timeIntervalSince1970: TimeInterval(createdAtInt)),
-                ismanga: isManga
-            )
+                // Prefer English title, fall back to userPreferred
+                let mediaTitle = (title["english"] as? String) ?? (title["userPreferred"] as? String) ?? "Unknown"
+
+                let status = activity["status"] as? String ?? ""
+                let progress = activity["progress"] as? String ?? ""
+                let chapters = parseChapters(progress: progress, status: status)
+
+                return AniListActivity(
+                    id: id,
+                    mediaTitle: mediaTitle,
+                    progress: "\(status) \(progress)",
+                    chaptersRead: max(chapters, 1),
+                    createdAt: Date(timeIntervalSince1970: TimeInterval(createdAtInt)),
+                    ismanga: isManga
+                )
+            }
+
+            allActivities.append(contentsOf: parsed)
+
+            // Check if there are more pages
+            let pageInfo = pageObj["pageInfo"] as? [String: Any]
+            let hasNextPage = pageInfo?["hasNextPage"] as? Bool ?? false
+            guard hasNextPage, !activities.isEmpty else { break }
+            page += 1
         }
+
+        return allActivities
     }
 
     private func parseChapters(progress: String, status: String) -> Int {

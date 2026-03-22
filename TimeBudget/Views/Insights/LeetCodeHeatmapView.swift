@@ -64,13 +64,15 @@ struct LeetCodeHeatmapView: View {
 
                                 Spacer()
 
-                                Text(submission.lang)
-                                    .font(.system(.caption2, design: .monospaced).weight(.medium))
-                                    .foregroundStyle(.secondary)
-                                    .padding(.horizontal, 8)
-                                    .padding(.vertical, 3)
-                                    .background(Color(.tertiarySystemFill))
-                                    .clipShape(Capsule())
+                                if !submission.topicTag.isEmpty {
+                                    Text(submission.topicTag)
+                                        .font(.system(.caption2, design: .rounded).weight(.medium))
+                                        .foregroundStyle(.secondary)
+                                        .padding(.horizontal, 8)
+                                        .padding(.vertical, 3)
+                                        .background(Color(.tertiarySystemFill))
+                                        .clipShape(Capsule())
+                                }
 
                                 Text(relativeDate(submission.timestamp))
                                     .font(.system(.caption2, design: .rounded))

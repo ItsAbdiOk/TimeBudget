@@ -35,6 +35,14 @@ final class TimeEntry {
         Int(duration / 60)
     }
 
+    var displayName: String {
+        // Show manga title for reading entries, meeting title for calendar entries
+        if let title = metadata["title"], !title.isEmpty {
+            return title
+        }
+        return category?.name ?? "Unknown"
+    }
+
     var durationFormatted: String {
         let hours = Int(duration) / 3600
         let minutes = (Int(duration) % 3600) / 60

@@ -1,6 +1,7 @@
 import Foundation
 import SwiftData
 
+@MainActor
 @Observable
 final class InsightsViewModel {
     var correlations: [Correlation] = []
@@ -11,7 +12,9 @@ final class InsightsViewModel {
     private let correlationEngine = CorrelationEngine.shared
 
     func loadInsights(context: ModelContext) async {
+        if isLoading { return }
         isLoading = true
+        defer { isLoading = false }
 
         // Fetch snapshots for correlation analysis (last 90 days)
         let ninetyDaysAgo = Calendar.current.date(byAdding: .day, value: -90, to: Date())!
@@ -40,8 +43,6 @@ final class InsightsViewModel {
 
         fragmentationScore = correlationEngine.fragmentationScore(entries: todayEntries)
         fragmentationLabel = fragmentationText(fragmentationScore)
-
-        isLoading = false
     }
 
     private func fragmentationText(_ score: Double) -> String {
@@ -54,3 +55,4 @@ final class InsightsViewModel {
         }
     }
 }
+
