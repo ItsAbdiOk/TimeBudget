@@ -52,6 +52,9 @@
 		A1000100000000000000003D /* LeetCodeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000200000000000000003D /* LeetCodeService.swift */; };
 		A1000100000000000000003E /* LeetCodeHeatmapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000200000000000000003E /* LeetCodeHeatmapView.swift */; };
 		A1000100000000000000003F /* ContributionCalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000200000000000000003F /* ContributionCalendarView.swift */; };
+		A10001000000000000000040 /* ActivityDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002000000000000000040 /* ActivityDetailView.swift */; };
+		A10001000000000000000041 /* MangaDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002000000000000000041 /* MangaDetailView.swift */; };
+		A10001000000000000000042 /* LeetCodeDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002000000000000000042 /* LeetCodeDetailView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -103,6 +106,9 @@
 		A1000200000000000000003D /* LeetCodeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeetCodeService.swift; sourceTree = "<group>"; };
 		A1000200000000000000003E /* LeetCodeHeatmapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeetCodeHeatmapView.swift; sourceTree = "<group>"; };
 		A1000200000000000000003F /* ContributionCalendarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContributionCalendarView.swift; sourceTree = "<group>"; };
+		A10002000000000000000040 /* ActivityDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityDetailView.swift; sourceTree = "<group>"; };
+		A10002000000000000000041 /* MangaDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MangaDetailView.swift; sourceTree = "<group>"; };
+		A10002000000000000000042 /* LeetCodeDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeetCodeDetailView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -225,6 +231,9 @@
 				A1000200000000000000003C /* AniListHeatmapView.swift */,
 				A1000200000000000000003E /* LeetCodeHeatmapView.swift */,
 				A1000200000000000000003F /* ContributionCalendarView.swift */,
+				A10002000000000000000040 /* ActivityDetailView.swift */,
+				A10002000000000000000041 /* MangaDetailView.swift */,
+				A10002000000000000000042 /* LeetCodeDetailView.swift */,
 			);
 			path = Insights;
 			sourceTree = "<group>";
@@ -395,6 +404,9 @@
 				A1000100000000000000003D /* LeetCodeService.swift in Sources */,
 				A1000100000000000000003E /* LeetCodeHeatmapView.swift in Sources */,
 				A1000100000000000000003F /* ContributionCalendarView.swift in Sources */,
+				A10001000000000000000040 /* ActivityDetailView.swift in Sources */,
+				A10001000000000000000041 /* MangaDetailView.swift in Sources */,
+				A10001000000000000000042 /* LeetCodeDetailView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

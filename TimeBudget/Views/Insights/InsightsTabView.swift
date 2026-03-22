@@ -60,8 +60,13 @@ struct InsightsTabView: View {
 
                         // Activity Heatmap
                         VStack(alignment: .leading, spacing: 10) {
-                            SectionHeader(title: "Activity", subtitle: "Your daily activity")
-                                .padding(.horizontal, 16)
+                            NavigationLink {
+                                ActivityDetailView()
+                            } label: {
+                                TappableSectionHeader(title: "Activity", subtitle: "Your daily activity")
+                            }
+                            .buttonStyle(.plain)
+                            .padding(.horizontal, 16)
 
                             HeatmapView()
                                 .card()
@@ -72,8 +77,13 @@ struct InsightsTabView: View {
                         // AniList Reading Heatmap (only if configured)
                         if !aniListUsername.isEmpty {
                             VStack(alignment: .leading, spacing: 10) {
-                                SectionHeader(title: "Manga", subtitle: "Your reading activity")
-                                    .padding(.horizontal, 16)
+                                NavigationLink {
+                                    MangaDetailView()
+                                } label: {
+                                    TappableSectionHeader(title: "Manga", subtitle: "Your reading activity")
+                                }
+                                .buttonStyle(.plain)
+                                .padding(.horizontal, 16)
 
                                 AniListHeatmapView()
                                     .card()
@@ -85,8 +95,13 @@ struct InsightsTabView: View {
                         // LeetCode Heatmap (only if configured)
                         if !leetCodeUsername.isEmpty {
                             VStack(alignment: .leading, spacing: 10) {
-                                SectionHeader(title: "LeetCode", subtitle: "Your coding practice")
-                                    .padding(.horizontal, 16)
+                                NavigationLink {
+                                    LeetCodeDetailView()
+                                } label: {
+                                    TappableSectionHeader(title: "LeetCode", subtitle: "Your coding practice")
+                                }
+                                .buttonStyle(.plain)
+                                .padding(.horizontal, 16)
 
                                 LeetCodeHeatmapView()
                                     .card()
@@ -200,5 +215,34 @@ struct CorrelationCard: View {
                 .foregroundStyle(.tertiary)
         }
         .card()
+    }
+}
+
+// MARK: - Tappable Section Header
+
+struct TappableSectionHeader: View {
+    let title: String
+    var subtitle: String? = nil
+
+    var body: some View {
+        HStack {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title)
+                    .font(.title3.weight(.semibold))
+                    .foregroundStyle(.primary)
+                if let subtitle {
+                    Text(subtitle)
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
+            }
+
+            Spacer()
+
+            Image(systemName: "chevron.right")
+                .font(.system(size: 12, weight: .semibold))
+                .foregroundStyle(.tertiary)
+        }
+        .contentShape(Rectangle())
     }
 }

@@ -13,7 +13,7 @@ struct LeetCodeSubmission: Identifiable {
     let id: String
     let title: String
     let timestamp: Date
-    let lang: String
+    let topicTag: String
 }
 
 final class LeetCodeService {
@@ -139,7 +139,7 @@ final class LeetCodeService {
         let query = """
         query {
             recentAcSubmissionList(username: "\(username)", limit: \(limit)) {
-                id title timestamp lang
+                id title titleSlug timestamp
             }
         }
         """
@@ -152,23 +152,67 @@ final class LeetCodeService {
             throw LeetCodeError.invalidResponse
         }
 
-        let submissions = list.compactMap { entry -> LeetCodeSubmission? in
+        // Collect title slugs to batch-fetch topic tags
+        let entries = list.compactMap { entry -> (id: String, title: String, slug: String, timestamp: Date)? in
             guard let id = entry["id"] as? String,
                   let title = entry["title"] as? String,
                   let timestampStr = entry["timestamp"] as? String,
                   let timestamp = Double(timestampStr),
-                  let lang = entry["lang"] as? String else { return nil }
+                  let slug = entry["titleSlug"] as? String else { return nil }
+            return (id: id, title: title, slug: slug, timestamp: Date(timeIntervalSince1970: timestamp))
+        }
 
-            return LeetCodeSubmission(
-                id: id,
-                title: title,
-                timestamp: Date(timeIntervalSince1970: timestamp),
-                lang: lang
+        // Fetch topic tags for each problem (deduplicated by slug)
+        let uniqueSlugs = Array(Set(entries.map { $0.slug }))
+        var tagsBySlug: [String: String] = [:]
+
+        // Fetch tags in parallel (up to 5 at a time to avoid rate limits)
+        await withTaskGroup(of: (String, String).self) { group in
+            for slug in uniqueSlugs {
+                group.addTask { [self] in
+                    let tag = (try? await self.fetchTopicTag(for: slug)) ?? ""
+                    return (slug, tag)
+                }
+            }
+            for await (slug, tag) in group {
+                tagsBySlug[slug] = tag
+            }
+        }
+
+        let submissions = entries.map { entry in
+            LeetCodeSubmission(
+                id: entry.id,
+                title: entry.title,
+                timestamp: entry.timestamp,
+                topicTag: tagsBySlug[entry.slug] ?? ""
             )
         }
 
         cachedSubmissions = submissions
         return submissions
+    }
+
+    /// Fetch the first topic tag for a problem by its slug
+    private func fetchTopicTag(for titleSlug: String) async throws -> String {
+        let query = """
+        query {
+            question(titleSlug: "\(titleSlug)") {
+                topicTags { name }
+            }
+        }
+        """
+
+        let data = try await executeQuery(query)
+
+        guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let dataObj = json["data"] as? [String: Any],
+              let question = dataObj["question"] as? [String: Any],
+              let tags = question["topicTags"] as? [[String: Any]] else {
+            return ""
+        }
+
+        // Return the first topic tag name
+        return (tags.first?["name"] as? String) ?? ""
     }
 
     // MARK: - Private
