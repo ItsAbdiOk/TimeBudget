@@ -14,12 +14,30 @@ struct AWEvent: Identifiable {
 
 /// A bundled block of consecutive desktop activity
 struct AWActivityBlock: Identifiable {
-    let id = UUID()
+    let id: UUID
     let start: Date
     let end: Date
     let category: String            // "Desk Time" or "Deep Work"
     let topApp: String              // most-used app in this block
     let events: [AWEvent]
+    var productivityTag: ProductivityTag  // set by LLMAnalysisService (or heuristic fallback)
+
+    init(
+        start: Date,
+        end: Date,
+        category: String,
+        topApp: String,
+        events: [AWEvent],
+        productivityTag: ProductivityTag = .unknown
+    ) {
+        self.id              = UUID()
+        self.start           = start
+        self.end             = end
+        self.category        = category
+        self.topApp          = topApp
+        self.events          = events
+        self.productivityTag = productivityTag
+    }
 
     var durationMinutes: Int {
         Int(end.timeIntervalSince(start) / 60)
@@ -90,7 +108,7 @@ final class ActivityWatchService {
 
     // MARK: - Public API
 
-    /// Fetch today's desktop activity blocks
+    /// Fetch today's desktop activity blocks (with LLM productivity tagging when configured)
     func fetchTodayBlocks() async throws -> [AWActivityBlock] {
         guard isConfigured else { throw ActivityWatchError.notConfigured }
 
@@ -106,7 +124,7 @@ final class ActivityWatchService {
         return blocks
     }
 
-    /// Fetch desktop activity for a specific date
+    /// Fetch desktop activity for a specific date (with LLM productivity tagging when configured)
     func fetchBlocks(for date: Date) async throws -> [AWActivityBlock] {
         guard isConfigured else { throw ActivityWatchError.notConfigured }
 
@@ -116,10 +134,14 @@ final class ActivityWatchService {
         let meaningful = events.filter { $0.duration >= 120 }
 
         // Bundle consecutive events into blocks (gap > 5 minutes = new block)
-        return bundleIntoBlocks(meaningful)
+        let rawBlocks = bundleIntoBlocks(meaningful)
+
+        // Tag blocks with LLM (falls back to heuristic silently if LLM unavailable)
+        return (try? await LLMAnalysisService.shared.tagProductivity(blocks: rawBlocks)) ?? rawBlocks
     }
 
-    /// Fetch blocks for a date range (for trends / heatmaps)
+    /// Fetch blocks for a date range (for trends / heatmaps).
+    /// Skips LLM tagging for bulk historical queries to avoid slow serial requests.
     func fetchBlocks(from start: Date, to end: Date) async throws -> [AWActivityBlock] {
         guard isConfigured else { throw ActivityWatchError.notConfigured }
 

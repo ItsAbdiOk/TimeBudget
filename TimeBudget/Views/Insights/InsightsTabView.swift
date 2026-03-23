@@ -16,12 +16,26 @@ struct InsightsTabView: View {
 
                 ScrollView {
                     VStack(spacing: 16) {
+                        // AI Insights card (shown when LLM is configured)
+                        if LLMServiceFactory.isConfigured || viewModel.dailyNarrative != nil {
+                            AIInsightsCard(
+                                narrative: viewModel.dailyNarrative,
+                                suggestion: viewModel.dailySuggestion,
+                                isGenerating: viewModel.isGeneratingNarrative,
+                                error: viewModel.narrativeError
+                            ) {
+                                Task { await viewModel.generateAIInsights(context: modelContext) }
+                            }
+                            .slideUpAppear(index: 0)
+                            .padding(.horizontal, 16)
+                        }
+
                         // Focus / Fragmentation card
                         FragmentationCard(
                             score: viewModel.fragmentationScore,
                             label: viewModel.fragmentationLabel
                         )
-                        .slideUpAppear(index: 0)
+                        .slideUpAppear(index: 1)
                         .padding(.horizontal, 16)
 
                         // Correlations

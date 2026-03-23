@@ -82,6 +82,19 @@ struct SettingsView: View {
                         .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
                         .padding(.horizontal, 16)
 
+                        // AI Analysis
+                        VStack(spacing: 0) {
+                            SettingsRow(
+                                icon: "sparkles",
+                                iconColor: .purple,
+                                title: "AI Analysis",
+                                destination: AnyView(LLMSettingsView())
+                            )
+                        }
+                        .background(Color(.secondarySystemGroupedBackground))
+                        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                        .padding(.horizontal, 16)
+
                         // Data section
                         VStack(spacing: 0) {
                             SettingsRow(

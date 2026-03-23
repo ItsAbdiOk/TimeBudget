@@ -17,6 +17,7 @@ struct TimeBudgetApp: App {
                 IdealDay.self,
                 DailyScore.self,
                 TimeBudgetModel.self,
+                DailyAnalysis.self,
             ])
             let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
             modelContainer = try ModelContainer(for: schema, configurations: [config])
