@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TimeBudget — AI Analysis Preview</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #1C1C1E;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', sans-serif;
+    display: flex;
+    gap: 32px;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 40px 24px;
+    min-height: 100vh;
+    flex-wrap: wrap;
+  }
+
+  /* ── iPhone Frame ── */
+  .phone {
+    width: 393px;
+    background: #000;
+    border-radius: 54px;
+    padding: 14px;
+    box-shadow:
+      0 0 0 2px #3A3A3C,
+      0 40px 80px rgba(0,0,0,0.7),
+      inset 0 0 0 1px rgba(255,255,255,0.05);
+    flex-shrink: 0;
+  }
+
+  .screen {
+    background: #F2F2F7;
+    border-radius: 44px;
+    overflow: hidden;
+    height: 820px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+
+  /* ── Status Bar ── */
+  .status-bar {
+    background: #F2F2F7;
+    padding: 14px 28px 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+    z-index: 10;
+  }
+  .status-bar .time { font-size: 15px; font-weight: 600; color: #000; }
+  .status-bar .icons { font-size: 13px; color: #000; display: flex; gap: 6px; align-items: center; }
+
+  /* ── Dynamic Island ── */
+  .dynamic-island {
+    position: absolute;
+    top: 12px; left: 50%;
+    transform: translateX(-50%);
+    width: 120px; height: 34px;
+    background: #000;
+    border-radius: 20px;
+    z-index: 20;
+  }
+
+  /* ── Nav Bar ── */
+  .nav-bar {
+    background: #F2F2F7;
+    padding: 8px 20px 6px;
+    border-bottom: 0.5px solid rgba(0,0,0,0.12);
+    flex-shrink: 0;
+  }
+  .nav-bar h1 { font-size: 28px; font-weight: 700; color: #000; letter-spacing: -0.5px; }
+
+  /* ── Scroll Content ── */
+  .scroll-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px 16px 80px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    scrollbar-width: none;
+  }
+  .scroll-content::-webkit-scrollbar { display: none; }
+
+  /* ── Cards ── */
+  .card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 16px;
+  }
+
+  /* ── Tab Bar ── */
+  .tab-bar {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    background: rgba(242,242,247,0.92);
+    backdrop-filter: blur(20px);
+    border-top: 0.5px solid rgba(0,0,0,0.12);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 8px 0 20px;
+    border-radius: 0 0 44px 44px;
+    flex-shrink: 0;
+  }
+  .tab-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    font-size: 10px;
+    color: #8E8E93;
+    font-weight: 500;
+  }
+  .tab-item.active { color: #007AFF; }
+  .tab-item svg { width: 22px; height: 22px; }
+
+  /* ── AI Card ── */
+  .ai-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  .ai-icon-box {
+    width: 32px; height: 32px;
+    background: rgba(139,92,246,0.12);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+  .ai-meta { flex: 1; }
+  .ai-meta .label {
+    font-size: 10px; font-weight: 700; letter-spacing: 1.2px;
+    color: #8E8E93; text-transform: uppercase;
+  }
+  .ai-meta .title { font-size: 15px; font-weight: 600; color: #000; }
+  .refresh-btn {
+    width: 28px; height: 28px;
+    display: flex; align-items: center; justify-content: center;
+    color: #8B5CF6; font-size: 15px;
+  }
+  .ai-divider { height: 0.5px; background: rgba(0,0,0,0.1); margin-bottom: 12px; }
+  .ai-narrative {
+    font-size: 14px; line-height: 1.55; color: #1C1C1E;
+    margin-bottom: 12px;
+  }
+  .suggestion-box {
+    background: rgba(255,204,0,0.1);
+    border-radius: 8px;
+    padding: 10px 12px;
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+  }
+  .suggestion-box .bulb { font-size: 13px; flex-shrink: 0; margin-top: 1px; }
+  .suggestion-box p { font-size: 12px; color: #636366; line-height: 1.45; }
+
+  /* ── Fragmentation Card ── */
+  .frag-card { display: flex; align-items: center; gap: 18px; }
+  .frag-ring {
+    width: 64px; height: 64px;
+    border-radius: 50%;
+    background: conic-gradient(#34C759 0% 72%, rgba(52,199,89,0.12) 72% 100%);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    position: relative;
+  }
+  .frag-ring::before {
+    content: '';
+    position: absolute;
+    width: 52px; height: 52px;
+    background: #fff;
+    border-radius: 50%;
+  }
+  .frag-ring span {
+    font-size: 14px; font-weight: 700; color: #000;
+    position: relative; z-index: 1;
+  }
+  .frag-info .eyebrow {
+    font-size: 10px; font-weight: 700; letter-spacing: 1.2px;
+    color: #8E8E93; text-transform: uppercase; margin-bottom: 2px;
+  }
+  .frag-info .score-label { font-size: 20px; font-weight: 700; color: #000; }
+  .frag-info .sub { font-size: 12px; color: #8E8E93; margin-top: 2px; }
+
+  /* ── Correlation Card ── */
+  .correlation-card {
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .corr-header { display: flex; align-items: center; gap: 10px; }
+  .corr-icon {
+    width: 32px; height: 32px;
+    background: rgba(52,199,89,0.12);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; color: #34C759; flex-shrink: 0;
+  }
+  .corr-title { font-size: 14px; font-weight: 600; color: #000; flex: 1; }
+  .chip {
+    font-size: 11px; font-weight: 500;
+    padding: 4px 10px;
+    background: rgba(52,199,89,0.15);
+    color: #34C759;
+    border-radius: 20px;
+  }
+  .chip.blue { background: rgba(0,122,255,0.12); color: #007AFF; }
+  .corr-body { font-size: 12px; color: #8E8E93; }
+  .corr-days { font-size: 11px; color: #AEAEB2; }
+
+  /* ── Section Header ── */
+  .section-header { margin-bottom: 2px; }
+  .section-header h2 { font-size: 20px; font-weight: 600; color: #000; }
+  .section-header p { font-size: 14px; color: #8E8E93; margin-top: 1px; }
+
+  /* ════════════════════ SETTINGS SCREENS ════════════════════ */
+
+  /* ── Settings Row ── */
+  .settings-group {
+    background: #fff;
+    border-radius: 16px;
+    overflow: hidden;
+  }
+  .settings-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    border-bottom: 0.5px solid rgba(0,0,0,0.08);
+  }
+  .settings-row:last-child { border-bottom: none; }
+  .settings-icon {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+  .settings-label { flex: 1; font-size: 15px; color: #000; }
+  .chevron { color: #AEAEB2; font-size: 12px; font-weight: 600; }
+
+  /* ── Provider Picker ── */
+  .provider-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    border-bottom: 0.5px solid rgba(0,0,0,0.08);
+  }
+  .provider-row:last-child { border-bottom: none; }
+  .provider-info { flex: 1; }
+  .provider-info .pname { font-size: 15px; font-weight: 500; color: #000; }
+  .provider-info .psub { font-size: 12px; color: #8E8E93; margin-top: 1px; }
+  .check-circle { font-size: 20px; color: #8B5CF6; }
+  .empty-circle {
+    width: 22px; height: 22px;
+    border: 1.5px solid rgba(0,0,0,0.2);
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* ── Config Row ── */
+  .config-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 16px;
+    border-bottom: 0.5px solid rgba(0,0,0,0.08);
+  }
+  .config-row:last-child { border-bottom: none; }
+  .config-info { flex: 1; }
+  .config-info .cname { font-size: 15px; font-weight: 500; color: #000; }
+  .config-info .csub { font-size: 12px; color: #8E8E93; }
+  .config-value {
+    font-size: 14px; color: #8E8E93;
+    font-variant-numeric: tabular-nums;
+  }
+  .config-value.mono { font-family: 'SF Mono', Menlo, monospace; font-size: 13px; }
+
+  /* ── Status Bar (bottom of config section) ── */
+  .test-row {
+    display: flex; align-items: center; gap: 8px;
+    padding: 12px 16px;
+  }
+  .test-status {
+    display: flex; gap: 6px; align-items: center;
+    font-size: 12px; color: #34C759; flex: 1;
+  }
+  .test-btn {
+    background: #8B5CF6;
+    color: #fff;
+    font-size: 12px; font-weight: 600;
+    padding: 7px 18px;
+    border-radius: 20px;
+    white-space: nowrap;
+  }
+
+  /* ── Info Box ── */
+  .info-box {
+    border-radius: 12px;
+    padding: 14px;
+  }
+  .info-box.purple { background: rgba(139,92,246,0.07); }
+  .info-box .info-header {
+    display: flex; gap: 7px; align-items: center;
+    font-size: 14px; font-weight: 600; margin-bottom: 8px;
+  }
+  .info-box.purple .info-header { color: #8B5CF6; }
+  .info-box p { font-size: 12px; color: #8E8E93; line-height: 1.55; }
+  .info-box strong { color: #3C3C3C; }
+
+  /* ── AW Heatmap placeholder ── */
+  .productivity-bar {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+    margin-top: 4px;
+  }
+  .prod-chip {
+    font-size: 11px;
+    font-weight: 500;
+    padding: 3px 9px;
+    border-radius: 12px;
+  }
+  .prod-chip.productive { background: rgba(52,199,89,0.15); color: #34C759; }
+  .prod-chip.distracted  { background: rgba(255,69,58,0.12); color: #FF453A; }
+  .prod-chip.break       { background: rgba(0,122,255,0.1); color: #007AFF; }
+
+  .desk-block {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 0;
+    border-bottom: 0.5px solid rgba(0,0,0,0.07);
+  }
+  .desk-block:last-child { border-bottom: none; }
+  .desk-app { font-size: 13px; font-weight: 600; color: #000; flex: 1; }
+  .desk-dur { font-size: 12px; color: #8E8E93; }
+
+  /* ── Screen label ── */
+  .screen-label {
+    text-align: center;
+    color: #636366;
+    font-size: 12px;
+    font-weight: 500;
+    margin-top: 12px;
+    letter-spacing: 0.3px;
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════
+     SCREEN 1: Insights Tab (with AI Summary card)
+═══════════════════════════════════════════════════════ -->
+<div>
+<div class="phone">
+  <div class="screen">
+    <!-- Dynamic Island -->
+    <div class="dynamic-island"></div>
+
+    <!-- Status bar -->
+    <div class="status-bar">
+      <span class="time">9:41</span>
+      <div class="icons">
+        <span>●●●</span>
+        <span>WiFi</span>
+        <span>🔋</span>
+      </div>
+    </div>
+
+    <!-- Nav -->
+    <div class="nav-bar">
+      <h1>Insights</h1>
+    </div>
+
+    <!-- Scroll -->
+    <div class="scroll-content">
+
+      <!-- ── AI Summary Card (NEW) ── -->
+      <div class="card">
+        <div class="ai-header">
+          <div class="ai-icon-box">✦</div>
+          <div class="ai-meta">
+            <div class="label">AI Summary</div>
+            <div class="title">Today at a glance</div>
+          </div>
+          <div class="refresh-btn">↻</div>
+        </div>
+        <div class="ai-divider"></div>
+        <div class="ai-narrative">
+          Today was a deep coding day with solid morning momentum — 3h 20m in Xcode before your afternoon meetings broke the flow. Your 7.2h sleep was above your average, which likely explains the high step count (9,400) and the quality of your focused blocks.
+        </div>
+        <div class="suggestion-box">
+          <span class="bulb">💡</span>
+          <p>Try blocking your calendar from 14:00–16:00 tomorrow to protect the post-lunch coding window you lost today.</p>
+        </div>
+      </div>
+
+      <!-- ── Fragmentation Card ── -->
+      <div class="card">
+        <div class="frag-card">
+          <div class="frag-ring"><span>72</span></div>
+          <div class="frag-info">
+            <div class="eyebrow">Today's Focus</div>
+            <div class="score-label">Focused</div>
+            <div class="sub">Fewer context switches = deeper work</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Correlations section ── -->
+      <div class="section-header">
+        <h2>Correlations</h2>
+        <p>Patterns from your last 90 days</p>
+      </div>
+
+      <div class="card">
+        <div class="correlation-card">
+          <div class="corr-header">
+            <div class="corr-icon">↗</div>
+            <span class="corr-title">Sleep → Next-day Steps</span>
+            <span class="chip">Strong</span>
+          </div>
+          <div class="corr-body">Nights with 7.5h+ sleep are followed by ~2,300 more steps the next day.</div>
+          <div class="corr-days">68 days analysed</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="correlation-card">
+          <div class="corr-header">
+            <div class="corr-icon" style="background:rgba(0,122,255,0.12);color:#007AFF;">↗</div>
+            <span class="corr-title">Exercise → Sleep Quality</span>
+            <span class="chip blue">Moderate</span>
+          </div>
+          <div class="corr-body">Workouts of 30m+ are associated with 14% better sleep quality scores.</div>
+          <div class="corr-days">54 days analysed</div>
+        </div>
+      </div>
+
+      <!-- ── Desk Time (showing productivity tags) ── -->
+      <div class="section-header">
+        <h2>Desk Time</h2>
+        <p>Your desktop activity</p>
+      </div>
+
+      <div class="card">
+        <div class="desk-block">
+          <div style="flex:1">
+            <div class="desk-app">Xcode</div>
+            <div style="font-size:12px;color:#8E8E93;margin-top:1px">TimeBudget — Services/LLMService.swift</div>
+          </div>
+          <div class="desk-dur">3h 22m</div>
+          <span class="prod-chip productive">Productive</span>
+        </div>
+        <div class="desk-block">
+          <div style="flex:1">
+            <div class="desk-app">Chrome</div>
+            <div style="font-size:12px;color:#8E8E93;margin-top:1px">Twitter / YouTube</div>
+          </div>
+          <div class="desk-dur">41m</div>
+          <span class="prod-chip distracted">Distracted</span>
+        </div>
+        <div class="desk-block">
+          <div style="flex:1">
+            <div class="desk-app">Spotify</div>
+            <div style="font-size:12px;color:#8E8E93;margin-top:1px">Lo-fi playlist</div>
+          </div>
+          <div class="desk-dur">28m</div>
+          <span class="prod-chip break">Break</span>
+        </div>
+        <div class="desk-block">
+          <div style="flex:1">
+            <div class="desk-app">Terminal</div>
+            <div style="font-size:12px;color:#8E8E93;margin-top:1px">git, ollama pull</div>
+          </div>
+          <div class="desk-dur">52m</div>
+          <span class="prod-chip productive">Productive</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Tab Bar -->
+    <div class="tab-bar">
+      <div class="tab-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        Today
+      </div>
+      <div class="tab-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><polyline points="12 6 12 12 16 14"/></svg>
+        Focus
+      </div>
+      <div class="tab-item active">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 3h8v8H3V3zm0 10h8v8H3v-8zm10-10h8v8h-8V3zm0 10h8v8h-8v-8z" opacity="0.3"/><path d="M4 4h6v6H4V4zm0 10h6v6H4v-6zm10-10h6v6h-6V4zm0 10h6v6h-6v-6z"/></svg>
+        Insights
+      </div>
+      <div class="tab-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 10h16M4 14h10"/></svg>
+        Budget
+      </div>
+      <div class="tab-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+        Settings
+      </div>
+    </div>
+  </div>
+</div>
+<div class="screen-label">Insights tab — AI Summary card + productivity tags</div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════
+     SCREEN 2: Settings → AI Analysis row
+═══════════════════════════════════════════════════════ -->
+<div>
+<div class="phone">
+  <div class="screen">
+    <div class="dynamic-island"></div>
+    <div class="status-bar">
+      <span class="time">9:41</span>
+      <div class="icons"><span>●●●</span><span>WiFi</span><span>🔋</span></div>
+    </div>
+    <div class="nav-bar"><h1>Settings</h1></div>
+
+    <div class="scroll-content">
+
+      <!-- Tracking -->
+      <div class="settings-group">
+        <div class="settings-row">
+          <div class="settings-icon" style="background:rgba(0,122,255,0.12);font-size:15px;">📍</div>
+          <span class="settings-label">My Places</span>
+          <span class="chevron">›</span>
+        </div>
+        <div class="settings-row">
+          <div class="settings-icon" style="background:rgba(255,204,0,0.15);font-size:15px;">⭐</div>
+          <span class="settings-label">Ideal Day</span>
+          <span class="chevron">›</span>
+        </div>
+        <div class="settings-row">
+          <div class="settings-icon" style="background:rgba(52,199,89,0.12);font-size:15px;">🛡</div>
+          <span class="settings-label">Permissions</span>
+          <span class="chevron">›</span>
+        </div>
+      </div>
+
+      <!-- Connected Accounts -->
+      <div class="settings-group">
+        <div class="settings-row">
+          <div class="settings-icon" style="background:rgba(172,142,104,0.15);font-size:15px;">📖</div>
+          <span class="settings-label">AniList</span>
+          <span class="chevron">›</span>
+        </div>
+        <div class="settings-row">
+          <div class="settings-icon" style="background:rgba(255,161,22,0.15);font-size:14px;">&lt;/&gt;</div>
+          <span class="settings-label">LeetCode</span>
+          <span class="chevron">›</span>
+        </div>
+        <div class="settings-row">
+          <div class="settings-icon" style="background:rgba(244,63,94,0.12);font-size:15px;">🎧</div>
+          <span class="settings-label">Pocket Casts</span>
+          <span class="chevron">›</span>
+        </div>
+        <div class="settings-row">
+          <div class="settings-icon" style="background:rgba(139,92,246,0.12);font-size:15px;">🖥</div>
+          <span class="settings-label">ActivityWatch</span>
+          <span class="chevron">›</span>
+        </div>
+      </div>
+
+      <!-- AI Analysis (NEW) -->
+      <div class="settings-group" style="border: 1.5px solid rgba(139,92,246,0.25);">
+        <div class="settings-row" style="background: rgba(139,92,246,0.04);">
+          <div class="settings-icon" style="background:rgba(139,92,246,0.15);font-size:16px;">✦</div>
+          <div style="flex:1">
+            <div style="font-size:15px;color:#000;font-weight:500;">AI Analysis</div>
+            <div style="font-size:12px;color:#8B5CF6;margin-top:1px;font-weight:500;">Ollama · llama3.2:3b · Connected</div>
+          </div>
+          <span class="chevron">›</span>
+        </div>
+      </div>
+
+      <!-- Data -->
+      <div class="settings-group">
+        <div class="settings-row">
+          <div class="settings-icon" style="background:rgba(88,86,214,0.12);font-size:15px;">⬆</div>
+          <span class="settings-label">Export Data</span>
+          <span class="chevron">›</span>
+        </div>
+      </div>
+
+      <!-- About -->
+      <div class="settings-group">
+        <div class="settings-row">
+          <div class="settings-icon" style="background:rgba(142,142,147,0.12);font-size:15px;">ℹ</div>
+          <span class="settings-label">Version</span>
+          <span style="font-size:14px;color:#8E8E93;">1.0</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Tab Bar -->
+    <div class="tab-bar">
+      <div class="tab-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Today</div>
+      <div class="tab-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><polyline points="12 6 12 12 16 14"/></svg>Focus</div>
+      <div class="tab-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h8v8H3V3zm0 10h8v8H3v-8zm10-10h8v8h-8V3zm0 10h8v8h-8v-8z"/></svg>Insights</div>
+      <div class="tab-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 10h16M4 14h10"/></svg>Budget</div>
+      <div class="tab-item active"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>Settings</div>
+    </div>
+  </div>
+</div>
+<div class="screen-label">Settings — new AI Analysis row with status hint</div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════
+     SCREEN 3: AI Analysis Settings
+═══════════════════════════════════════════════════════ -->
+<div>
+<div class="phone">
+  <div class="screen">
+    <div class="dynamic-island"></div>
+    <div class="status-bar">
+      <span class="time">9:41</span>
+      <div class="icons"><span>●●●</span><span>WiFi</span><span>🔋</span></div>
+    </div>
+    <div class="nav-bar" style="display:flex;align-items:center;gap:8px;">
+      <span style="color:#007AFF;font-size:16px;">‹</span>
+      <h1 style="font-size:22px;">AI Analysis</h1>
+    </div>
+
+    <div class="scroll-content">
+
+      <!-- Provider Picker -->
+      <div class="settings-group">
+        <!-- Ollama (selected) -->
+        <div class="provider-row">
+          <div class="settings-icon" style="background:rgba(139,92,246,0.12);font-size:15px;">🖧</div>
+          <div class="provider-info">
+            <div class="pname">Ollama (local network)</div>
+            <div class="psub">Run a model on your Mac over WiFi</div>
+          </div>
+          <span class="check-circle">✓</span>
+        </div>
+        <!-- Foundation (not selected) -->
+        <div class="provider-row">
+          <div class="settings-icon" style="background:rgba(6,182,212,0.12);font-size:15px;">📱</div>
+          <div class="provider-info">
+            <div class="pname">On-device (Apple Intelligence)</div>
+            <div class="psub">iPhone 15 Pro+ · iOS 18.2+ required</div>
+          </div>
+          <div class="empty-circle"></div>
+        </div>
+        <!-- Disable -->
+        <div style="display:flex;justify-content:flex-end;padding:12px 16px;border-top:0.5px solid rgba(0,0,0,0.08);">
+          <span style="font-size:12px;font-weight:600;color:#FF3B30;background:rgba(255,59,48,0.08);padding:7px 16px;border-radius:20px;">Disable AI Analysis</span>
+        </div>
+      </div>
+
+      <!-- Ollama Config -->
+      <div class="settings-group">
+        <!-- Host -->
+        <div class="config-row">
+          <div class="settings-icon" style="background:rgba(139,92,246,0.12);font-size:14px;">📡</div>
+          <div class="config-info">
+            <div class="cname">Mac IP Address</div>
+            <div class="csub">Same as ActivityWatch</div>
+          </div>
+          <span class="config-value mono">192.168.1.50</span>
+        </div>
+        <!-- Model -->
+        <div class="config-row">
+          <div class="settings-icon" style="background:rgba(139,92,246,0.12);font-size:14px;">⚙️</div>
+          <div class="config-info">
+            <div class="cname">Model</div>
+            <div class="csub">Must be pulled in Ollama first</div>
+          </div>
+          <span class="config-value mono">llama3.2:3b</span>
+        </div>
+        <!-- Test connection -->
+        <div class="test-row">
+          <div class="test-status">
+            <span style="color:#34C759;font-size:14px;">✓</span>
+            Connected · Models: llama3.2:3b, qwen2.5:3b
+          </div>
+          <span class="test-btn">Test Connection</span>
+        </div>
+      </div>
+
+      <!-- Info box -->
+      <div class="info-box purple">
+        <div class="info-header">
+          <span>ℹ️</span>
+          Setting up Ollama
+        </div>
+        <p>
+          1. Install Ollama from <strong>ollama.com</strong><br>
+          2. Run <strong>`ollama pull llama3.2:3b`</strong> in Terminal<br>
+          3. Enter your Mac's IP address above<br><br>
+          Your iPhone must be on the same WiFi network. Suggested small models: <strong>llama3.2:3b</strong> (2 GB), <strong>qwen2.5:3b</strong> (2 GB)
+        </p>
+      </div>
+
+    </div>
+
+    <!-- Tab Bar -->
+    <div class="tab-bar">
+      <div class="tab-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Today</div>
+      <div class="tab-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><polyline points="12 6 12 12 16 14"/></svg>Focus</div>
+      <div class="tab-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h8v8H3V3zm0 10h8v8H3v-8zm10-10h8v8h-8V3zm0 10h8v8h-8v-8z"/></svg>Insights</div>
+      <div class="tab-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 10h16M4 14h10"/></svg>Budget</div>
+      <div class="tab-item active"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>Settings</div>
+    </div>
+  </div>
+</div>
+<div class="screen-label">Settings → AI Analysis — Ollama configured &amp; connected</div>
+</div>
+
+</body>
+</html>
