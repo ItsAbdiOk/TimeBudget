@@ -58,6 +58,10 @@
 		A10001000000000000000050 /* PocketCastsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002000000000000000050 /* PocketCastsService.swift */; };
 		A10001000000000000000051 /* ActivityWatchService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002000000000000000051 /* ActivityWatchService.swift */; };
 		A10001000000000000000052 /* IntegrationsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002000000000000000052 /* IntegrationsSettingsView.swift */; };
+		A10001000000000000000060 /* PodcastHeatmapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002000000000000000060 /* PodcastHeatmapView.swift */; };
+		A10001000000000000000061 /* PodcastDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002000000000000000061 /* PodcastDetailView.swift */; };
+		A10001000000000000000062 /* DeskTimeHeatmapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002000000000000000062 /* DeskTimeHeatmapView.swift */; };
+		A10001000000000000000063 /* DeskTimeDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002000000000000000063 /* DeskTimeDetailView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -115,6 +119,10 @@
 		A10002000000000000000050 /* PocketCastsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PocketCastsService.swift; sourceTree = "<group>"; };
 		A10002000000000000000051 /* ActivityWatchService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityWatchService.swift; sourceTree = "<group>"; };
 		A10002000000000000000052 /* IntegrationsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntegrationsSettingsView.swift; sourceTree = "<group>"; };
+		A10002000000000000000060 /* PodcastHeatmapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PodcastHeatmapView.swift; sourceTree = "<group>"; };
+		A10002000000000000000061 /* PodcastDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PodcastDetailView.swift; sourceTree = "<group>"; };
+		A10002000000000000000062 /* DeskTimeHeatmapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeskTimeHeatmapView.swift; sourceTree = "<group>"; };
+		A10002000000000000000063 /* DeskTimeDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeskTimeDetailView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -242,6 +250,10 @@
 				A10002000000000000000040 /* ActivityDetailView.swift */,
 				A10002000000000000000041 /* MangaDetailView.swift */,
 				A10002000000000000000042 /* LeetCodeDetailView.swift */,
+				A10002000000000000000060 /* PodcastHeatmapView.swift */,
+				A10002000000000000000061 /* PodcastDetailView.swift */,
+				A10002000000000000000062 /* DeskTimeHeatmapView.swift */,
+				A10002000000000000000063 /* DeskTimeDetailView.swift */,
 			);
 			path = Insights;
 			sourceTree = "<group>";
@@ -419,6 +431,10 @@
 				A10001000000000000000050 /* PocketCastsService.swift in Sources */,
 				A10001000000000000000051 /* ActivityWatchService.swift in Sources */,
 				A10001000000000000000052 /* IntegrationsSettingsView.swift in Sources */,
+				A10001000000000000000060 /* PodcastHeatmapView.swift in Sources */,
+				A10001000000000000000061 /* PodcastDetailView.swift in Sources */,
+				A10001000000000000000062 /* DeskTimeHeatmapView.swift in Sources */,
+				A10001000000000000000063 /* DeskTimeDetailView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

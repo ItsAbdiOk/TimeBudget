@@ -6,6 +6,8 @@ struct InsightsTabView: View {
     @State private var viewModel = InsightsViewModel()
     @AppStorage("anilist_username") private var aniListUsername = ""
     @AppStorage("leetcode_username") private var leetCodeUsername = ""
+    @AppStorage("activitywatch_hostname") private var awHostname = ""
+    @State private var hasPocketCastsToken = PocketCastsService.shared.isConfigured
 
     var body: some View {
         NavigationStack {
@@ -108,6 +110,42 @@ struct InsightsTabView: View {
                                     .padding(.horizontal, 16)
                             }
                             .slideUpAppear(index: 7)
+                        }
+
+                        // Podcast Heatmap (only if configured)
+                        if hasPocketCastsToken {
+                            VStack(alignment: .leading, spacing: 10) {
+                                NavigationLink {
+                                    PodcastDetailView()
+                                } label: {
+                                    TappableSectionHeader(title: "Podcasts", subtitle: "Your listening activity")
+                                }
+                                .buttonStyle(.plain)
+                                .padding(.horizontal, 16)
+
+                                PodcastHeatmapView()
+                                    .card()
+                                    .padding(.horizontal, 16)
+                            }
+                            .slideUpAppear(index: 8)
+                        }
+
+                        // Desk Time Heatmap (only if configured)
+                        if !awHostname.isEmpty {
+                            VStack(alignment: .leading, spacing: 10) {
+                                NavigationLink {
+                                    DeskTimeDetailView()
+                                } label: {
+                                    TappableSectionHeader(title: "Desk Time", subtitle: "Your desktop activity")
+                                }
+                                .buttonStyle(.plain)
+                                .padding(.horizontal, 16)
+
+                                DeskTimeHeatmapView()
+                                    .card()
+                                    .padding(.horizontal, 16)
+                            }
+                            .slideUpAppear(index: 9)
                         }
 
                         Spacer().frame(height: 90)
