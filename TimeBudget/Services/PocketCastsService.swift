@@ -107,6 +107,7 @@ final class PocketCastsService {
 
     private let historyURL = URL(string: "https://api.pocketcasts.com/user/history")!
     private let profileURL = URL(string: "https://api.pocketcasts.com/user/profile")!
+    private let loginURL = URL(string: "https://api.pocketcasts.com/user/login")!
 
     // MARK: - Cache
 
@@ -139,6 +140,43 @@ final class PocketCastsService {
         KeychainHelper.delete()
         cachedEpisodes = []
         lastSyncDate = nil
+    }
+
+    // MARK: - Login (email + password → token)
+
+    /// Authenticate with Pocket Casts and store the token in Keychain.
+    /// Returns the email on success for UI confirmation.
+    func login(email: String, password: String) async throws -> String {
+        var request = URLRequest(url: loginURL)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue("application/json", forHTTPHeaderField: "Accept")
+        request.timeoutInterval = 15
+
+        let body: [String: String] = ["email": email, "password": password]
+        request.httpBody = try JSONSerialization.data(withJSONObject: body)
+
+        let (data, response) = try await URLSession.shared.data(for: request)
+
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw PocketCastsError.invalidResponse
+        }
+
+        if httpResponse.statusCode == 401 {
+            throw PocketCastsError.unauthorized
+        }
+
+        guard (200...299).contains(httpResponse.statusCode) else {
+            throw PocketCastsError.requestFailed(statusCode: httpResponse.statusCode)
+        }
+
+        guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let bearerToken = json["token"] as? String else {
+            throw PocketCastsError.invalidResponse
+        }
+
+        saveToken(bearerToken)
+        return email
     }
 
     // MARK: - Public API
