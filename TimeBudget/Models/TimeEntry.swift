@@ -8,6 +8,8 @@ enum DataSource: String, Codable {
     case calendar
     case manual
     case aniList
+    case pocketCasts
+    case activityWatch
 }
 
 @Model

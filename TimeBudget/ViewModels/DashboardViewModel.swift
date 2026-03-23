@@ -99,6 +99,22 @@ final class DashboardViewModel {
             }
         }()
 
+        // Pocket Casts sync (parallel, throttled)
+        let pocketCasts = PocketCastsService.shared
+        async let pocketCastsTask: () = {
+            if pocketCasts.isConfigured && pocketCasts.shouldSync {
+                _ = try? await pocketCasts.fetchTodayEpisodes()
+            }
+        }()
+
+        // ActivityWatch sync (parallel, graceful failure if unreachable)
+        let activityWatch = ActivityWatchService.shared
+        async let activityWatchTask: () = {
+            if activityWatch.isConfigured && activityWatch.shouldSync {
+                _ = try? await activityWatch.fetchTodayBlocks()
+            }
+        }()
+
         // Await all in parallel
         steps = await stepsTask ?? 0
         activeCalories = await caloriesTask ?? 0
@@ -108,6 +124,8 @@ final class DashboardViewModel {
         workouts = await workoutsTask ?? []
         await motionTask
         await aniListTask
+        await pocketCastsTask
+        await activityWatchTask
 
         currentActivity = motion.currentActivity
 

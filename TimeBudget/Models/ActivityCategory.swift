@@ -40,8 +40,10 @@ final class ActivityCategory {
             ("Deep Work", "brain.head.profile", "#FF375F", 8),
             ("Reading", "book.fill", "#AC8E68", 9),
             ("Creative", "paintbrush.fill", "#FF9F0A", 10),
-            ("Stationary", "figure.stand", "#8E8E93", 11),
-            ("Other", "questionmark.circle", "#636366", 12),
+            ("Podcast", "headphones", "#F43F5E", 11),
+            ("Desk Time", "desktopcomputer", "#8B5CF6", 12),
+            ("Stationary", "figure.stand", "#8E8E93", 13),
+            ("Other", "questionmark.circle", "#636366", 14),
         ]
 
         for (name, icon, color, order) in defaults {

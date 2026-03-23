@@ -16,6 +16,8 @@ No backend. All data stays on your device.
 ### Integrations
 - **AniList** — Track manga reading activity with chapter counts and estimated reading time
 - **LeetCode** — Track coding practice with problem stats, topic tags, and submission history
+- **Pocket Casts** — Track podcast listening history (bearer token stored in Keychain)
+- **ActivityWatch** — Track desktop computer usage over local network (IDE vs browser vs misc)
 
 ### Dashboard
 - Today's health stats (steps, sleep, exercise, meetings)
@@ -43,7 +45,7 @@ Manual timer for activities that aren't automatically tracked:
 ### Settings
 - Save and label frequent places on a map
 - Configure your ideal day with per-category targets
-- Connect AniList and LeetCode accounts
+- Connect AniList, LeetCode, Pocket Casts, and ActivityWatch accounts
 - Manage permissions (Health, Location, Calendar, Motion)
 
 ## Requirements
@@ -70,6 +72,8 @@ Manual timer for activities that aren't automatically tracked:
 6. Optionally, connect your accounts in **Settings**:
    - **AniList** — Enter your username to track manga reading
    - **LeetCode** — Enter your username to track coding practice
+   - **Pocket Casts** — Paste your bearer token from the web player
+   - **ActivityWatch** — Enter your desktop's local IP and hostname
 
 > **Note:** With a free Apple Developer account, the app expires every 7 days and needs to be re-deployed from Xcode.
 
@@ -100,7 +104,8 @@ The app is designed to minimize battery impact:
 - All HealthKit queries run in parallel using `async let`
 - Dashboard reloads are throttled to once per 30 seconds
 - Historical backfill uses batch range queries (3 queries instead of 120+)
-- AniList and LeetCode sync at most once per hour with in-memory caching
+- All external API syncs (AniList, LeetCode, Pocket Casts) throttled to once per hour
+- ActivityWatch uses 5-second timeout so the app never freezes when away from home WiFi
 - Location uses significant change monitoring and geofencing — no continuous GPS
 - Background refresh via `BGAppRefreshTask` for overnight syncs
 
