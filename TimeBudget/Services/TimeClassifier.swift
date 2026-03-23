@@ -10,6 +10,8 @@ final class TimeClassifier {
     private let calendar = CalendarService.shared
     private let location = LocationService.shared
     private let aniList = AniListService.shared
+    private let pocketCasts = PocketCastsService.shared
+    private let activityWatch = ActivityWatchService.shared
 
     /// Priority order for resolving overlaps:
     /// 1. Manual (focus sessions) — highest
@@ -115,7 +117,47 @@ final class TimeClassifier {
             ))
         }
 
-        // 5. Core Motion activities (priority 6)
+        // 5. Pocket Casts podcast listening (priority 4, same as calendar/AniList)
+        if pocketCasts.isConfigured {
+            let episodes = (try? await pocketCasts.fetchTodayEpisodes()) ?? []
+            for episode in episodes {
+                guard let playedAt = episode.lastPlayedAt else { continue }
+                let listenDuration = TimeInterval(episode.listenedMinutes * 60)
+                let listenStart = playedAt.addingTimeInterval(-listenDuration)
+                entries.append((
+                    start: listenStart,
+                    end: playedAt,
+                    category: "Podcast",
+                    source: .pocketCasts,
+                    confidence: 0.85,
+                    metadata: [
+                        "title": episode.title,
+                        "podcast": episode.podcastTitle,
+                        "source": "PocketCasts"
+                    ]
+                ))
+            }
+        }
+
+        // 6. ActivityWatch desktop activity (priority 4)
+        if activityWatch.isConfigured {
+            let blocks = (try? await activityWatch.fetchBlocks(for: date)) ?? []
+            for block in blocks {
+                entries.append((
+                    start: block.start,
+                    end: block.end,
+                    category: block.category,
+                    source: .activityWatch,
+                    confidence: 0.8,
+                    metadata: [
+                        "topApp": block.topApp,
+                        "source": "ActivityWatch"
+                    ]
+                ))
+            }
+        }
+
+        // 7. Core Motion activities (lowest priority)
         let motionSegments = (try? await motion.fetchActivities(from: startOfDay, to: min(endOfDay, Date()))) ?? []
         for segment in motionSegments {
             let categoryName = motionCategoryName(for: segment, context: context)
@@ -165,6 +207,8 @@ final class TimeClassifier {
             case .healthKit: return 2
             case .calendar: return 3
             case .aniList: return 4
+            case .pocketCasts: return 4
+            case .activityWatch: return 4
             case .coreMotion: return 5
             case .coreLocation: return 6
             }

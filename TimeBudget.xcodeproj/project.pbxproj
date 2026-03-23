@@ -55,6 +55,9 @@
 		A10001000000000000000040 /* ActivityDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002000000000000000040 /* ActivityDetailView.swift */; };
 		A10001000000000000000041 /* MangaDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002000000000000000041 /* MangaDetailView.swift */; };
 		A10001000000000000000042 /* LeetCodeDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002000000000000000042 /* LeetCodeDetailView.swift */; };
+		A10001000000000000000050 /* PocketCastsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002000000000000000050 /* PocketCastsService.swift */; };
+		A10001000000000000000051 /* ActivityWatchService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002000000000000000051 /* ActivityWatchService.swift */; };
+		A10001000000000000000052 /* IntegrationsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002000000000000000052 /* IntegrationsSettingsView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -109,6 +112,9 @@
 		A10002000000000000000040 /* ActivityDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityDetailView.swift; sourceTree = "<group>"; };
 		A10002000000000000000041 /* MangaDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MangaDetailView.swift; sourceTree = "<group>"; };
 		A10002000000000000000042 /* LeetCodeDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeetCodeDetailView.swift; sourceTree = "<group>"; };
+		A10002000000000000000050 /* PocketCastsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PocketCastsService.swift; sourceTree = "<group>"; };
+		A10002000000000000000051 /* ActivityWatchService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityWatchService.swift; sourceTree = "<group>"; };
+		A10002000000000000000052 /* IntegrationsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntegrationsSettingsView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -176,6 +182,8 @@
 				A10002000000000000000039 /* AniListService.swift */,
 				A1000200000000000000003D /* LeetCodeService.swift */,
 				A1000200000000000000003B /* BackgroundTaskService.swift */,
+				A10002000000000000000050 /* PocketCastsService.swift */,
+				A10002000000000000000051 /* ActivityWatchService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -244,6 +252,7 @@
 				A10002000000000000000014 /* SettingsView.swift */,
 				A10002000000000000000015 /* PlaceManagementView.swift */,
 				A1000200000000000000001B /* IdealDaySetupView.swift */,
+				A10002000000000000000052 /* IntegrationsSettingsView.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -407,6 +416,9 @@
 				A10001000000000000000040 /* ActivityDetailView.swift in Sources */,
 				A10001000000000000000041 /* MangaDetailView.swift in Sources */,
 				A10001000000000000000042 /* LeetCodeDetailView.swift in Sources */,
+				A10001000000000000000050 /* PocketCastsService.swift in Sources */,
+				A10001000000000000000051 /* ActivityWatchService.swift in Sources */,
+				A10001000000000000000052 /* IntegrationsSettingsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

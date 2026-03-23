@@ -59,6 +59,24 @@ struct SettingsView: View {
                                 title: "LeetCode",
                                 destination: AnyView(LeetCodeSettingsView())
                             )
+
+                            Divider().padding(.leading, 52)
+
+                            SettingsRow(
+                                icon: "headphones",
+                                iconColor: Color(hex: "#F43F5E"),
+                                title: "Pocket Casts",
+                                destination: AnyView(PocketCastsSettingsView())
+                            )
+
+                            Divider().padding(.leading, 52)
+
+                            SettingsRow(
+                                icon: "desktopcomputer",
+                                iconColor: Color(hex: "#8B5CF6"),
+                                title: "ActivityWatch",
+                                destination: AnyView(ActivityWatchSettingsView())
+                            )
                         }
                         .background(Color(.secondarySystemGroupedBackground))
                         .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))

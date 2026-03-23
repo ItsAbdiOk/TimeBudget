@@ -41,6 +41,12 @@
 	<array>
 		<string>armv7</string>
 	</array>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>TimeBudget connects to ActivityWatch on your desktop to track computer usage time.</string>
+	<key>NSBonjourServices</key>
+	<array>
+		<string>_http._tcp.</string>
+	</array>
 	<key>BGTaskSchedulerPermittedIdentifiers</key>
 	<array>
 		<string>com.timebudget.app.refresh</string>
