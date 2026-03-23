@@ -130,7 +130,7 @@ final class ActivityWatchService {
 
     /// Test connectivity to the ActivityWatch server
     func testConnection() async throws -> Bool {
-        guard isConfigured else { throw ActivityWatchError.notConfigured }
+        guard !desktopIP.isEmpty else { throw ActivityWatchError.notConfigured }
 
         let url = URL(string: "http://\(desktopIP):\(port)/api/0/info")!
         var request = URLRequest(url: url)
@@ -148,6 +148,46 @@ final class ActivityWatchService {
         }
 
         return (200...299).contains(httpResponse.statusCode)
+    }
+
+    /// Auto-discover the hostname by scanning available buckets on the server.
+    /// Finds the `aw-watcher-window_*` bucket and extracts the hostname suffix.
+    /// Saves the hostname to UserDefaults on success.
+    @discardableResult
+    func discoverHostname() async throws -> String {
+        guard !desktopIP.isEmpty else { throw ActivityWatchError.notConfigured }
+
+        let url = URL(string: "http://\(desktopIP):\(port)/api/0/buckets")!
+        var request = URLRequest(url: url)
+        request.setValue("application/json", forHTTPHeaderField: "Accept")
+        request.timeoutInterval = 5
+
+        let (data, response): (Data, URLResponse)
+        do {
+            (data, response) = try await session.data(for: request)
+        } catch {
+            throw ActivityWatchError.unreachable
+        }
+
+        guard let httpResponse = response as? HTTPURLResponse,
+              (200...299).contains(httpResponse.statusCode) else {
+            throw ActivityWatchError.invalidResponse
+        }
+
+        // The response is a dict of bucket_id -> bucket_info
+        guard let buckets = try JSONSerialization.jsonObject(with: data) as? [String: Any] else {
+            throw ActivityWatchError.invalidResponse
+        }
+
+        // Find the window watcher bucket
+        let prefix = "aw-watcher-window_"
+        guard let windowBucket = buckets.keys.first(where: { $0.hasPrefix(prefix) }) else {
+            throw ActivityWatchError.noBucket
+        }
+
+        let discoveredHostname = String(windowBucket.dropFirst(prefix.count))
+        UserDefaults.standard.set(discoveredHostname, forKey: "activitywatch_hostname")
+        return discoveredHostname
     }
 
     // MARK: - Private: Fetching

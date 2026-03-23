@@ -3,9 +3,10 @@ import SwiftUI
 // MARK: - Pocket Casts Settings
 
 struct PocketCastsSettingsView: View {
-    @State private var tokenInput = ""
-    @State private var isTesting = false
-    @State private var testResult: TestResult?
+    @State private var email = ""
+    @State private var password = ""
+    @State private var isLoggingIn = false
+    @State private var statusResult: TestResult?
     @State private var hasToken: Bool
 
     private let service = PocketCastsService.shared
@@ -20,74 +21,43 @@ struct PocketCastsSettingsView: View {
 
             ScrollView {
                 VStack(spacing: 16) {
-                    // Info card
-                    VStack(alignment: .leading, spacing: 8) {
-                        Label("How to get your token", systemImage: "info.circle.fill")
-                            .font(.subheadline.weight(.semibold))
-                            .foregroundStyle(.blue)
-
-                        Text("1. Open **play.pocketcasts.com** in a browser\n2. Log in to your account\n3. Open Developer Tools (F12)\n4. Go to **Application** > **Local Storage**\n5. Copy the value of the **token** key")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                            .fixedSize(horizontal: false, vertical: true)
-                    }
-                    .padding(14)
-                    .background(Color.blue.opacity(0.06))
-                    .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
-                    .padding(.horizontal, 16)
-
-                    // Token input card
-                    VStack(spacing: 0) {
-                        VStack(alignment: .leading, spacing: 8) {
+                    if hasToken {
+                        // Logged in state
+                        VStack(spacing: 0) {
                             HStack(spacing: 12) {
                                 ZStack {
                                     RoundedRectangle(cornerRadius: 8, style: .continuous)
-                                        .fill(Color.red.opacity(0.12))
+                                        .fill(Color(hex: "#F43F5E").opacity(0.12))
                                         .frame(width: 32, height: 32)
-                                    Image(systemName: "key.fill")
-                                        .font(.system(size: 14, weight: .semibold))
-                                        .foregroundStyle(.red)
+                                    Image(systemName: "checkmark.circle.fill")
+                                        .font(.system(size: 16))
+                                        .foregroundStyle(.green)
                                 }
 
                                 VStack(alignment: .leading, spacing: 1) {
-                                    Text("Bearer Token")
+                                    Text("Connected")
                                         .font(.subheadline.weight(.medium))
-                                    Text(hasToken ? "Token saved securely in Keychain" : "Paste your token below")
+                                    Text("Podcast listening is being tracked")
                                         .font(.caption)
                                         .foregroundStyle(.secondary)
                                 }
 
                                 Spacer()
-
-                                if hasToken {
-                                    Image(systemName: "checkmark.circle.fill")
-                                        .foregroundStyle(.green)
-                                }
                             }
+                            .padding(14)
 
-                            SecureField("Paste bearer token here", text: $tokenInput)
-                                .font(.system(.caption, design: .monospaced))
-                                .padding(10)
-                                .background(Color(.tertiarySystemGroupedBackground))
-                                .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
-                                .autocorrectionDisabled()
-                                .textInputAutocapitalization(.never)
-                        }
-                        .padding(14)
+                            Divider().padding(.leading, 52)
 
-                        Divider().padding(.leading, 52)
+                            HStack {
+                                Spacer()
 
-                        // Actions row
-                        HStack(spacing: 12) {
-                            if hasToken {
                                 Button {
                                     Haptics.light()
                                     service.clearToken()
                                     hasToken = false
-                                    tokenInput = ""
-                                    testResult = nil
+                                    statusResult = nil
                                 } label: {
-                                    Text("Remove")
+                                    Text("Sign Out")
                                         .font(.caption.weight(.semibold))
                                         .foregroundStyle(.red)
                                         .padding(.horizontal, 16)
@@ -96,53 +66,105 @@ struct PocketCastsSettingsView: View {
                                         .clipShape(Capsule())
                                 }
                             }
-
-                            Spacer()
-
-                            if !tokenInput.isEmpty {
-                                Button {
-                                    Haptics.light()
-                                    service.saveToken(tokenInput.trimmingCharacters(in: .whitespacesAndNewlines))
-                                    hasToken = true
-                                    tokenInput = ""
-                                } label: {
-                                    Text("Save Token")
-                                        .font(.caption.weight(.semibold))
-                                        .foregroundStyle(.white)
-                                        .padding(.horizontal, 16)
-                                        .padding(.vertical, 8)
-                                        .background(Color.blue)
-                                        .clipShape(Capsule())
-                                }
-                            }
-
-                            Button {
-                                Task { await testPocketCasts() }
-                            } label: {
-                                HStack(spacing: 4) {
-                                    if isTesting {
-                                        ProgressView()
-                                            .controlSize(.mini)
-                                    }
-                                    Text("Test Connection")
-                                        .font(.caption.weight(.semibold))
-                                }
-                                .foregroundStyle(.white)
-                                .padding(.horizontal, 16)
-                                .padding(.vertical, 8)
-                                .background(hasToken ? Color.green : Color.gray)
-                                .clipShape(Capsule())
-                            }
-                            .disabled(!hasToken || isTesting)
+                            .padding(14)
                         }
-                        .padding(14)
-                    }
-                    .background(Color(.secondarySystemGroupedBackground))
-                    .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-                    .padding(.horizontal, 16)
+                        .background(Color(.secondarySystemGroupedBackground))
+                        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                        .padding(.horizontal, 16)
 
-                    // Test result
-                    if let result = testResult {
+                    } else {
+                        // Login form
+                        VStack(spacing: 0) {
+                            // Email row
+                            HStack(spacing: 12) {
+                                ZStack {
+                                    RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                        .fill(Color(hex: "#F43F5E").opacity(0.12))
+                                        .frame(width: 32, height: 32)
+                                    Image(systemName: "envelope.fill")
+                                        .font(.system(size: 14, weight: .semibold))
+                                        .foregroundStyle(Color(hex: "#F43F5E"))
+                                }
+
+                                Text("Email")
+                                    .font(.subheadline.weight(.medium))
+
+                                Spacer()
+
+                                TextField("you@example.com", text: $email)
+                                    .font(.subheadline)
+                                    .foregroundStyle(.secondary)
+                                    .multilineTextAlignment(.trailing)
+                                    .frame(width: 180)
+                                    .keyboardType(.emailAddress)
+                                    .autocorrectionDisabled()
+                                    .textInputAutocapitalization(.never)
+                            }
+                            .padding(14)
+
+                            Divider().padding(.leading, 52)
+
+                            // Password row
+                            HStack(spacing: 12) {
+                                ZStack {
+                                    RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                        .fill(Color(hex: "#F43F5E").opacity(0.12))
+                                        .frame(width: 32, height: 32)
+                                    Image(systemName: "lock.fill")
+                                        .font(.system(size: 14, weight: .semibold))
+                                        .foregroundStyle(Color(hex: "#F43F5E"))
+                                }
+
+                                Text("Password")
+                                    .font(.subheadline.weight(.medium))
+
+                                Spacer()
+
+                                SecureField("Password", text: $password)
+                                    .font(.subheadline)
+                                    .foregroundStyle(.secondary)
+                                    .multilineTextAlignment(.trailing)
+                                    .frame(width: 180)
+                                    .autocorrectionDisabled()
+                                    .textInputAutocapitalization(.never)
+                            }
+                            .padding(14)
+
+                            Divider().padding(.leading, 52)
+
+                            // Sign in button
+                            HStack {
+                                Spacer()
+
+                                Button {
+                                    Task { await login() }
+                                } label: {
+                                    HStack(spacing: 6) {
+                                        if isLoggingIn {
+                                            ProgressView()
+                                                .controlSize(.mini)
+                                                .tint(.white)
+                                        }
+                                        Text("Sign In")
+                                            .font(.caption.weight(.semibold))
+                                    }
+                                    .foregroundStyle(.white)
+                                    .padding(.horizontal, 20)
+                                    .padding(.vertical, 8)
+                                    .background(canLogin ? Color(hex: "#F43F5E") : Color.gray)
+                                    .clipShape(Capsule())
+                                }
+                                .disabled(!canLogin || isLoggingIn)
+                            }
+                            .padding(14)
+                        }
+                        .background(Color(.secondarySystemGroupedBackground))
+                        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                        .padding(.horizontal, 16)
+                    }
+
+                    // Status message
+                    if let result = statusResult {
                         HStack(spacing: 8) {
                             Image(systemName: result.success ? "checkmark.circle.fill" : "xmark.circle.fill")
                                 .foregroundStyle(result.success ? .green : .red)
@@ -152,28 +174,55 @@ struct PocketCastsSettingsView: View {
                         }
                         .transition(.opacity.combined(with: .move(edge: .top)))
                     }
+
+                    if !hasToken {
+                        Text("Sign in with your Pocket Casts account to track podcast listening")
+                            .font(.caption)
+                            .foregroundStyle(.tertiary)
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal, 32)
+                    }
                 }
                 .padding(.top, 8)
             }
         }
         .navigationTitle("Pocket Casts")
-        .animation(.easeInOut(duration: 0.2), value: testResult?.message)
+        .animation(.easeInOut(duration: 0.2), value: statusResult?.message)
+        .animation(.easeInOut(duration: 0.3), value: hasToken)
     }
 
-    private func testPocketCasts() async {
-        isTesting = true
-        testResult = nil
+    private var canLogin: Bool {
+        !email.trimmingCharacters(in: .whitespaces).isEmpty &&
+        !password.isEmpty
+    }
+
+    private func login() async {
+        isLoggingIn = true
+        statusResult = nil
 
         do {
-            let success = try await service.testConnection()
+            let loggedInEmail = try await service.login(
+                email: email.trimmingCharacters(in: .whitespaces),
+                password: password
+            )
             await MainActor.run {
-                testResult = TestResult(success: success, message: success ? "Connected successfully" : "Connection failed")
-                isTesting = false
+                hasToken = true
+                email = ""
+                password = ""
+                statusResult = TestResult(success: true, message: "Signed in as \(loggedInEmail)")
+                isLoggingIn = false
+                Haptics.success()
             }
         } catch {
             await MainActor.run {
-                testResult = TestResult(success: false, message: error.localizedDescription)
-                isTesting = false
+                let message: String
+                if case PocketCastsError.unauthorized = error {
+                    message = "Incorrect email or password"
+                } else {
+                    message = error.localizedDescription
+                }
+                statusResult = TestResult(success: false, message: message)
+                isLoggingIn = false
             }
         }
     }
@@ -184,7 +233,7 @@ struct PocketCastsSettingsView: View {
 struct ActivityWatchSettingsView: View {
     @AppStorage("activitywatch_ip") private var desktopIP = ""
     @AppStorage("activitywatch_hostname") private var hostname = ""
-    @State private var isTesting = false
+    @State private var isConnecting = false
     @State private var testResult: TestResult?
 
     private let service = ActivityWatchService.shared
@@ -195,39 +244,22 @@ struct ActivityWatchSettingsView: View {
 
             ScrollView {
                 VStack(spacing: 16) {
-                    // Info card
-                    VStack(alignment: .leading, spacing: 8) {
-                        Label("Setup", systemImage: "info.circle.fill")
-                            .font(.subheadline.weight(.semibold))
-                            .foregroundStyle(.purple)
-
-                        Text("ActivityWatch must be running on your desktop. Your iPhone must be on the same WiFi network to connect.\n\n**IP Address:** Find it in System Settings > Network\n**Hostname:** Your computer name (e.g. MacBook-Pro)")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                            .fixedSize(horizontal: false, vertical: true)
-                    }
-                    .padding(14)
-                    .background(Color.purple.opacity(0.06))
-                    .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
-                    .padding(.horizontal, 16)
-
-                    // Config card
+                    // Config card — just the IP address
                     VStack(spacing: 0) {
-                        // IP Address row
                         HStack(spacing: 12) {
                             ZStack {
                                 RoundedRectangle(cornerRadius: 8, style: .continuous)
-                                    .fill(Color.purple.opacity(0.12))
+                                    .fill(Color(hex: "#8B5CF6").opacity(0.12))
                                     .frame(width: 32, height: 32)
                                 Image(systemName: "network")
                                     .font(.system(size: 14, weight: .semibold))
-                                    .foregroundStyle(.purple)
+                                    .foregroundStyle(Color(hex: "#8B5CF6"))
                             }
 
                             VStack(alignment: .leading, spacing: 1) {
                                 Text("Desktop IP")
                                     .font(.subheadline.weight(.medium))
-                                Text("Local network address")
+                                Text("System Settings > Network")
                                     .font(.caption)
                                     .foregroundStyle(.secondary)
                             }
@@ -247,61 +279,40 @@ struct ActivityWatchSettingsView: View {
 
                         Divider().padding(.leading, 52)
 
-                        // Hostname row
-                        HStack(spacing: 12) {
-                            ZStack {
-                                RoundedRectangle(cornerRadius: 8, style: .continuous)
-                                    .fill(Color.purple.opacity(0.12))
-                                    .frame(width: 32, height: 32)
-                                Image(systemName: "desktopcomputer")
-                                    .font(.system(size: 14, weight: .semibold))
-                                    .foregroundStyle(.purple)
-                            }
-
-                            VStack(alignment: .leading, spacing: 1) {
-                                Text("Hostname")
-                                    .font(.subheadline.weight(.medium))
-                                Text("Computer name")
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                            }
-
-                            Spacer()
-
-                            TextField("MacBook-Pro", text: $hostname)
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
-                                .multilineTextAlignment(.trailing)
-                                .frame(width: 150)
-                                .autocorrectionDisabled()
-                                .textInputAutocapitalization(.never)
-                        }
-                        .padding(14)
-
-                        Divider().padding(.leading, 52)
-
-                        // Test connection
+                        // Connect button — discovers hostname automatically
                         HStack {
+                            if !hostname.isEmpty {
+                                HStack(spacing: 6) {
+                                    Image(systemName: "checkmark.circle.fill")
+                                        .foregroundStyle(.green)
+                                        .font(.caption)
+                                    Text(hostname)
+                                        .font(.system(.caption, design: .monospaced))
+                                        .foregroundStyle(.secondary)
+                                }
+                            }
+
                             Spacer()
 
                             Button {
-                                Task { await testActivityWatch() }
+                                Task { await connectAndDiscover() }
                             } label: {
-                                HStack(spacing: 4) {
-                                    if isTesting {
+                                HStack(spacing: 6) {
+                                    if isConnecting {
                                         ProgressView()
                                             .controlSize(.mini)
+                                            .tint(.white)
                                     }
-                                    Text("Test Connection")
+                                    Text(hostname.isEmpty ? "Connect" : "Reconnect")
                                         .font(.caption.weight(.semibold))
                                 }
                                 .foregroundStyle(.white)
-                                .padding(.horizontal, 16)
+                                .padding(.horizontal, 20)
                                 .padding(.vertical, 8)
-                                .background(service.isConfigured ? Color.purple : Color.gray)
+                                .background(!desktopIP.isEmpty ? Color(hex: "#8B5CF6") : Color.gray)
                                 .clipShape(Capsule())
                             }
-                            .disabled(!service.isConfigured || isTesting)
+                            .disabled(desktopIP.isEmpty || isConnecting)
                         }
                         .padding(14)
                     }
@@ -309,7 +320,7 @@ struct ActivityWatchSettingsView: View {
                     .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
                     .padding(.horizontal, 16)
 
-                    // Test result
+                    // Status
                     if let result = testResult {
                         HStack(spacing: 8) {
                             Image(systemName: result.success ? "checkmark.circle.fill" : "xmark.circle.fill")
@@ -317,19 +328,54 @@ struct ActivityWatchSettingsView: View {
                             Text(result.message)
                                 .font(.caption)
                                 .foregroundStyle(result.success ? Color.secondary : Color.red)
+                                .fixedSize(horizontal: false, vertical: true)
                         }
+                        .padding(.horizontal, 16)
                         .transition(.opacity.combined(with: .move(edge: .top)))
                     }
 
-                    // Status
-                    if service.isConfigured {
+                    // Info
+                    VStack(alignment: .leading, spacing: 8) {
+                        Label("How it works", systemImage: "info.circle.fill")
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(Color(hex: "#8B5CF6"))
+
+                        Text("Enter your desktop's IP address and tap **Connect**. The app will find your ActivityWatch instance and auto-detect the hostname.\n\nYour iPhone must be on the same WiFi network as your desktop.")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                    .padding(14)
+                    .background(Color(hex: "#8B5CF6").opacity(0.06))
+                    .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                    .padding(.horizontal, 16)
+
+                    if hostname.isEmpty {
+                        // Disconnect option
+                    } else {
+                        // Show connected details
                         VStack(spacing: 4) {
-                            Text("Bucket: aw-watcher-window_\(hostname)")
-                                .font(.system(.caption2, design: .monospaced))
-                                .foregroundStyle(.tertiary)
                             Text("http://\(desktopIP):5600")
                                 .font(.system(.caption2, design: .monospaced))
                                 .foregroundStyle(.tertiary)
+                            Text("aw-watcher-window_\(hostname)")
+                                .font(.system(.caption2, design: .monospaced))
+                                .foregroundStyle(.tertiary)
+                        }
+
+                        Button {
+                            Haptics.light()
+                            hostname = ""
+                            desktopIP = ""
+                            testResult = nil
+                        } label: {
+                            Text("Disconnect")
+                                .font(.caption.weight(.semibold))
+                                .foregroundStyle(.red)
+                                .padding(.horizontal, 16)
+                                .padding(.vertical, 8)
+                                .background(Color.red.opacity(0.1))
+                                .clipShape(Capsule())
                         }
                     }
                 }
@@ -338,17 +384,28 @@ struct ActivityWatchSettingsView: View {
         }
         .navigationTitle("ActivityWatch")
         .animation(.easeInOut(duration: 0.2), value: testResult?.message)
+        .animation(.easeInOut(duration: 0.3), value: hostname)
     }
 
-    private func testActivityWatch() async {
-        isTesting = true
+    private func connectAndDiscover() async {
+        isConnecting = true
         testResult = nil
 
         do {
-            let success = try await service.testConnection()
+            // Step 1: Test connectivity
+            _ = try await service.testConnection()
+
+            // Step 2: Auto-discover hostname from buckets
+            let discoveredHostname = try await service.discoverHostname()
+
             await MainActor.run {
-                testResult = TestResult(success: success, message: success ? "Connected to ActivityWatch" : "Connection failed")
-                isTesting = false
+                hostname = discoveredHostname
+                testResult = TestResult(
+                    success: true,
+                    message: "Connected! Found hostname: \(discoveredHostname)"
+                )
+                isConnecting = false
+                Haptics.success()
             }
         } catch {
             await MainActor.run {
@@ -356,12 +413,12 @@ struct ActivityWatchSettingsView: View {
                 if case ActivityWatchError.unreachable = error {
                     message = "Cannot reach \(desktopIP):5600. Make sure ActivityWatch is running and you're on the same WiFi."
                 } else if case ActivityWatchError.noBucket = error {
-                    message = "Server found but bucket 'aw-watcher-window_\(hostname)' not found. Check hostname."
+                    message = "Server reached but no window watcher found. Is aw-watcher-window running?"
                 } else {
                     message = error.localizedDescription
                 }
                 testResult = TestResult(success: false, message: message)
-                isTesting = false
+                isConnecting = false
             }
         }
     }
