@@ -148,7 +148,7 @@ struct PocketCastsSettingsView: View {
                                 .foregroundStyle(result.success ? .green : .red)
                             Text(result.message)
                                 .font(.caption)
-                                .foregroundStyle(result.success ? .secondary : .red)
+                                .foregroundStyle(result.success ? Color.secondary : Color.red)
                         }
                         .transition(.opacity.combined(with: .move(edge: .top)))
                     }
@@ -316,7 +316,7 @@ struct ActivityWatchSettingsView: View {
                                 .foregroundStyle(result.success ? .green : .red)
                             Text(result.message)
                                 .font(.caption)
-                                .foregroundStyle(result.success ? .secondary : .red)
+                                .foregroundStyle(result.success ? Color.secondary : Color.red)
                         }
                         .transition(.opacity.combined(with: .move(edge: .top)))
                     }
