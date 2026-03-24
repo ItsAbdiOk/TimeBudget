@@ -10,6 +10,46 @@ struct AWEvent: Identifiable {
     let windowTitle: String
 
     var durationMinutes: Int { Int(duration / 60) }
+
+    /// For browser events, extract the site name from the window title.
+    /// Chrome pattern: "Page Title - SiteName - Google Chrome – Profile"
+    /// Safari pattern: "Page Title — SiteName"
+    var siteName: String? {
+        let browsers = ["Google Chrome", "Safari", "Firefox", "Arc", "Brave Browser", "Microsoft Edge", "Orion"]
+        guard browsers.contains(appName) else { return nil }
+
+        // Try "- SiteName - Google Chrome" pattern
+        let parts = windowTitle.components(separatedBy: " - ")
+        if parts.count >= 3 {
+            // Second-to-last part before "Google Chrome" is usually the site
+            let candidate = parts[parts.count - 2].trimmingCharacters(in: .whitespaces)
+            let browserSuffixes = ["Google Chrome", "Safari", "Firefox", "Arc", "Brave", "Edge", "Orion"]
+            if !browserSuffixes.contains(where: { candidate.contains($0) }) && !candidate.isEmpty {
+                return candidate
+            }
+        }
+
+        // Try extracting from "Title - Site" (2 parts)
+        if parts.count >= 2 {
+            // Last meaningful part (strip browser name and profile)
+            for part in parts.reversed() {
+                let cleaned = part
+                    .replacingOccurrences(of: "Google Chrome", with: "")
+                    .replacingOccurrences(of: "– ", with: "")
+                    .trimmingCharacters(in: .whitespaces)
+                if !cleaned.isEmpty && cleaned.count > 1 {
+                    return cleaned
+                }
+            }
+        }
+
+        // Fallback: use the full title trimmed
+        let cleaned = windowTitle
+            .replacingOccurrences(of: " - Google Chrome", with: "")
+            .replacingOccurrences(of: " – Google Chrome", with: "")
+            .trimmingCharacters(in: .whitespaces)
+        return cleaned.isEmpty ? nil : String(cleaned.prefix(50))
+    }
 }
 
 /// A bundled block of consecutive desktop activity
@@ -17,12 +57,128 @@ struct AWActivityBlock: Identifiable {
     let id = UUID()
     let start: Date
     let end: Date
-    let category: String            // "Desk Time" or "Deep Work"
+    let category: String            // "Deep Work", "Productive", "Neutral", "Distraction"
     let topApp: String              // most-used app in this block
+    let topSite: String?            // most-used website (if browser-heavy)
     let events: [AWEvent]
 
     var durationMinutes: Int {
         Int(end.timeIntervalSince(start) / 60)
+    }
+}
+
+// MARK: - Productivity Classification
+
+enum ProductivityTier: String {
+    case productive = "Productive"
+    case deepWork = "Deep Work"
+    case neutral = "Neutral"
+    case distraction = "Distraction"
+
+    var color: String {
+        switch self {
+        case .deepWork: return "systemGreen"
+        case .productive: return "systemTeal"
+        case .neutral: return "systemOrange"
+        case .distraction: return "systemRed"
+        }
+    }
+}
+
+struct ProductivityClassifier {
+    // Apps that are always productive (IDE, terminal, etc.)
+    static let deepWorkApps: Set<String> = [
+        "Xcode", "Visual Studio Code", "Code", "Terminal", "iTerm2",
+        "IntelliJ IDEA", "PyCharm", "WebStorm", "Sublime Text", "Vim",
+        "Neovim", "Cursor", "Android Studio", "CLion", "DataGrip",
+        "Ghostty", "Warp", "Alacritty", "Kitty",
+    ]
+
+    static let productiveApps: Set<String> = [
+        "Notion", "Obsidian", "Notes", "Pages", "Numbers", "Keynote",
+        "Microsoft Word", "Microsoft Excel", "Microsoft PowerPoint",
+        "Figma", "Sketch", "Adobe Photoshop", "Adobe Illustrator",
+        "Logic Pro", "Final Cut Pro", "DaVinci Resolve",
+        "Simulator", "Instruments", "FileMerge",
+        "Preview", "Finder", "Calendar", "Mail", "Reminders",
+        "System Settings", "Activity Monitor",
+    ]
+
+    static let distractionApps: Set<String> = [
+        "Messages", "WhatsApp", "Telegram", "Discord",
+    ]
+
+    // Websites that are productive
+    static let productiveSites: Set<String> = [
+        "GitHub", "Stack Overflow", "GitLab", "Bitbucket",
+        "Claude", "ChatGPT", "Perplexity",
+        "Notion", "Linear", "Jira", "Asana", "Trello",
+        "Google Docs", "Google Sheets", "Google Slides",
+        "Figma", "Miro", "Confluence",
+        "LeetCode", "HackerRank", "Codewars",
+        "MDN Web Docs", "Apple Developer", "Swift.org",
+        "Coursera", "Udemy", "edX", "Khan Academy",
+        "Google Scholar", "arXiv", "ResearchGate",
+        "Wikipedia", "Wolfram",
+        "localhost", "127.0.0.1", "192.168",
+        "AWS", "Google Cloud", "Azure", "Vercel", "Netlify",
+        "Docker Hub", "npm",
+    ]
+
+    // Websites that are distracting
+    static let distractionSites: Set<String> = [
+        "YouTube", "Twitter", "X.com", "Reddit",
+        "Instagram", "Facebook", "TikTok", "Snapchat",
+        "Netflix", "Twitch", "Disney+", "Hulu",
+        "9GAG", "Imgur", "BuzzFeed",
+        "Amazon", "eBay", "AliExpress",
+    ]
+
+    static func classify(app: String, site: String?) -> ProductivityTier {
+        // Check app first
+        if deepWorkApps.contains(app) { return .deepWork }
+        if distractionApps.contains(app) { return .distraction }
+
+        // For browsers, check the site
+        let browsers = Set(["Google Chrome", "Safari", "Firefox", "Arc", "Brave Browser", "Microsoft Edge", "Orion"])
+        if browsers.contains(app), let site = site {
+            let siteLower = site.lowercased()
+
+            for productive in productiveSites {
+                if siteLower.contains(productive.lowercased()) { return .productive }
+            }
+            for distraction in distractionSites {
+                if siteLower.contains(distraction.lowercased()) { return .distraction }
+            }
+            return .neutral
+        }
+
+        // Known productive apps
+        if productiveApps.contains(app) { return .productive }
+
+        return .neutral
+    }
+
+    /// Score: 0-100 based on time distribution across tiers
+    static func productivityScore(events: [AWEvent]) -> Int {
+        guard !events.isEmpty else { return 0 }
+
+        var tierDurations: [ProductivityTier: TimeInterval] = [:]
+        for event in events {
+            let tier = classify(app: event.appName, site: event.siteName)
+            tierDurations[tier, default: 0] += event.duration
+        }
+
+        let total = tierDurations.values.reduce(0, +)
+        guard total > 0 else { return 0 }
+
+        // Weights: deepWork=100, productive=80, neutral=40, distraction=0
+        let deepWork = (tierDurations[.deepWork] ?? 0) * 100
+        let productive = (tierDurations[.productive] ?? 0) * 80
+        let neutral = (tierDurations[.neutral] ?? 0) * 40
+        let weighted = deepWork + productive + neutral
+
+        return min(100, Int(weighted / total))
     }
 }
 
@@ -128,6 +284,12 @@ final class ActivityWatchService {
         return bundleIntoBlocks(meaningful)
     }
 
+    /// Fetch raw events for a date (for detailed analysis)
+    func fetchRawEvents(for date: Date) async throws -> [AWEvent] {
+        guard isConfigured else { throw ActivityWatchError.notConfigured }
+        return try await fetchEvents(for: date)
+    }
+
     /// Test connectivity to the ActivityWatch server
     func testConnection() async throws -> Bool {
         guard !desktopIP.isEmpty else { throw ActivityWatchError.notConfigured }
@@ -151,8 +313,6 @@ final class ActivityWatchService {
     }
 
     /// Auto-discover the hostname by scanning available buckets on the server.
-    /// Finds the `aw-watcher-window_*` bucket and extracts the hostname suffix.
-    /// Saves the hostname to UserDefaults on success.
     @discardableResult
     func discoverHostname() async throws -> String {
         guard !desktopIP.isEmpty else { throw ActivityWatchError.notConfigured }
@@ -174,12 +334,10 @@ final class ActivityWatchService {
             throw ActivityWatchError.invalidResponse
         }
 
-        // The response is a dict of bucket_id -> bucket_info
         guard let buckets = try JSONSerialization.jsonObject(with: data) as? [String: Any] else {
             throw ActivityWatchError.invalidResponse
         }
 
-        // Find the window watcher bucket
         let prefix = "aw-watcher-window_"
         guard let windowBucket = buckets.keys.first(where: { $0.hasPrefix(prefix) }) else {
             throw ActivityWatchError.noBucket
@@ -298,7 +456,6 @@ final class ActivityWatchService {
             let gap = event.timestamp.timeIntervalSince(prevEnd)
 
             if gap > maxGap {
-                // Finalize current block
                 let block = makeBlock(events: currentEvents, start: blockStart)
                 blocks.append(block)
                 currentEvents = [event]
@@ -308,7 +465,6 @@ final class ActivityWatchService {
             }
         }
 
-        // Finalize last block
         if !currentEvents.isEmpty {
             let block = makeBlock(events: currentEvents, start: blockStart)
             blocks.append(block)
@@ -323,24 +479,25 @@ final class ActivityWatchService {
 
         // Find the most-used app by total duration
         var appDurations: [String: TimeInterval] = [:]
+        var siteDurations: [String: TimeInterval] = [:]
         for event in events {
             appDurations[event.appName, default: 0] += event.duration
+            if let site = event.siteName {
+                siteDurations[site, default: 0] += event.duration
+            }
         }
         let topApp = appDurations.max(by: { $0.value < $1.value })?.key ?? "Unknown"
+        let topSite = siteDurations.max(by: { $0.value < $1.value })?.key
 
-        // Categorize: if the top app is a code editor or terminal, it's "Deep Work"
-        let deepWorkApps = Set([
-            "Xcode", "Visual Studio Code", "Code", "Terminal", "iTerm2",
-            "IntelliJ IDEA", "PyCharm", "WebStorm", "Sublime Text", "Vim",
-            "Neovim", "Cursor", "Android Studio", "CLion", "DataGrip",
-        ])
-        let category = deepWorkApps.contains(topApp) ? "Deep Work" : "Desk Time"
+        // Use the productivity classifier for the dominant activity
+        let tier = ProductivityClassifier.classify(app: topApp, site: topSite)
 
         return AWActivityBlock(
             start: start,
             end: end,
-            category: category,
+            category: tier.rawValue,
             topApp: topApp,
+            topSite: topSite,
             events: events
         )
     }

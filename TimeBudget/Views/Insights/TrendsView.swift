@@ -18,7 +18,7 @@ struct TrendsView: View {
                         .controlSize(.small)
                     Text("Loading trends...")
                         .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Color(.secondaryLabel))
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 24)
@@ -45,9 +45,9 @@ struct TrendsView: View {
                     .opacity(0.08)
                 }
                 .chartForegroundStyleScale([
-                    "Sleep (hrs)": Color.indigo,
-                    "Steps (k)": Color.green,
-                    "Exercise (hrs)": Color.orange,
+                    "Sleep (hrs)": Color(.systemTeal),
+                    "Steps (k)": Color(.systemGreen),
+                    "Exercise (hrs)": Color(.systemOrange),
                     "Reading (hrs)": Color(hex: "#AC8E68"),
                 ])
                 .chartYAxis {

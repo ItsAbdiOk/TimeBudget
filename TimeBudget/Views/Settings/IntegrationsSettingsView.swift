@@ -17,7 +17,7 @@ struct PocketCastsSettingsView: View {
 
     var body: some View {
         ZStack {
-            Color(.systemGroupedBackground).ignoresSafeArea()
+            Color(.systemBackground).ignoresSafeArea()
 
             ScrollView {
                 VStack(spacing: 16) {
@@ -26,12 +26,12 @@ struct PocketCastsSettingsView: View {
                         VStack(spacing: 0) {
                             HStack(spacing: 12) {
                                 ZStack {
-                                    RoundedRectangle(cornerRadius: 8, style: .continuous)
-                                        .fill(Color(hex: "#F43F5E").opacity(0.12))
-                                        .frame(width: 32, height: 32)
+                                    RoundedRectangle(cornerRadius: 7, style: .continuous)
+                                        .fill(Color(hex: "#F43F5E"))
+                                        .frame(width: 30, height: 30)
                                     Image(systemName: "checkmark.circle.fill")
-                                        .font(.system(size: 16))
-                                        .foregroundStyle(.green)
+                                        .font(.system(size: 16, weight: .medium))
+                                        .foregroundStyle(.white)
                                 }
 
                                 VStack(alignment: .leading, spacing: 1) {
@@ -39,7 +39,7 @@ struct PocketCastsSettingsView: View {
                                         .font(.subheadline.weight(.medium))
                                     Text("Podcast listening is being tracked")
                                         .font(.caption)
-                                        .foregroundStyle(.secondary)
+                                        .foregroundStyle(Color(.secondaryLabel))
                                 }
 
                                 Spacer()
@@ -59,17 +59,18 @@ struct PocketCastsSettingsView: View {
                                 } label: {
                                     Text("Sign Out")
                                         .font(.caption.weight(.semibold))
-                                        .foregroundStyle(.red)
+                                        .foregroundStyle(Color(.systemRed))
                                         .padding(.horizontal, 16)
                                         .padding(.vertical, 8)
-                                        .background(Color.red.opacity(0.1))
+                                        .background(Color(.systemRed).opacity(0.1))
                                         .clipShape(Capsule())
                                 }
                             }
                             .padding(14)
                         }
-                        .background(Color(.secondarySystemGroupedBackground))
-                        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                        .background(.regularMaterial)
+                        .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+                        .shadow(color: .black.opacity(0.05), radius: 10, y: 2)
                         .padding(.horizontal, 16)
 
                     } else {
@@ -78,12 +79,12 @@ struct PocketCastsSettingsView: View {
                             // Email row
                             HStack(spacing: 12) {
                                 ZStack {
-                                    RoundedRectangle(cornerRadius: 8, style: .continuous)
-                                        .fill(Color(hex: "#F43F5E").opacity(0.12))
-                                        .frame(width: 32, height: 32)
+                                    RoundedRectangle(cornerRadius: 7, style: .continuous)
+                                        .fill(Color(hex: "#F43F5E"))
+                                        .frame(width: 30, height: 30)
                                     Image(systemName: "envelope.fill")
                                         .font(.system(size: 14, weight: .semibold))
-                                        .foregroundStyle(Color(hex: "#F43F5E"))
+                                        .foregroundStyle(.white)
                                 }
 
                                 Text("Email")
@@ -93,7 +94,7 @@ struct PocketCastsSettingsView: View {
 
                                 TextField("you@example.com", text: $email)
                                     .font(.subheadline)
-                                    .foregroundStyle(.secondary)
+                                    .foregroundStyle(Color(.secondaryLabel))
                                     .multilineTextAlignment(.trailing)
                                     .frame(width: 180)
                                     .keyboardType(.emailAddress)
@@ -107,12 +108,12 @@ struct PocketCastsSettingsView: View {
                             // Password row
                             HStack(spacing: 12) {
                                 ZStack {
-                                    RoundedRectangle(cornerRadius: 8, style: .continuous)
-                                        .fill(Color(hex: "#F43F5E").opacity(0.12))
-                                        .frame(width: 32, height: 32)
+                                    RoundedRectangle(cornerRadius: 7, style: .continuous)
+                                        .fill(Color(hex: "#F43F5E"))
+                                        .frame(width: 30, height: 30)
                                     Image(systemName: "lock.fill")
                                         .font(.system(size: 14, weight: .semibold))
-                                        .foregroundStyle(Color(hex: "#F43F5E"))
+                                        .foregroundStyle(.white)
                                 }
 
                                 Text("Password")
@@ -122,7 +123,7 @@ struct PocketCastsSettingsView: View {
 
                                 SecureField("Password", text: $password)
                                     .font(.subheadline)
-                                    .foregroundStyle(.secondary)
+                                    .foregroundStyle(Color(.secondaryLabel))
                                     .multilineTextAlignment(.trailing)
                                     .frame(width: 180)
                                     .autocorrectionDisabled()
@@ -151,15 +152,16 @@ struct PocketCastsSettingsView: View {
                                     .foregroundStyle(.white)
                                     .padding(.horizontal, 20)
                                     .padding(.vertical, 8)
-                                    .background(canLogin ? Color(hex: "#F43F5E") : Color.gray)
+                                    .background(canLogin ? Color(hex: "#F43F5E") : Color(.systemGray))
                                     .clipShape(Capsule())
                                 }
                                 .disabled(!canLogin || isLoggingIn)
                             }
                             .padding(14)
                         }
-                        .background(Color(.secondarySystemGroupedBackground))
-                        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                        .background(.regularMaterial)
+                        .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+                        .shadow(color: .black.opacity(0.05), radius: 10, y: 2)
                         .padding(.horizontal, 16)
                     }
 
@@ -167,10 +169,10 @@ struct PocketCastsSettingsView: View {
                     if let result = statusResult {
                         HStack(spacing: 8) {
                             Image(systemName: result.success ? "checkmark.circle.fill" : "xmark.circle.fill")
-                                .foregroundStyle(result.success ? .green : .red)
+                                .foregroundStyle(result.success ? Color(.systemGreen) : Color(.systemRed))
                             Text(result.message)
                                 .font(.caption)
-                                .foregroundStyle(result.success ? Color.secondary : Color.red)
+                                .foregroundStyle(result.success ? Color(.secondaryLabel) : Color(.systemRed))
                         }
                         .transition(.opacity.combined(with: .move(edge: .top)))
                     }
@@ -178,7 +180,7 @@ struct PocketCastsSettingsView: View {
                     if !hasToken {
                         Text("Sign in with your Pocket Casts account to track podcast listening")
                             .font(.caption)
-                            .foregroundStyle(.tertiary)
+                            .foregroundStyle(Color(.tertiaryLabel))
                             .multilineTextAlignment(.center)
                             .padding(.horizontal, 32)
                     }
@@ -240,7 +242,7 @@ struct ActivityWatchSettingsView: View {
 
     var body: some View {
         ZStack {
-            Color(.systemGroupedBackground).ignoresSafeArea()
+            Color(.systemBackground).ignoresSafeArea()
 
             ScrollView {
                 VStack(spacing: 16) {
@@ -248,12 +250,12 @@ struct ActivityWatchSettingsView: View {
                     VStack(spacing: 0) {
                         HStack(spacing: 12) {
                             ZStack {
-                                RoundedRectangle(cornerRadius: 8, style: .continuous)
-                                    .fill(Color(hex: "#8B5CF6").opacity(0.12))
-                                    .frame(width: 32, height: 32)
+                                RoundedRectangle(cornerRadius: 7, style: .continuous)
+                                    .fill(Color(hex: "#8B5CF6"))
+                                    .frame(width: 30, height: 30)
                                 Image(systemName: "network")
                                     .font(.system(size: 14, weight: .semibold))
-                                    .foregroundStyle(Color(hex: "#8B5CF6"))
+                                    .foregroundStyle(.white)
                             }
 
                             VStack(alignment: .leading, spacing: 1) {
@@ -261,14 +263,15 @@ struct ActivityWatchSettingsView: View {
                                     .font(.subheadline.weight(.medium))
                                 Text("System Settings > Network")
                                     .font(.caption)
-                                    .foregroundStyle(.secondary)
+                                    .foregroundStyle(Color(.secondaryLabel))
                             }
 
                             Spacer()
 
                             TextField("192.168.1.50", text: $desktopIP)
                                 .font(.system(.subheadline, design: .monospaced))
-                                .foregroundStyle(.secondary)
+                                .monospacedDigit()
+                                .foregroundStyle(Color(.secondaryLabel))
                                 .multilineTextAlignment(.trailing)
                                 .frame(width: 150)
                                 .keyboardType(.decimalPad)
@@ -284,11 +287,11 @@ struct ActivityWatchSettingsView: View {
                             if !hostname.isEmpty {
                                 HStack(spacing: 6) {
                                     Image(systemName: "checkmark.circle.fill")
-                                        .foregroundStyle(.green)
+                                        .foregroundStyle(Color(.systemGreen))
                                         .font(.caption)
                                     Text(hostname)
                                         .font(.system(.caption, design: .monospaced))
-                                        .foregroundStyle(.secondary)
+                                        .foregroundStyle(Color(.secondaryLabel))
                                 }
                             }
 
@@ -309,25 +312,26 @@ struct ActivityWatchSettingsView: View {
                                 .foregroundStyle(.white)
                                 .padding(.horizontal, 20)
                                 .padding(.vertical, 8)
-                                .background(!desktopIP.isEmpty ? Color(hex: "#8B5CF6") : Color.gray)
+                                .background(!desktopIP.isEmpty ? Color(hex: "#8B5CF6") : Color(.systemGray))
                                 .clipShape(Capsule())
                             }
                             .disabled(desktopIP.isEmpty || isConnecting)
                         }
                         .padding(14)
                     }
-                    .background(Color(.secondarySystemGroupedBackground))
-                    .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                    .background(.regularMaterial)
+                    .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+                    .shadow(color: .black.opacity(0.05), radius: 10, y: 2)
                     .padding(.horizontal, 16)
 
                     // Status
                     if let result = testResult {
                         HStack(spacing: 8) {
                             Image(systemName: result.success ? "checkmark.circle.fill" : "xmark.circle.fill")
-                                .foregroundStyle(result.success ? .green : .red)
+                                .foregroundStyle(result.success ? Color(.systemGreen) : Color(.systemRed))
                             Text(result.message)
                                 .font(.caption)
-                                .foregroundStyle(result.success ? Color.secondary : Color.red)
+                                .foregroundStyle(result.success ? Color(.secondaryLabel) : Color(.systemRed))
                                 .fixedSize(horizontal: false, vertical: true)
                         }
                         .padding(.horizontal, 16)
@@ -342,7 +346,7 @@ struct ActivityWatchSettingsView: View {
 
                         Text("Enter your desktop's IP address and tap **Connect**. The app will find your ActivityWatch instance and auto-detect the hostname.\n\nYour iPhone must be on the same WiFi network as your desktop.")
                             .font(.caption)
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(Color(.secondaryLabel))
                             .fixedSize(horizontal: false, vertical: true)
                     }
                     .padding(14)
@@ -357,10 +361,11 @@ struct ActivityWatchSettingsView: View {
                         VStack(spacing: 4) {
                             Text("http://\(desktopIP):5600")
                                 .font(.system(.caption2, design: .monospaced))
-                                .foregroundStyle(.tertiary)
+                                .monospacedDigit()
+                                .foregroundStyle(Color(.tertiaryLabel))
                             Text("aw-watcher-window_\(hostname)")
                                 .font(.system(.caption2, design: .monospaced))
-                                .foregroundStyle(.tertiary)
+                                .foregroundStyle(Color(.tertiaryLabel))
                         }
 
                         Button {
@@ -371,10 +376,10 @@ struct ActivityWatchSettingsView: View {
                         } label: {
                             Text("Disconnect")
                                 .font(.caption.weight(.semibold))
-                                .foregroundStyle(.red)
+                                .foregroundStyle(Color(.systemRed))
                                 .padding(.horizontal, 16)
                                 .padding(.vertical, 8)
-                                .background(Color.red.opacity(0.1))
+                                .background(Color(.systemRed).opacity(0.1))
                                 .clipShape(Capsule())
                         }
                     }

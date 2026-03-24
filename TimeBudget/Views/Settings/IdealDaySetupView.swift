@@ -35,7 +35,7 @@ struct IdealDaySetupView: View {
 
     var body: some View {
         ZStack {
-            Color(.systemGroupedBackground).ignoresSafeArea()
+            Color(.systemBackground).ignoresSafeArea()
 
             ScrollView {
                 VStack(spacing: 12) {
@@ -43,15 +43,15 @@ struct IdealDaySetupView: View {
                     VStack(spacing: 8) {
                         HStack {
                             Text("Total")
-                                .font(.system(.headline, design: .rounded))
+                                .font(.system(.headline, design: .default))
                             Spacer()
                             HStack(spacing: 4) {
                                 Text(totalFormatted)
-                                    .font(.system(.title3, design: .rounded).weight(.bold))
-                                    .foregroundStyle(isOverDay ? .red : .primary)
+                                    .font(.system(.title3, design: .default).weight(.bold).monospacedDigit())
+                                    .foregroundStyle(isOverDay ? Color(.systemRed) : Color(.label))
                                 Text("/ 24h")
-                                    .font(.system(.subheadline, design: .rounded))
-                                    .foregroundStyle(.secondary)
+                                    .font(.system(.subheadline, design: .default).monospacedDigit())
+                                    .foregroundStyle(Color(.secondaryLabel))
                             }
                         }
 
@@ -59,11 +59,11 @@ struct IdealDaySetupView: View {
                         GeometryReader { geo in
                             ZStack(alignment: .leading) {
                                 Capsule()
-                                    .fill(Color(.tertiarySystemGroupedBackground))
+                                    .fill(Color(.separator))
                                     .frame(height: 8)
 
                                 Capsule()
-                                    .fill(isOverDay ? Color.red : Color.blue)
+                                    .fill(isOverDay ? Color(.systemRed) : Color(.systemBlue))
                                     .frame(width: geo.size.width * min(Double(totalMinutes) / 1440.0, 1.0), height: 8)
                                     .animation(.spring(response: 0.4, dampingFraction: 0.8), value: totalMinutes)
                             }
@@ -77,7 +77,7 @@ struct IdealDaySetupView: View {
                                 Text("Your ideal day exceeds 24 hours")
                                     .font(.caption)
                             }
-                            .foregroundStyle(.red)
+                            .foregroundStyle(Color(.systemRed))
                             .frame(maxWidth: .infinity, alignment: .leading)
                         }
                     }
@@ -89,12 +89,12 @@ struct IdealDaySetupView: View {
                         VStack(spacing: 10) {
                             HStack {
                                 ZStack {
-                                    Circle()
+                                    RoundedRectangle(cornerRadius: 11, style: .continuous)
                                         .fill(Color(hex: colorHex).opacity(0.12))
-                                        .frame(width: 32, height: 32)
+                                        .frame(width: 38, height: 38)
 
                                     Image(systemName: icon)
-                                        .font(.system(size: 14, weight: .semibold))
+                                        .font(.system(size: 16, weight: .semibold))
                                         .foregroundStyle(Color(hex: colorHex))
                                 }
 
@@ -104,8 +104,8 @@ struct IdealDaySetupView: View {
                                 Spacer()
 
                                 Text(formatMinutes(Int(targets[name] ?? 0)))
-                                    .font(.system(.subheadline, design: .rounded).weight(.semibold).monospacedDigit())
-                                    .foregroundStyle(.secondary)
+                                    .font(.system(.subheadline, design: .default).weight(.semibold).monospacedDigit())
+                                    .foregroundStyle(Color(.secondaryLabel))
                             }
 
                             Slider(

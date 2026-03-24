@@ -19,7 +19,7 @@ struct PodcastHeatmapView: View {
                         .controlSize(.small)
                     Text("Loading podcast data...")
                         .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Color(.secondaryLabel))
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 24)
@@ -47,12 +47,12 @@ struct PodcastHeatmapView: View {
                     if let top = topPodcast {
                         VStack(spacing: 4) {
                             Text(top)
-                                .font(.system(.caption, design: .rounded).weight(.semibold))
+                                .font(.system(.caption).weight(.semibold))
                                 .lineLimit(2)
                                 .multilineTextAlignment(.center)
                             Text("most played")
-                                .font(.system(size: 11, design: .rounded))
-                                .foregroundStyle(.secondary)
+                                .font(.system(size: 11))
+                                .foregroundStyle(Color(.secondaryLabel))
                         }
                         .frame(maxWidth: .infinity)
                     }
@@ -127,10 +127,10 @@ private struct StatBadge: View {
     var body: some View {
         VStack(spacing: 4) {
             Text(value)
-                .font(.system(.title3, design: .rounded).weight(.semibold))
+                .font(.system(.title3).weight(.semibold).monospacedDigit())
             Text(label)
-                .font(.system(size: 11, design: .rounded))
-                .foregroundStyle(.secondary)
+                .font(.system(size: 11))
+                .foregroundStyle(Color(.secondaryLabel))
         }
         .frame(maxWidth: .infinity)
     }

@@ -2,11 +2,11 @@ import Foundation
 import BackgroundTasks
 import SwiftData
 
-/// Manages BGAppRefreshTask for overnight syncing of AniList data
-/// and batch processing of motion/health data.
+/// Manages BGAppRefreshTask for overnight aggregation.
 ///
 /// iOS decides when to run these — typically overnight while charging.
-/// We register the task identifiers at app launch and schedule them.
+/// The handler queries all historical data sources for yesterday,
+/// runs TimeClassifier to build TimeEntries, and syncs external services.
 final class BackgroundTaskService {
     static let shared = BackgroundTaskService()
 
@@ -45,23 +45,62 @@ final class BackgroundTaskService {
         // Schedule the next refresh before we start work
         scheduleAppRefresh()
 
-        let workTask = Task {
-            // 1. Sync AniList reading data (last 7 days)
-            await AniListService.shared.syncRecentActivity(days: 7)
+        let yesterday = Calendar.current.date(byAdding: .day, value: -1, to: Date())!
 
-            // 2. Pre-fetch current activity snapshot so dashboard loads faster
-            await MotionService.shared.fetchCurrentActivity()
+        let workTask = Task {
+            await aggregateDay(yesterday)
         }
 
-        // If iOS needs to terminate us, cancel gracefully
         task.expirationHandler = {
             workTask.cancel()
         }
 
-        // When done, mark complete
         Task {
             await workTask.value
             task.setTaskCompleted(success: true)
+        }
+    }
+
+    // MARK: - Day Aggregation (standalone context for background safety)
+
+    /// Aggregate all data sources for a given day.
+    /// Creates its own ModelContainer/ModelContext so it's safe to call
+    /// from a background task without touching the main context.
+    func aggregateDay(_ date: Date) async {
+        do {
+            let schema = Schema([
+                TimeEntry.self,
+                ActivityCategory.self,
+                HealthSnapshot.self,
+                LocationPlace.self,
+                FocusSession.self,
+                IdealDay.self,
+                DailyScore.self,
+                TimeBudgetModel.self,
+            ])
+            let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
+            let container = try ModelContainer(for: schema, configurations: [config])
+            let context = ModelContext(container)
+            context.autosaveEnabled = false
+
+            // Sync external services
+            await AniListService.shared.syncRecentActivity(days: 7)
+
+            let pocketCasts = PocketCastsService.shared
+            if pocketCasts.isConfigured {
+                _ = try? await pocketCasts.fetchTodayEpisodes()
+            }
+
+            let activityWatch = ActivityWatchService.shared
+            if activityWatch.isConfigured {
+                _ = try? await activityWatch.fetchTodayBlocks()
+            }
+
+            // Classify the day
+            try await TimeClassifier.shared.classifyDay(date: date, context: context)
+            try context.save()
+        } catch {
+            print("[BackgroundTask] aggregateDay failed: \(error.localizedDescription)")
         }
     }
 }

@@ -12,69 +12,84 @@ struct InsightsTabView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                Color(.systemGroupedBackground).ignoresSafeArea()
+                Color(.systemBackground).ignoresSafeArea()
 
                 ScrollView {
-                    VStack(spacing: 16) {
-                        // Focus / Fragmentation card
-                        FragmentationCard(
-                            score: viewModel.fragmentationScore,
-                            label: viewModel.fragmentationLabel
-                        )
+                    VStack(spacing: 14) {
+                        // Hero
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Insights")
+                                .font(.system(size: 32, weight: .bold))
+                                .tracking(-0.8)
+                            Text("30-day patterns and trends.")
+                                .font(.system(size: 14))
+                                .foregroundStyle(Color(.secondaryLabel))
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.top, 24)
+                        .padding(.bottom, 4)
                         .slideUpAppear(index: 0)
-                        .padding(.horizontal, 16)
 
-                        // Correlations
-                        if !viewModel.correlations.isEmpty {
-                            VStack(alignment: .leading, spacing: 10) {
-                                SectionHeader(title: "Correlations", subtitle: "Patterns from your last 90 days")
-                                    .padding(.horizontal, 16)
-
-                                ForEach(Array(viewModel.correlations.enumerated()), id: \.element.factorA) { index, correlation in
-                                    CorrelationCard(correlation: correlation)
+                        // Trend Grid (2x2)
+                        if !viewModel.trendMetrics.isEmpty {
+                            LazyVGrid(
+                                columns: [
+                                    GridItem(.flexible(), spacing: 10),
+                                    GridItem(.flexible(), spacing: 10)
+                                ],
+                                spacing: 10
+                            ) {
+                                ForEach(Array(viewModel.trendMetrics.enumerated()), id: \.element.id) { index, metric in
+                                    TrendCardView(metric: metric)
                                         .slideUpAppear(index: index + 1)
-                                        .padding(.horizontal, 16)
                                 }
                             }
                         }
 
-                        // Week Comparison
-                        VStack(alignment: .leading, spacing: 10) {
-                            SectionHeader(title: "Week vs Week")
-                                .padding(.horizontal, 16)
-
-                            WeekComparisonView()
-                                .card()
-                                .padding(.horizontal, 16)
-                        }
-                        .slideUpAppear(index: 3)
-
-                        // 30-Day Trends
-                        VStack(alignment: .leading, spacing: 10) {
-                            SectionHeader(title: "30-Day Trends")
-                                .padding(.horizontal, 16)
-
-                            TrendsView()
-                                .card()
-                                .padding(.horizontal, 16)
-                        }
-                        .slideUpAppear(index: 4)
-
                         // Activity Heatmap
-                        VStack(alignment: .leading, spacing: 10) {
+                        VStack(alignment: .leading, spacing: 12) {
                             NavigationLink {
                                 ActivityDetailView()
                             } label: {
-                                TappableSectionHeader(title: "Activity", subtitle: "Your daily activity")
+                                HStack {
+                                    Text("Activity Heatmap")
+                                        .font(.system(size: 14, weight: .semibold))
+                                        .foregroundStyle(Color(.label))
+                                    Spacer()
+                                    HStack(spacing: 4) {
+                                        Text("Last 15 weeks")
+                                            .font(.system(size: 11))
+                                            .foregroundStyle(Color(.secondaryLabel))
+                                        Image(systemName: "chevron.right")
+                                            .font(.system(size: 10, weight: .semibold))
+                                            .foregroundStyle(Color(.tertiaryLabel))
+                                    }
+                                }
                             }
                             .buttonStyle(.plain)
-                            .padding(.horizontal, 16)
 
                             HeatmapView()
-                                .card()
-                                .padding(.horizontal, 16)
                         }
+                        .card()
                         .slideUpAppear(index: 5)
+
+                        // Correlations (single grouped card)
+                        if !viewModel.correlations.isEmpty {
+                            VStack(alignment: .leading, spacing: 0) {
+                                Text("Correlations")
+                                    .font(.system(size: 16, weight: .semibold))
+                                    .padding(.bottom, 10)
+
+                                ForEach(Array(viewModel.correlations.enumerated()), id: \.element.factorA) { index, correlation in
+                                    if index > 0 {
+                                        Divider()
+                                    }
+                                    CorrelationRow(correlation: correlation)
+                                }
+                            }
+                            .card()
+                            .slideUpAppear(index: 6)
+                        }
 
                         // AniList Reading Heatmap (only if configured)
                         if !aniListUsername.isEmpty {
@@ -85,13 +100,11 @@ struct InsightsTabView: View {
                                     TappableSectionHeader(title: "Manga", subtitle: "Your reading activity")
                                 }
                                 .buttonStyle(.plain)
-                                .padding(.horizontal, 16)
 
                                 AniListHeatmapView()
                                     .card()
-                                    .padding(.horizontal, 16)
                             }
-                            .slideUpAppear(index: 6)
+                            .slideUpAppear(index: 7)
                         }
 
                         // LeetCode Heatmap (only if configured)
@@ -103,13 +116,11 @@ struct InsightsTabView: View {
                                     TappableSectionHeader(title: "LeetCode", subtitle: "Your coding practice")
                                 }
                                 .buttonStyle(.plain)
-                                .padding(.horizontal, 16)
 
                                 LeetCodeHeatmapView()
                                     .card()
-                                    .padding(.horizontal, 16)
                             }
-                            .slideUpAppear(index: 7)
+                            .slideUpAppear(index: 8)
                         }
 
                         // Podcast Heatmap (only if configured)
@@ -121,13 +132,11 @@ struct InsightsTabView: View {
                                     TappableSectionHeader(title: "Podcasts", subtitle: "Your listening activity")
                                 }
                                 .buttonStyle(.plain)
-                                .padding(.horizontal, 16)
 
                                 PodcastHeatmapView()
                                     .card()
-                                    .padding(.horizontal, 16)
                             }
-                            .slideUpAppear(index: 8)
+                            .slideUpAppear(index: 9)
                         }
 
                         // Desk Time Heatmap (only if configured)
@@ -139,21 +148,20 @@ struct InsightsTabView: View {
                                     TappableSectionHeader(title: "Desk Time", subtitle: "Your desktop activity")
                                 }
                                 .buttonStyle(.plain)
-                                .padding(.horizontal, 16)
 
                                 DeskTimeHeatmapView()
                                     .card()
-                                    .padding(.horizontal, 16)
                             }
-                            .slideUpAppear(index: 9)
+                            .slideUpAppear(index: 10)
                         }
 
                         Spacer().frame(height: 90)
                     }
+                    .padding(.horizontal, 16)
                     .padding(.top, 8)
                 }
             }
-            .navigationTitle("Insights")
+            .toolbar(.hidden, for: .navigationBar)
             .overlay {
                 if viewModel.isLoading {
                     ProgressView()
@@ -166,93 +174,118 @@ struct InsightsTabView: View {
     }
 }
 
-// MARK: - Fragmentation Card
+// MARK: - Correlation Row
 
-struct FragmentationCard: View {
-    let score: Double
-    let label: String
-
-    private var color: Color {
-        switch score {
-        case 0.8...: return .green
-        case 0.6..<0.8: return .blue
-        case 0.4..<0.6: return .orange
-        default: return .red
-        }
-    }
-
-    var body: some View {
-        HStack(spacing: 20) {
-            CircularProgress(
-                progress: score,
-                lineWidth: 8,
-                color: color
-            )
-            .frame(width: 64, height: 64)
-
-            VStack(alignment: .leading, spacing: 4) {
-                Text("TODAY'S FOCUS")
-                    .font(.system(size: 10, weight: .bold, design: .rounded))
-                    .foregroundStyle(.secondary)
-                    .tracking(1.2)
-
-                Text(label)
-                    .font(.system(.title2, design: .rounded).weight(.bold))
-
-                Text("Fewer context switches = deeper work")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            }
-
-            Spacer()
-        }
-        .card()
-    }
-}
-
-// MARK: - Correlation Card
-
-struct CorrelationCard: View {
+private struct CorrelationRow: View {
     let correlation: Correlation
+
+    private var iconColor: Color {
+        correlation.coefficient > 0 ? Color(.systemGreen) : Color(.systemOrange)
+    }
 
     private var strengthColor: Color {
         switch correlation.strengthLabel {
-        case "Strong": return .green
-        case "Moderate": return .blue
-        default: return .orange
+        case "Strong": return Color(.systemGreen)
+        case "Moderate": return Color(.systemPurple)
+        default: return Color(.systemOrange)
         }
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            HStack {
-                ZStack {
-                    Circle()
-                        .fill((correlation.coefficient > 0 ? Color.green : Color.orange).opacity(0.12))
-                        .frame(width: 32, height: 32)
-
+        HStack(spacing: 10) {
+            // Icon box
+            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                .fill(iconColor)
+                .frame(width: 30, height: 30)
+                .overlay {
                     Image(systemName: correlation.coefficient > 0 ? "arrow.up.right" : "arrow.down.right")
-                        .font(.system(size: 14, weight: .semibold))
-                        .foregroundStyle(correlation.coefficient > 0 ? .green : .orange)
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundStyle(.white)
                 }
 
-                Text("\(correlation.factorA) → \(correlation.factorB)")
-                    .font(.system(.subheadline, design: .rounded).weight(.semibold))
-
-                Spacer()
-
-                ChipView(text: correlation.strengthLabel, color: strengthColor, isSelected: true)
-            }
-
+            // Description
             Text(correlation.insight)
-                .font(.caption)
-                .foregroundStyle(.secondary)
+                .font(.system(size: 13))
+                .foregroundStyle(Color(.label))
+                .lineLimit(2)
 
-            Text("\(correlation.sampleSize) days analyzed")
-                .font(.caption2)
-                .foregroundStyle(.tertiary)
+            Spacer(minLength: 4)
+
+            // Strength badge
+            Text(correlation.strengthLabel)
+                .font(.system(size: 10, weight: .semibold))
+                .padding(.horizontal, 7)
+                .padding(.vertical, 2)
+                .background(strengthColor.opacity(0.12))
+                .foregroundStyle(strengthColor)
+                .clipShape(RoundedRectangle(cornerRadius: 100, style: .continuous))
         }
-        .card()
+        .padding(.vertical, 9)
+    }
+}
+
+// MARK: - Trend Card View
+
+private struct TrendCardView: View {
+    let metric: TrendMetric
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text(metric.label)
+                .font(.system(size: 11, weight: .semibold))
+                .tracking(0.7)
+                .foregroundStyle(Color(.tertiaryLabel))
+
+            HStack(alignment: .firstTextBaseline, spacing: 0) {
+                Text(metric.value)
+                    .font(.system(size: 26, weight: .semibold))
+                    .monospacedDigit()
+                Text(metric.unit)
+                    .font(.system(size: 14, weight: .regular))
+                    .foregroundStyle(Color(.secondaryLabel))
+            }
+            .lineLimit(1)
+            .minimumScaleFactor(0.7)
+
+            Text(metric.deltaText)
+                .font(.system(size: 11, weight: .medium))
+                .foregroundStyle(metric.deltaPositive ? Color(.systemGreen) : Color(.systemRed))
+
+            SparklineView(points: metric.sparklinePoints, color: metric.accentColor)
+                .frame(height: 30)
+                .padding(.top, 4)
+        }
+        .card(padding: 16)
+    }
+}
+
+// MARK: - Sparkline View
+
+private struct SparklineView: View {
+    let points: [CGFloat]
+    let color: Color
+
+    var body: some View {
+        GeometryReader { geo in
+            Path { path in
+                guard points.count >= 2 else { return }
+
+                let stepX = geo.size.width / CGFloat(points.count - 1)
+                let height = geo.size.height
+
+                for (index, point) in points.enumerated() {
+                    let x = CGFloat(index) * stepX
+                    let y = height * (1.0 - point)
+
+                    if index == 0 {
+                        path.move(to: CGPoint(x: x, y: y))
+                    } else {
+                        path.addLine(to: CGPoint(x: x, y: y))
+                    }
+                }
+            }
+            .stroke(color, style: StrokeStyle(lineWidth: 1.8, lineCap: .round, lineJoin: .round))
+        }
     }
 }
 
@@ -267,11 +300,11 @@ struct TappableSectionHeader: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
                     .font(.title3.weight(.semibold))
-                    .foregroundStyle(.primary)
+                    .foregroundStyle(Color(.label))
                 if let subtitle {
                     Text(subtitle)
                         .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Color(.secondaryLabel))
                 }
             }
 
@@ -279,7 +312,7 @@ struct TappableSectionHeader: View {
 
             Image(systemName: "chevron.right")
                 .font(.system(size: 12, weight: .semibold))
-                .foregroundStyle(.tertiary)
+                .foregroundStyle(Color(.tertiaryLabel))
         }
         .contentShape(Rectangle())
     }

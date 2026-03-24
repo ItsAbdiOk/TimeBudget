@@ -338,7 +338,7 @@ final class TimeClassifier {
             return "Commute"
         case .stationary:
             // Try to determine what "stationary" means based on location
-            if let place = location.detectCurrentPlace(context: context) {
+            if let place = location.currentPlace(context: context) {
                 switch place.name.lowercased() {
                 case let n where n.contains("work") || n.contains("office"): return "Work"
                 case let n where n.contains("gym"): return "Exercise"

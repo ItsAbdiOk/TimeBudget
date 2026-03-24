@@ -27,32 +27,37 @@ enum Haptics {
 // MARK: - Card Modifier
 
 struct CardStyle: ViewModifier {
-    var padding: CGFloat = 16
+    var padding: CGFloat = 18
 
     func body(content: Content) -> some View {
         content
             .padding(padding)
-            .background(Color(.secondarySystemGroupedBackground))
-            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+            .background(.regularMaterial)
+            .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+            .shadow(color: .black.opacity(0.05), radius: 10, y: 2)
     }
 }
 
-struct GlassCardStyle: ViewModifier {
+struct HeroCardStyle: ViewModifier {
+    var padding: CGFloat = 24
+
     func body(content: Content) -> some View {
         content
-            .padding(16)
-            .background(.ultraThinMaterial)
-            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+            .padding(padding)
+            .background(.regularMaterial)
+            .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
+            .shadow(color: .black.opacity(0.08), radius: 24, y: 6)
+            .shadow(color: .black.opacity(0.04), radius: 4, y: 1)
     }
 }
 
 extension View {
-    func card(padding: CGFloat = 16) -> some View {
+    func card(padding: CGFloat = 18) -> some View {
         modifier(CardStyle(padding: padding))
     }
 
-    func glassCard() -> some View {
-        modifier(GlassCardStyle())
+    func heroCard(padding: CGFloat = 24) -> some View {
+        modifier(HeroCardStyle(padding: padding))
     }
 }
 
@@ -64,10 +69,10 @@ struct SlideUpAppear: ViewModifier {
 
     func body(content: Content) -> some View {
         content
-            .offset(y: appeared ? 0 : 20)
+            .offset(y: appeared ? 0 : 12)
             .opacity(appeared ? 1 : 0)
             .onAppear {
-                withAnimation(.spring(response: 0.5, dampingFraction: 0.8).delay(Double(index) * 0.06)) {
+                withAnimation(.easeOut(duration: 0.4).delay(Double(index) * 0.06)) {
                     appeared = true
                 }
             }
@@ -93,9 +98,9 @@ struct PrimaryButtonStyle: ButtonStyle {
             .padding(.vertical, 16)
             .background(color)
             .clipShape(Capsule())
-            .scaleEffect(configuration.isPressed ? 0.96 : 1.0)
+            .scaleEffect(configuration.isPressed ? 0.97 : 1.0)
             .opacity(configuration.isPressed ? 0.9 : 1.0)
-            .animation(.spring(response: 0.25, dampingFraction: 0.7), value: configuration.isPressed)
+            .animation(.easeOut(duration: 0.15), value: configuration.isPressed)
     }
 }
 
@@ -109,8 +114,8 @@ struct CircleButtonStyle: ButtonStyle {
             .frame(width: size, height: size)
             .background(color)
             .clipShape(Circle())
-            .scaleEffect(configuration.isPressed ? 0.9 : 1.0)
-            .animation(.spring(response: 0.25, dampingFraction: 0.7), value: configuration.isPressed)
+            .scaleEffect(configuration.isPressed ? 0.97 : 1.0)
+            .animation(.easeOut(duration: 0.15), value: configuration.isPressed)
     }
 }
 
@@ -118,14 +123,14 @@ struct GhostButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .font(.subheadline.weight(.medium))
-            .foregroundStyle(.secondary)
+            .foregroundStyle(Color(.secondaryLabel))
             .padding(.vertical, 12)
             .padding(.horizontal, 20)
             .background(Color(.tertiarySystemGroupedBackground))
             .clipShape(Capsule())
-            .scaleEffect(configuration.isPressed ? 0.96 : 1.0)
+            .scaleEffect(configuration.isPressed ? 0.97 : 1.0)
             .opacity(configuration.isPressed ? 0.7 : 1.0)
-            .animation(.spring(response: 0.25, dampingFraction: 0.7), value: configuration.isPressed)
+            .animation(.easeOut(duration: 0.15), value: configuration.isPressed)
     }
 }
 
@@ -142,7 +147,7 @@ struct SectionHeader: View {
             if let subtitle {
                 Text(subtitle)
                     .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Color(.secondaryLabel))
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -161,16 +166,16 @@ struct EmptyStateView: View {
         VStack(spacing: 16) {
             Image(systemName: icon)
                 .font(.system(size: 56, weight: .light))
-                .foregroundStyle(.tertiary)
+                .foregroundStyle(Color(.tertiaryLabel))
                 .symbolEffect(.pulse.byLayer, options: .repeating, value: isAnimating)
 
             Text(title)
                 .font(.title3.weight(.semibold))
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Color(.secondaryLabel))
 
             Text(subtitle)
                 .font(.subheadline)
-                .foregroundStyle(.tertiary)
+                .foregroundStyle(Color(.tertiaryLabel))
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 40)
         }
@@ -189,6 +194,7 @@ struct AnimatedNumber: View {
     var body: some View {
         Text("\(value)")
             .font(font)
+            .monospacedDigit()
             .contentTransition(.numericText(value: Double(value)))
             .animation(.spring(response: 0.4, dampingFraction: 0.8), value: value)
     }
@@ -207,8 +213,8 @@ struct ChipView: View {
             .padding(.horizontal, 10)
             .padding(.vertical, 5)
             .background(isSelected ? color.opacity(0.2) : Color(.tertiarySystemGroupedBackground))
-            .foregroundStyle(isSelected ? color : .secondary)
-            .clipShape(Capsule())
+            .foregroundStyle(isSelected ? color : Color(.secondaryLabel))
+            .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
     }
 }
 
@@ -223,17 +229,18 @@ struct CircularProgress: View {
     var body: some View {
         ZStack {
             Circle()
-                .stroke(color.opacity(0.15), lineWidth: lineWidth)
+                .stroke(Color(.separator), lineWidth: lineWidth)
 
             Circle()
                 .trim(from: 0, to: min(progress, 1.0))
                 .stroke(color, style: StrokeStyle(lineWidth: lineWidth, lineCap: .round))
                 .rotationEffect(.degrees(-90))
-                .animation(.spring(response: 0.6, dampingFraction: 0.8), value: progress)
+                .animation(.spring(response: 1.2, dampingFraction: 0.8), value: progress)
 
             if showLabel {
                 Text("\(Int(progress * 100))")
                     .font(.system(.title3, design: .rounded).weight(.bold))
+                    .monospacedDigit()
                     .contentTransition(.numericText(value: progress))
             }
         }

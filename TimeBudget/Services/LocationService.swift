@@ -91,10 +91,23 @@ final class LocationService: NSObject {
         }
     }
 
-    // MARK: - Current Place Detection
+    // MARK: - Current Place Detection (geofence-based)
 
-    func detectCurrentPlace(context: ModelContext) -> LocationPlace? {
-        guard let location = currentLocation else { return nil }
+    /// Returns the place the user is currently inside, based on geofence state.
+    /// Falls back to distance check against last known location.
+    func currentPlace(context: ModelContext) -> LocationPlace? {
+        // First: check if a geofence region is active
+        if let activePlaceID = currentPlaceName,
+           let uuid = UUID(uuidString: activePlaceID) {
+            let descriptor = FetchDescriptor<LocationPlace>()
+            if let places = try? context.fetch(descriptor),
+               let match = places.first(where: { $0.id == uuid }) {
+                return match
+            }
+        }
+
+        // Fallback: distance check against last known location
+        guard let location = lastKnownLocation else { return nil }
 
         let descriptor = FetchDescriptor<LocationPlace>()
         guard let places = try? context.fetch(descriptor) else { return nil }
@@ -109,11 +122,20 @@ final class LocationService: NSObject {
         return nil
     }
 
-    // MARK: - One-shot Location Request (foreground only)
+    // MARK: - One-shot Location Request (async, foreground only)
 
-    func requestCurrentLocation() {
-        guard isAuthorized else { return }
-        locationManager.requestLocation()
+    /// Last known location (updated by significant changes, visits, or one-shot requests)
+    private(set) var lastKnownLocation: CLLocation?
+
+    private var locationContinuation: CheckedContinuation<CLLocation?, Never>?
+
+    /// Request a single location fix. Returns nil if unavailable.
+    func requestCurrentLocation() async -> CLLocation? {
+        guard isAuthorized else { return nil }
+        return await withCheckedContinuation { continuation in
+            locationContinuation = continuation
+            locationManager.requestLocation()
+        }
     }
 
     // MARK: - Dwell Time
@@ -137,10 +159,18 @@ extension LocationService: CLLocationManagerDelegate {
 
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         currentLocation = locations.last
+        lastKnownLocation = locations.last
+        if let continuation = locationContinuation {
+            locationContinuation = nil
+            continuation.resume(returning: locations.last)
+        }
     }
 
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        // Silently handle — location is best-effort
+        if let continuation = locationContinuation {
+            locationContinuation = nil
+            continuation.resume(returning: nil)
+        }
     }
 
     func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {

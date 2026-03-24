@@ -8,8 +8,6 @@
 	<string>TimeBudget uses motion data to detect whether you are walking, running, driving, or stationary.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>TimeBudget uses your location to detect when you are at home, work, the gym, or other saved places.</string>
-	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>TimeBudget uses background location to automatically track time spent at your saved places.</string>
 	<key>NSCalendarsFullAccessUsageDescription</key>
 	<string>TimeBudget reads your calendar to track time spent in meetings.</string>
 	<key>CFBundleDevelopmentRegion</key>
@@ -41,6 +39,11 @@
 	<array>
 		<string>armv7</string>
 	</array>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsLocalNetworking</key>
+		<true/>
+	</dict>
 	<key>NSLocalNetworkUsageDescription</key>
 	<string>TimeBudget connects to ActivityWatch on your desktop to track computer usage time.</string>
 	<key>NSBonjourServices</key>

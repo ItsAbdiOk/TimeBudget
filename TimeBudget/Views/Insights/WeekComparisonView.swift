@@ -17,7 +17,7 @@ struct WeekComparisonView: View {
                         .controlSize(.small)
                     Text("Loading comparison...")
                         .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Color(.secondaryLabel))
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 24)
@@ -50,8 +50,8 @@ struct WeekComparisonView: View {
                     }
                 }
                 .chartForegroundStyleScale([
-                    "This Week": Color.blue,
-                    "Last Week": Color.blue.opacity(0.25),
+                    "This Week": Color(.systemGreen),
+                    "Last Week": Color(.systemGreen).opacity(0.25),
                 ])
                 .chartYAxisLabel("Hours")
                 .frame(height: 200)

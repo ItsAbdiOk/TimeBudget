@@ -21,7 +21,7 @@ struct PlaceManagementView: View {
                 HStack(spacing: 12) {
                     Image(systemName: place.iconName)
                         .font(.title2)
-                        .foregroundStyle(.blue)
+                        .foregroundStyle(Color(.systemIndigo))
                         .frame(width: 36)
 
                     VStack(alignment: .leading) {
@@ -29,7 +29,8 @@ struct PlaceManagementView: View {
                             .font(.headline)
                         Text("\(Int(place.radiusMeters))m radius")
                             .font(.caption)
-                            .foregroundStyle(.secondary)
+                            .monospacedDigit()
+                            .foregroundStyle(Color(.secondaryLabel))
                     }
 
                     Spacer()
@@ -39,7 +40,7 @@ struct PlaceManagementView: View {
                             .font(.caption2)
                             .padding(.horizontal, 8)
                             .padding(.vertical, 2)
-                            .background(.blue.opacity(0.15))
+                            .background(Color(.systemBlue).opacity(0.15))
                             .clipShape(Capsule())
                     }
                 }
@@ -107,7 +108,7 @@ struct AddPlaceView: View {
                                         Image(systemName: icon)
                                             .font(.title2)
                                             .frame(width: 44, height: 44)
-                                            .background(selectedIcon == icon ? Color.blue.opacity(0.2) : Color.clear)
+                                            .background(selectedIcon == icon ? Color(.systemBlue).opacity(0.2) : Color.clear)
                                             .clipShape(Circle())
                                         Text(label)
                                             .font(.caption2)
@@ -123,7 +124,7 @@ struct AddPlaceView: View {
                 Section("Location") {
                     Text("Tap the map to set the location")
                         .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Color(.secondaryLabel))
 
                     Map(position: $position) {
                         if let coord = selectedCoordinate {
@@ -137,7 +138,7 @@ struct AddPlaceView: View {
                         // For now, use current location as default
                     }
                     .onAppear {
-                        if let currentLoc = LocationService.shared.currentLocation {
+                        if let currentLoc = LocationService.shared.lastKnownLocation {
                             selectedCoordinate = currentLoc.coordinate
                             position = .region(MKCoordinateRegion(
                                 center: currentLoc.coordinate,
@@ -147,13 +148,14 @@ struct AddPlaceView: View {
                     }
 
                     Button("Use Current Location") {
-                        LocationService.shared.requestCurrentLocation()
-                        if let loc = LocationService.shared.currentLocation {
-                            selectedCoordinate = loc.coordinate
-                            position = .region(MKCoordinateRegion(
-                                center: loc.coordinate,
-                                span: MKCoordinateSpan(latitudeDelta: 0.005, longitudeDelta: 0.005)
-                            ))
+                        Task {
+                            if let loc = await LocationService.shared.requestCurrentLocation() {
+                                selectedCoordinate = loc.coordinate
+                                position = .region(MKCoordinateRegion(
+                                    center: loc.coordinate,
+                                    span: MKCoordinateSpan(latitudeDelta: 0.005, longitudeDelta: 0.005)
+                                ))
+                            }
                         }
                     }
                 }
@@ -163,7 +165,8 @@ struct AddPlaceView: View {
                         Slider(value: $radius, in: 50...500, step: 25)
                         Text("\(Int(radius)) meters")
                             .font(.caption)
-                            .foregroundStyle(.secondary)
+                            .monospacedDigit()
+                            .foregroundStyle(Color(.secondaryLabel))
                     }
                 }
             }

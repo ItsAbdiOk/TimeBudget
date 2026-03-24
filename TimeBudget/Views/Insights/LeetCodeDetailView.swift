@@ -15,7 +15,7 @@ struct LeetCodeDetailView: View {
 
     var body: some View {
         ZStack {
-            Color(.systemGroupedBackground).ignoresSafeArea()
+            Color(.systemBackground).ignoresSafeArea()
 
             ScrollView {
                 VStack(spacing: 16) {
@@ -28,22 +28,22 @@ struct LeetCodeDetailView: View {
                             VStack(spacing: 12) {
                                 HStack(spacing: 0) {
                                     DiffBadge(value: "\(stats.totalSolved)", label: "solved", color: accentColor)
-                                    DiffBadge(value: "\(stats.easySolved)", label: "easy", color: .green)
-                                    DiffBadge(value: "\(stats.mediumSolved)", label: "medium", color: .orange)
-                                    DiffBadge(value: "\(stats.hardSolved)", label: "hard", color: .red)
+                                    DiffBadge(value: "\(stats.easySolved)", label: "easy", color: Color(.systemGreen))
+                                    DiffBadge(value: "\(stats.mediumSolved)", label: "medium", color: Color(.systemOrange))
+                                    DiffBadge(value: "\(stats.hardSolved)", label: "hard", color: Color(.systemRed))
                                 }
 
                                 // Difficulty progress bars
                                 VStack(spacing: 8) {
-                                    DifficultyBar(label: "Easy", solved: stats.easySolved, total: stats.totalSolved, color: .green)
-                                    DifficultyBar(label: "Medium", solved: stats.mediumSolved, total: stats.totalSolved, color: .orange)
-                                    DifficultyBar(label: "Hard", solved: stats.hardSolved, total: stats.totalSolved, color: .red)
+                                    DifficultyBar(label: "Easy", solved: stats.easySolved, total: stats.totalSolved, color: Color(.systemGreen))
+                                    DifficultyBar(label: "Medium", solved: stats.mediumSolved, total: stats.totalSolved, color: Color(.systemOrange))
+                                    DifficultyBar(label: "Hard", solved: stats.hardSolved, total: stats.totalSolved, color: Color(.systemRed))
                                 }
 
                                 HStack(spacing: 0) {
-                                    DiffBadge(value: "#\(stats.ranking)", label: "ranking", color: .blue)
+                                    DiffBadge(value: "#\(stats.ranking)", label: "ranking", color: Color(.systemPurple))
                                     DiffBadge(value: "\(totalDays)", label: "active days", color: accentColor)
-                                    DiffBadge(value: "\(currentStreak)", label: "day streak", color: .green)
+                                    DiffBadge(value: "\(currentStreak)", label: "day streak", color: Color(.systemGreen))
                                 }
                             }
                             .card()
@@ -54,8 +54,8 @@ struct LeetCodeDetailView: View {
                         if !weeklyData.isEmpty {
                             VStack(alignment: .leading, spacing: 10) {
                                 Text("WEEKLY SUBMISSIONS")
-                                    .font(.system(size: 11, weight: .bold, design: .rounded))
-                                    .foregroundStyle(.secondary)
+                                    .font(.system(size: 11, weight: .bold))
+                                    .foregroundStyle(Color(.secondaryLabel))
                                     .tracking(0.5)
 
                                 Chart(weeklyData, id: \.week) { item in
@@ -82,26 +82,26 @@ struct LeetCodeDetailView: View {
                         if !recentSubmissions.isEmpty {
                             VStack(alignment: .leading, spacing: 10) {
                                 Text("RECENT ACCEPTED")
-                                    .font(.system(size: 11, weight: .bold, design: .rounded))
-                                    .foregroundStyle(.secondary)
+                                    .font(.system(size: 11, weight: .bold))
+                                    .foregroundStyle(Color(.secondaryLabel))
                                     .tracking(0.5)
 
                                 ForEach(recentSubmissions) { submission in
                                     HStack(spacing: 10) {
                                         Image(systemName: "checkmark.circle.fill")
                                             .font(.system(size: 14))
-                                            .foregroundStyle(.green)
+                                            .foregroundStyle(Color(.systemGreen))
 
                                         Text(submission.title)
-                                            .font(.system(.subheadline, design: .rounded))
+                                            .font(.system(.subheadline))
                                             .lineLimit(1)
 
                                         Spacer()
 
                                         if !submission.topicTag.isEmpty {
                                             Text(submission.topicTag)
-                                                .font(.system(.caption2, design: .rounded).weight(.medium))
-                                                .foregroundStyle(.secondary)
+                                                .font(.system(.caption2).weight(.medium))
+                                                .foregroundStyle(Color(.secondaryLabel))
                                                 .padding(.horizontal, 8)
                                                 .padding(.vertical, 3)
                                                 .background(Color(.tertiarySystemFill))
@@ -109,8 +109,8 @@ struct LeetCodeDetailView: View {
                                         }
 
                                         Text(relativeDate(submission.timestamp))
-                                            .font(.system(.caption2, design: .rounded))
-                                            .foregroundStyle(.tertiary)
+                                            .font(.system(.caption2))
+                                            .foregroundStyle(Color(.tertiaryLabel))
                                     }
                                 }
                             }
@@ -191,11 +191,11 @@ private struct DiffBadge: View {
     var body: some View {
         VStack(spacing: 4) {
             Text(value)
-                .font(.system(.title3, design: .rounded).weight(.semibold))
+                .font(.system(.title3).weight(.semibold).monospacedDigit())
                 .foregroundStyle(color)
             Text(label)
-                .font(.system(size: 11, design: .rounded))
-                .foregroundStyle(.secondary)
+                .font(.system(size: 11))
+                .foregroundStyle(Color(.secondaryLabel))
         }
         .frame(maxWidth: .infinity)
     }
@@ -215,9 +215,9 @@ private struct DifficultyBar: View {
     var body: some View {
         HStack(spacing: 8) {
             Text(label)
-                .font(.system(.caption, design: .rounded).weight(.medium))
+                .font(.system(.caption).weight(.medium))
                 .frame(width: 55, alignment: .leading)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Color(.secondaryLabel))
 
             GeometryReader { geo in
                 ZStack(alignment: .leading) {
@@ -232,8 +232,8 @@ private struct DifficultyBar: View {
             .frame(height: 8)
 
             Text("\(solved)")
-                .font(.system(.caption2, design: .rounded).weight(.medium))
-                .foregroundStyle(.tertiary)
+                .font(.system(.caption2).weight(.medium))
+                .foregroundStyle(Color(.tertiaryLabel))
                 .frame(width: 30, alignment: .trailing)
         }
     }

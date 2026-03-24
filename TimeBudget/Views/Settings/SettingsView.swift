@@ -7,7 +7,7 @@ struct SettingsView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                Color(.systemGroupedBackground).ignoresSafeArea()
+                Color(.systemBackground).ignoresSafeArea()
 
                 ScrollView {
                     VStack(spacing: 12) {
@@ -15,7 +15,7 @@ struct SettingsView: View {
                         VStack(spacing: 0) {
                             SettingsRow(
                                 icon: "mappin.circle.fill",
-                                iconColor: .blue,
+                                iconColor: Color(.systemBlue),
                                 title: "My Places",
                                 destination: AnyView(PlaceManagementView())
                             )
@@ -24,7 +24,7 @@ struct SettingsView: View {
 
                             SettingsRow(
                                 icon: "star.circle.fill",
-                                iconColor: .yellow,
+                                iconColor: Color(.systemYellow),
                                 title: "Ideal Day",
                                 destination: AnyView(IdealDaySetupView())
                             )
@@ -33,13 +33,14 @@ struct SettingsView: View {
 
                             SettingsRow(
                                 icon: "hand.raised.fill",
-                                iconColor: .green,
+                                iconColor: Color(.systemGreen),
                                 title: "Permissions",
                                 destination: AnyView(PermissionsView())
                             )
                         }
-                        .background(Color(.secondarySystemGroupedBackground))
-                        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                        .background(.regularMaterial)
+                        .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+                        .shadow(color: .black.opacity(0.05), radius: 10, y: 2)
                         .padding(.horizontal, 16)
 
                         // Connected Accounts
@@ -78,15 +79,16 @@ struct SettingsView: View {
                                 destination: AnyView(ActivityWatchSettingsView())
                             )
                         }
-                        .background(Color(.secondarySystemGroupedBackground))
-                        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                        .background(.regularMaterial)
+                        .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+                        .shadow(color: .black.opacity(0.05), radius: 10, y: 2)
                         .padding(.horizontal, 16)
 
                         // Data section
                         VStack(spacing: 0) {
                             SettingsRow(
                                 icon: "square.and.arrow.up",
-                                iconColor: .indigo,
+                                iconColor: Color(.systemIndigo),
                                 title: "Export Data",
                                 destination: AnyView(
                                     VStack {
@@ -96,25 +98,26 @@ struct SettingsView: View {
                                             subtitle: "CSV and JSON export will be available in a future update"
                                         )
                                     }
-                                    .background(Color(.systemGroupedBackground))
+                                    .background(Color(.systemBackground))
                                 )
                             )
                         }
-                        .background(Color(.secondarySystemGroupedBackground))
-                        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                        .background(.regularMaterial)
+                        .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+                        .shadow(color: .black.opacity(0.05), radius: 10, y: 2)
                         .padding(.horizontal, 16)
 
                         // About section
                         VStack(spacing: 0) {
                             HStack(spacing: 12) {
                                 ZStack {
-                                    RoundedRectangle(cornerRadius: 8, style: .continuous)
-                                        .fill(Color.gray.opacity(0.12))
-                                        .frame(width: 32, height: 32)
+                                    RoundedRectangle(cornerRadius: 7, style: .continuous)
+                                        .fill(Color(.systemGray))
+                                        .frame(width: 30, height: 30)
 
                                     Image(systemName: "info.circle.fill")
-                                        .font(.system(size: 16))
-                                        .foregroundStyle(.gray)
+                                        .font(.system(size: 16, weight: .medium))
+                                        .foregroundStyle(.white)
                                 }
 
                                 Text("Version")
@@ -124,12 +127,14 @@ struct SettingsView: View {
 
                                 Text("1.0")
                                     .font(.subheadline)
-                                    .foregroundStyle(.secondary)
+                                    .monospacedDigit()
+                                    .foregroundStyle(Color(.secondaryLabel))
                             }
                             .padding(14)
                         }
-                        .background(Color(.secondarySystemGroupedBackground))
-                        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                        .background(.regularMaterial)
+                        .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+                        .shadow(color: .black.opacity(0.05), radius: 10, y: 2)
                         .padding(.horizontal, 16)
 
                         Spacer().frame(height: 90)
@@ -156,24 +161,24 @@ struct SettingsRow: View {
         } label: {
             HStack(spacing: 12) {
                 ZStack {
-                    RoundedRectangle(cornerRadius: 8, style: .continuous)
-                        .fill(iconColor.opacity(0.12))
-                        .frame(width: 32, height: 32)
+                    RoundedRectangle(cornerRadius: 7, style: .continuous)
+                        .fill(iconColor)
+                        .frame(width: 30, height: 30)
 
                     Image(systemName: icon)
                         .font(.system(size: 16, weight: .medium))
-                        .foregroundStyle(iconColor)
+                        .foregroundStyle(.white)
                 }
 
                 Text(title)
                     .font(.subheadline)
-                    .foregroundStyle(.primary)
+                    .foregroundStyle(Color(.label))
 
                 Spacer()
 
                 Image(systemName: "chevron.right")
                     .font(.system(size: 12, weight: .semibold))
-                    .foregroundStyle(.tertiary)
+                    .foregroundStyle(Color(.tertiaryLabel))
             }
             .padding(14)
             .contentShape(Rectangle())
@@ -191,7 +196,7 @@ struct PermissionsView: View {
 
     var body: some View {
         ZStack {
-            Color(.systemGroupedBackground).ignoresSafeArea()
+            Color(.systemBackground).ignoresSafeArea()
 
             ScrollView {
                 VStack(spacing: 12) {
@@ -200,7 +205,7 @@ struct PermissionsView: View {
                             title: "Health Data",
                             subtitle: "Sleep, workouts, steps, calories",
                             icon: "heart.fill",
-                            color: .red,
+                            color: Color(.systemRed),
                             isGranted: healthKitService.isAuthorized
                         ) {
                             Haptics.light()
@@ -213,7 +218,7 @@ struct PermissionsView: View {
                             title: "Location",
                             subtitle: "Detect time at saved places",
                             icon: "location.fill",
-                            color: .blue,
+                            color: Color(.systemBlue),
                             isGranted: locationService.isAuthorized
                         ) {
                             Haptics.light()
@@ -226,7 +231,7 @@ struct PermissionsView: View {
                             title: "Calendar",
                             subtitle: "Track meeting time",
                             icon: "calendar",
-                            color: .orange,
+                            color: Color(.systemOrange),
                             isGranted: calendarService.isAuthorized
                         ) {
                             Haptics.light()
@@ -239,20 +244,21 @@ struct PermissionsView: View {
                             title: "Motion & Fitness",
                             subtitle: "Detect walking, running, driving",
                             icon: "figure.walk",
-                            color: .green,
+                            color: Color(.systemGreen),
                             isGranted: MotionService.shared.isAvailable
                         ) {
                             Haptics.light()
                             Task { await MotionService.shared.fetchCurrentActivity() }
                         }
                     }
-                    .background(Color(.secondarySystemGroupedBackground))
-                    .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                    .background(.regularMaterial)
+                    .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+                    .shadow(color: .black.opacity(0.05), radius: 10, y: 2)
                     .padding(.horizontal, 16)
 
                     Text("You can also manage permissions in\nSettings > Privacy & Security")
                         .font(.caption)
-                        .foregroundStyle(.tertiary)
+                        .foregroundStyle(Color(.tertiaryLabel))
                         .multilineTextAlignment(.center)
                         .padding(.top, 8)
                 }
@@ -271,19 +277,19 @@ struct AniListSettingsView: View {
 
     var body: some View {
         ZStack {
-            Color(.systemGroupedBackground).ignoresSafeArea()
+            Color(.systemBackground).ignoresSafeArea()
 
             ScrollView {
                 VStack(spacing: 12) {
                     VStack(spacing: 0) {
                         HStack(spacing: 12) {
                             ZStack {
-                                RoundedRectangle(cornerRadius: 8, style: .continuous)
-                                    .fill(Color(hex: "#AC8E68").opacity(0.12))
-                                    .frame(width: 32, height: 32)
+                                RoundedRectangle(cornerRadius: 7, style: .continuous)
+                                    .fill(Color(hex: "#AC8E68"))
+                                    .frame(width: 30, height: 30)
                                 Image(systemName: "person.fill")
                                     .font(.system(size: 14, weight: .semibold))
-                                    .foregroundStyle(Color(hex: "#AC8E68"))
+                                    .foregroundStyle(.white)
                             }
 
                             VStack(alignment: .leading, spacing: 1) {
@@ -291,14 +297,14 @@ struct AniListSettingsView: View {
                                     .font(.subheadline.weight(.medium))
                                 Text("Your AniList profile name")
                                     .font(.caption)
-                                    .foregroundStyle(.secondary)
+                                    .foregroundStyle(Color(.secondaryLabel))
                             }
 
                             Spacer()
 
                             TextField("Username", text: $username)
                                 .font(.subheadline)
-                                .foregroundStyle(.secondary)
+                                .foregroundStyle(Color(.secondaryLabel))
                                 .multilineTextAlignment(.trailing)
                                 .frame(width: 140)
                                 .autocorrectionDisabled()
@@ -310,12 +316,12 @@ struct AniListSettingsView: View {
 
                         HStack(spacing: 12) {
                             ZStack {
-                                RoundedRectangle(cornerRadius: 8, style: .continuous)
-                                    .fill(Color(hex: "#AC8E68").opacity(0.12))
-                                    .frame(width: 32, height: 32)
+                                RoundedRectangle(cornerRadius: 7, style: .continuous)
+                                    .fill(Color(hex: "#AC8E68"))
+                                    .frame(width: 30, height: 30)
                                 Image(systemName: "clock.fill")
                                     .font(.system(size: 14, weight: .semibold))
-                                    .foregroundStyle(Color(hex: "#AC8E68"))
+                                    .foregroundStyle(.white)
                             }
 
                             VStack(alignment: .leading, spacing: 1) {
@@ -323,29 +329,31 @@ struct AniListSettingsView: View {
                                     .font(.subheadline.weight(.medium))
                                 Text("Average reading time")
                                     .font(.caption)
-                                    .foregroundStyle(.secondary)
+                                    .foregroundStyle(Color(.secondaryLabel))
                             }
 
                             Spacer()
 
                             Stepper("\(minutesPerChapter) min", value: $minutesPerChapter, in: 1...30)
                                 .font(.subheadline)
-                                .foregroundStyle(.secondary)
+                                .monospacedDigit()
+                                .foregroundStyle(Color(.secondaryLabel))
                         }
                         .padding(14)
                     }
-                    .background(Color(.secondarySystemGroupedBackground))
-                    .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                    .background(.regularMaterial)
+                    .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+                    .shadow(color: .black.opacity(0.05), radius: 10, y: 2)
                     .padding(.horizontal, 16)
 
                     if !username.isEmpty {
                         Text("Tracking manga reading for **\(username)**")
                             .font(.caption)
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(Color(.secondaryLabel))
                     } else {
                         Text("Enter your AniList username to track manga reading")
                             .font(.caption)
-                            .foregroundStyle(.tertiary)
+                            .foregroundStyle(Color(.tertiaryLabel))
                     }
                 }
                 .padding(.top, 8)
@@ -362,19 +370,19 @@ struct LeetCodeSettingsView: View {
 
     var body: some View {
         ZStack {
-            Color(.systemGroupedBackground).ignoresSafeArea()
+            Color(.systemBackground).ignoresSafeArea()
 
             ScrollView {
                 VStack(spacing: 12) {
                     VStack(spacing: 0) {
                         HStack(spacing: 12) {
                             ZStack {
-                                RoundedRectangle(cornerRadius: 8, style: .continuous)
-                                    .fill(Color(hex: "#FFA116").opacity(0.12))
-                                    .frame(width: 32, height: 32)
+                                RoundedRectangle(cornerRadius: 7, style: .continuous)
+                                    .fill(Color(hex: "#FFA116"))
+                                    .frame(width: 30, height: 30)
                                 Image(systemName: "person.fill")
                                     .font(.system(size: 14, weight: .semibold))
-                                    .foregroundStyle(Color(hex: "#FFA116"))
+                                    .foregroundStyle(.white)
                             }
 
                             VStack(alignment: .leading, spacing: 1) {
@@ -382,14 +390,14 @@ struct LeetCodeSettingsView: View {
                                     .font(.subheadline.weight(.medium))
                                 Text("Your LeetCode profile name")
                                     .font(.caption)
-                                    .foregroundStyle(.secondary)
+                                    .foregroundStyle(Color(.secondaryLabel))
                             }
 
                             Spacer()
 
                             TextField("Username", text: $username)
                                 .font(.subheadline)
-                                .foregroundStyle(.secondary)
+                                .foregroundStyle(Color(.secondaryLabel))
                                 .multilineTextAlignment(.trailing)
                                 .frame(width: 140)
                                 .autocorrectionDisabled()
@@ -397,18 +405,19 @@ struct LeetCodeSettingsView: View {
                         }
                         .padding(14)
                     }
-                    .background(Color(.secondarySystemGroupedBackground))
-                    .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                    .background(.regularMaterial)
+                    .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+                    .shadow(color: .black.opacity(0.05), radius: 10, y: 2)
                     .padding(.horizontal, 16)
 
                     if !username.isEmpty {
                         Text("Tracking submissions for **\(username)**")
                             .font(.caption)
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(Color(.secondaryLabel))
                     } else {
                         Text("Enter your LeetCode username to track coding practice")
                             .font(.caption)
-                            .foregroundStyle(.tertiary)
+                            .foregroundStyle(Color(.tertiaryLabel))
                     }
                 }
                 .padding(.top, 8)
@@ -429,13 +438,13 @@ struct PermissionRow: View {
     var body: some View {
         HStack(spacing: 12) {
             ZStack {
-                RoundedRectangle(cornerRadius: 8, style: .continuous)
-                    .fill(color.opacity(0.12))
-                    .frame(width: 32, height: 32)
+                RoundedRectangle(cornerRadius: 7, style: .continuous)
+                    .fill(color)
+                    .frame(width: 30, height: 30)
 
                 Image(systemName: icon)
                     .font(.system(size: 14, weight: .semibold))
-                    .foregroundStyle(color)
+                    .foregroundStyle(.white)
             }
 
             VStack(alignment: .leading, spacing: 1) {
@@ -443,7 +452,7 @@ struct PermissionRow: View {
                     .font(.subheadline.weight(.medium))
                 Text(subtitle)
                     .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Color(.secondaryLabel))
             }
 
             Spacer()
@@ -451,7 +460,7 @@ struct PermissionRow: View {
             if isGranted {
                 Image(systemName: "checkmark.circle.fill")
                     .font(.title3)
-                    .foregroundStyle(.green)
+                    .foregroundStyle(Color(.systemGreen))
             } else {
                 Button {
                     action()

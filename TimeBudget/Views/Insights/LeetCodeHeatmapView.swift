@@ -18,7 +18,7 @@ struct LeetCodeHeatmapView: View {
                         .controlSize(.small)
                     Text("Loading LeetCode data...")
                         .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Color(.secondaryLabel))
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 24)
@@ -33,9 +33,9 @@ struct LeetCodeHeatmapView: View {
                 if let stats = stats {
                     HStack(spacing: 0) {
                         DifficultyBadge(value: "\(stats.totalSolved)", label: "solved", color: accentColor)
-                        DifficultyBadge(value: "\(stats.easySolved)", label: "easy", color: .green)
-                        DifficultyBadge(value: "\(stats.mediumSolved)", label: "medium", color: .orange)
-                        DifficultyBadge(value: "\(stats.hardSolved)", label: "hard", color: .red)
+                        DifficultyBadge(value: "\(stats.easySolved)", label: "easy", color: Color(.systemGreen))
+                        DifficultyBadge(value: "\(stats.mediumSolved)", label: "medium", color: Color(.systemOrange))
+                        DifficultyBadge(value: "\(stats.hardSolved)", label: "hard", color: Color(.systemRed))
                     }
                 }
 
@@ -48,26 +48,26 @@ struct LeetCodeHeatmapView: View {
                 if !recentSubmissions.isEmpty {
                     VStack(alignment: .leading, spacing: 10) {
                         Text("RECENT")
-                            .font(.system(size: 11, weight: .semibold, design: .rounded))
-                            .foregroundStyle(.tertiary)
+                            .font(.system(size: 11, weight: .semibold))
+                            .foregroundStyle(Color(.tertiaryLabel))
                             .tracking(0.5)
 
                         ForEach(recentSubmissions.prefix(5)) { submission in
                             HStack(spacing: 10) {
                                 Image(systemName: "checkmark.circle.fill")
                                     .font(.system(size: 14))
-                                    .foregroundStyle(.green)
+                                    .foregroundStyle(Color(.systemGreen))
 
                                 Text(submission.title)
-                                    .font(.system(.subheadline, design: .rounded))
+                                    .font(.system(.subheadline))
                                     .lineLimit(1)
 
                                 Spacer()
 
                                 if !submission.topicTag.isEmpty {
                                     Text(submission.topicTag)
-                                        .font(.system(.caption2, design: .rounded).weight(.medium))
-                                        .foregroundStyle(.secondary)
+                                        .font(.system(.caption2).weight(.medium))
+                                        .foregroundStyle(Color(.secondaryLabel))
                                         .padding(.horizontal, 8)
                                         .padding(.vertical, 3)
                                         .background(Color(.tertiarySystemFill))
@@ -75,8 +75,8 @@ struct LeetCodeHeatmapView: View {
                                 }
 
                                 Text(relativeDate(submission.timestamp))
-                                    .font(.system(.caption2, design: .rounded))
-                                    .foregroundStyle(.tertiary)
+                                    .font(.system(.caption2))
+                                    .foregroundStyle(Color(.tertiaryLabel))
                             }
                         }
                     }
@@ -120,11 +120,11 @@ private struct DifficultyBadge: View {
     var body: some View {
         VStack(spacing: 4) {
             Text(value)
-                .font(.system(.title3, design: .rounded).weight(.semibold))
+                .font(.system(.title3).weight(.semibold).monospacedDigit())
                 .foregroundStyle(color)
             Text(label)
-                .font(.system(size: 11, design: .rounded))
-                .foregroundStyle(.secondary)
+                .font(.system(size: 11))
+                .foregroundStyle(Color(.secondaryLabel))
         }
         .frame(maxWidth: .infinity)
     }

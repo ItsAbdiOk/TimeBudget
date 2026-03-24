@@ -18,7 +18,7 @@ struct HeatmapView: View {
                         .controlSize(.small)
                     Text("Loading activity data...")
                         .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Color(.secondaryLabel))
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 24)
@@ -33,35 +33,36 @@ struct HeatmapView: View {
                 HStack(spacing: 0) {
                     VStack(spacing: 4) {
                         Text("\(activeDays)")
-                            .font(.system(.title3, design: .rounded).weight(.semibold))
+                            .font(.system(.title3).weight(.semibold).monospacedDigit())
                         Text("active days")
-                            .font(.system(size: 11, design: .rounded))
-                            .foregroundStyle(.secondary)
+                            .font(.system(size: 11))
+                            .foregroundStyle(Color(.secondaryLabel))
                     }
                     .frame(maxWidth: .infinity)
 
                     VStack(spacing: 4) {
                         Text(formatMinutes(totalActiveMinutes))
-                            .font(.system(.title3, design: .rounded).weight(.semibold))
+                            .font(.system(.title3).weight(.semibold).monospacedDigit())
                         Text("total exercise")
-                            .font(.system(size: 11, design: .rounded))
-                            .foregroundStyle(.secondary)
+                            .font(.system(size: 11))
+                            .foregroundStyle(Color(.secondaryLabel))
                     }
                     .frame(maxWidth: .infinity)
 
                     VStack(spacing: 4) {
                         Text(formatMinutes(bestDay))
-                            .font(.system(.title3, design: .rounded).weight(.semibold))
+                            .font(.system(.title3).weight(.semibold).monospacedDigit())
                         Text("best day")
-                            .font(.system(size: 11, design: .rounded))
-                            .foregroundStyle(.secondary)
+                            .font(.system(size: 11))
+                            .foregroundStyle(Color(.secondaryLabel))
                     }
                     .frame(maxWidth: .infinity)
                 }
 
                 ContributionCalendarView(
                     data: dailyData,
-                    accentColor: .green
+                    accentColor: Color(.systemGreen),
+                    weeks: 15
                 )
             }
         }
@@ -79,7 +80,7 @@ struct HeatmapView: View {
         isLoading = true
 
         let calendar = Calendar.current
-        let sixteenWeeksAgo = calendar.date(byAdding: .day, value: -91, to: Date())!
+        let sixteenWeeksAgo = calendar.date(byAdding: .day, value: -105, to: Date())!
         let now = Date()
 
         async let workoutsTask = (try? await healthKit.fetchWorkoutsInRange(from: sixteenWeeksAgo, to: now)) ?? []

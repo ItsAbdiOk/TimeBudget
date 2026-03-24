@@ -41,14 +41,7 @@ struct TimeBudgetApp: App {
             ContentView()
                 .onChange(of: scenePhase) { _, newPhase in
                     if newPhase == .background {
-                        // Schedule background refresh when app enters background
                         BackgroundTaskService.shared.scheduleAppRefresh()
-
-                        // Stop live motion updates if no focus session is active
-                        // (FocusViewModel handles its own stop, but guard against leaks)
-                        if !MotionService.shared.isReceivingLiveUpdates {
-                            // Already stopped — nothing to do
-                        }
                     }
                 }
         }

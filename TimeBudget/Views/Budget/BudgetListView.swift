@@ -9,7 +9,7 @@ struct BudgetListView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                Color(.systemGroupedBackground).ignoresSafeArea()
+                Color(.systemBackground).ignoresSafeArea()
 
                 ScrollView {
                     if viewModel.budgets.isEmpty {
@@ -55,7 +55,7 @@ struct BudgetListView: View {
                     } label: {
                         Image(systemName: "plus.circle.fill")
                             .font(.title3)
-                            .foregroundStyle(.blue)
+                            .foregroundStyle(Color(.systemBlue))
                     }
                 }
             }
@@ -85,44 +85,52 @@ struct BudgetRow: View {
     }
 
     private var progressColor: Color {
-        if progress >= 1.0 { return .red }
-        if progress >= 0.8 { return .orange }
-        return .blue
+        if progress >= 1.0 { return Color(.systemRed) }
+        if progress >= 0.8 { return Color(.systemOrange) }
+        return Color(.systemGreen)
     }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
             // Header
             HStack {
-                Text(budget.categoryName)
-                    .font(.system(.headline, design: .rounded))
+                HStack(spacing: 8) {
+                    Circle()
+                        .fill(progressColor)
+                        .frame(width: 9, height: 9)
+
+                    Text(budget.categoryName)
+                        .font(.headline)
+                }
 
                 Spacer()
 
                 HStack(spacing: 4) {
                     Text(formatMinutes(actualMinutes))
-                        .font(.system(.subheadline, design: .rounded).weight(.semibold).monospacedDigit())
+                        .font(.subheadline.weight(.semibold))
+                        .monospacedDigit()
 
                     Text("/ \(budget.targetFormatted)")
-                        .font(.system(.subheadline, design: .rounded))
-                        .foregroundStyle(.secondary)
+                        .font(.subheadline)
+                        .monospacedDigit()
+                        .foregroundStyle(Color(.secondaryLabel))
                 }
             }
 
-            // Progress bar
+            // Progress bar — 4pt capsule on separator track
             GeometryReader { geo in
                 ZStack(alignment: .leading) {
                     Capsule()
-                        .fill(progressColor.opacity(0.12))
-                        .frame(height: 10)
+                        .fill(Color(.separator))
+                        .frame(height: 4)
 
                     Capsule()
                         .fill(progressColor)
-                        .frame(width: geo.size.width * min(progress, 1.0), height: 10)
-                        .animation(.spring(response: 0.6, dampingFraction: 0.8), value: progress)
+                        .frame(width: geo.size.width * min(progress, 1.0), height: 4)
+                        .animation(.easeOut(duration: 0.4), value: progress)
                 }
             }
-            .frame(height: 10)
+            .frame(height: 4)
 
             // Footer
             HStack {
@@ -132,8 +140,9 @@ struct BudgetRow: View {
                             .font(.caption2)
                         Text("+\(formatMinutes(budget.rolloverMinutes)) rollover")
                             .font(.caption)
+                            .monospacedDigit()
                     }
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Color(.secondaryLabel))
                 }
 
                 Spacer()
@@ -145,11 +154,12 @@ struct BudgetRow: View {
                         Text("Over budget")
                             .font(.caption.weight(.medium))
                     }
-                    .foregroundStyle(.red)
+                    .foregroundStyle(Color(.systemRed))
                 } else {
                     Text("\(Int((1.0 - progress) * 100))% remaining")
                         .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .monospacedDigit()
+                        .foregroundStyle(Color(.secondaryLabel))
                 }
             }
         }

@@ -10,22 +10,22 @@ struct BudgetEditView: View {
     @State private var allowRollover = false
 
     private let categories = [
-        ("Sleep", "moon.zzz.fill", Color.indigo),
-        ("Exercise", "figure.run", Color.green),
-        ("Work", "briefcase.fill", Color.blue),
-        ("Deep Work", "brain.head.profile", Color.pink),
-        ("Meetings", "person.2.fill", Color.purple),
-        ("Commute", "car.fill", Color.pink),
+        ("Sleep", "moon.zzz.fill", Color(.systemTeal)),
+        ("Exercise", "figure.run", Color(.systemGreen)),
+        ("Work", "briefcase.fill", Color(.systemOrange)),
+        ("Deep Work", "brain.head.profile", Color(.systemPurple)),
+        ("Meetings", "person.2.fill", Color(.systemOrange)),
+        ("Commute", "car.fill", Color(.systemPink)),
         ("Reading", "book.fill", Color(hex: "#AC8E68")),
-        ("Creative", "paintbrush.fill", Color.orange),
-        ("Walking", "figure.walk", Color.cyan),
-        ("Stationary", "figure.stand", Color.gray),
+        ("Creative", "paintbrush.fill", Color(.systemOrange)),
+        ("Walking", "figure.walk", Color(.systemTeal)),
+        ("Stationary", "figure.stand", Color(.systemGray)),
     ]
 
     var body: some View {
         NavigationStack {
             ZStack {
-                Color(.systemGroupedBackground).ignoresSafeArea()
+                Color(.systemBackground).ignoresSafeArea()
 
                 ScrollView {
                     VStack(spacing: 20) {
@@ -47,18 +47,18 @@ struct BudgetEditView: View {
                                     } label: {
                                         VStack(spacing: 6) {
                                             ZStack {
-                                                Circle()
-                                                    .fill(selectedCategory == name ? color.opacity(0.15) : Color(.tertiarySystemGroupedBackground))
-                                                    .frame(width: 44, height: 44)
+                                                RoundedRectangle(cornerRadius: 11, style: .continuous)
+                                                    .fill(selectedCategory == name ? color.opacity(0.15) : Color(.tertiarySystemBackground))
+                                                    .frame(width: 38, height: 38)
 
                                                 Image(systemName: icon)
-                                                    .font(.system(size: 18))
-                                                    .foregroundStyle(selectedCategory == name ? color : .secondary)
+                                                    .font(.system(size: 20, weight: .medium))
+                                                    .foregroundStyle(selectedCategory == name ? color : Color(.secondaryLabel))
                                             }
 
                                             Text(name)
                                                 .font(.system(size: 9, weight: selectedCategory == name ? .semibold : .regular))
-                                                .foregroundStyle(selectedCategory == name ? .primary : .secondary)
+                                                .foregroundStyle(selectedCategory == name ? Color(.label) : Color(.secondaryLabel))
                                                 .lineLimit(1)
                                         }
                                     }
@@ -73,13 +73,14 @@ struct BudgetEditView: View {
                             SectionHeader(title: "Daily Target")
 
                             Text(formatMinutes(Int(targetMinutes)))
-                                .font(.system(size: 40, weight: .bold, design: .rounded))
+                                .font(.system(size: 40, weight: .semibold))
+                                .monospacedDigit()
                                 .frame(maxWidth: .infinity, alignment: .center)
 
                             Slider(value: $targetMinutes, in: 15...720, step: 15) { editing in
                                 if !editing { Haptics.light() }
                             }
-                            .tint(.blue)
+                            .tint(Color(.systemBlue))
                         }
                         .card()
 
@@ -91,13 +92,14 @@ struct BudgetEditView: View {
                                         .font(.subheadline.weight(.semibold))
                                     Text("Unused minutes carry to the next day")
                                         .font(.caption)
-                                        .foregroundStyle(.secondary)
+                                        .foregroundStyle(Color(.secondaryLabel))
                                 }
 
                                 Spacer()
 
                                 Toggle("", isOn: $allowRollover)
                                     .labelsHidden()
+                                    .tint(Color(.systemBlue))
                                     .onChange(of: allowRollover) { _, _ in
                                         Haptics.light()
                                     }

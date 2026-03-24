@@ -111,7 +111,11 @@ final class DashboardViewModel {
         let activityWatch = ActivityWatchService.shared
         async let activityWatchTask: () = {
             if activityWatch.isConfigured && activityWatch.shouldSync {
-                _ = try? await activityWatch.fetchTodayBlocks()
+                do {
+                    _ = try await activityWatch.fetchTodayBlocks()
+                } catch {
+                    print("[ActivityWatch] Sync failed: \(error.localizedDescription)")
+                }
             }
         }()
 
@@ -133,7 +137,7 @@ final class DashboardViewModel {
         meetingMinutes = calendarService.totalMeetingMinutes(for: today)
 
         // Current place (synchronous, uses cached location)
-        if let place = location.detectCurrentPlace(context: context) {
+        if let place = location.currentPlace(context: context) {
             currentPlaceName = place.name
         } else {
             currentPlaceName = nil

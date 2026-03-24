@@ -14,13 +14,13 @@ struct OnboardingFlow: View {
                 // Page 1: Welcome
                 OnboardingPage(
                     icon: "clock.fill",
-                    iconColor: .blue,
+                    iconColor: Color(.systemBlue),
                     title: "Budget Your Time",
                     subtitle: "Track how you spend every hour — automatically. Set goals, spot patterns, and make every day count.",
                     buttonTitle: "Continue",
                     action: {
                         Haptics.medium()
-                        withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) {
+                        withAnimation(.easeOut(duration: 0.4)) {
                             currentPage = 1
                         }
                     }
@@ -30,13 +30,13 @@ struct OnboardingFlow: View {
                 // Page 2: What we track
                 OnboardingPage(
                     icon: "heart.text.square.fill",
-                    iconColor: .pink,
+                    iconColor: Color(.systemPink),
                     title: "Passive Tracking",
                     subtitle: "TimeBudget reads your sleep, workouts, steps, location, and calendar — all from data your iPhone and Apple Watch already collect.",
                     buttonTitle: "Continue",
                     action: {
                         Haptics.medium()
-                        withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) {
+                        withAnimation(.easeOut(duration: 0.4)) {
                             currentPage = 2
                         }
                     }
@@ -59,9 +59,9 @@ struct OnboardingFlow: View {
                 HStack(spacing: 8) {
                     ForEach(0..<3, id: \.self) { page in
                         Capsule()
-                            .fill(page == currentPage ? Color.blue : Color.gray.opacity(0.3))
+                            .fill(page == currentPage ? Color(.systemBlue) : Color(.separator))
                             .frame(width: page == currentPage ? 24 : 8, height: 8)
-                            .animation(.spring(response: 0.3, dampingFraction: 0.7), value: currentPage)
+                            .animation(.easeOut(duration: 0.4), value: currentPage)
                     }
                 }
                 .padding(.bottom, 20)
@@ -106,17 +106,18 @@ struct OnboardingPage: View {
             // Text
             VStack(spacing: 12) {
                 Text(title)
-                    .font(.system(.title, design: .rounded).weight(.bold))
+                    .font(.title.weight(.bold))
+                    .foregroundStyle(Color(.label))
 
                 Text(subtitle)
                     .font(.body)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Color(.secondaryLabel))
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 40)
             }
             .offset(y: textAppeared ? 0 : 20)
             .opacity(textAppeared ? 1 : 0)
-            .animation(.spring(response: 0.5, dampingFraction: 0.8).delay(0.2), value: textAppeared)
+            .animation(.easeOut(duration: 0.4).delay(0.2), value: textAppeared)
 
             Spacer()
 
@@ -155,13 +156,13 @@ private struct PermissionPage: View {
 
             ZStack {
                 Circle()
-                    .fill(Color.green.opacity(0.1))
+                    .fill(Color(.systemGreen).opacity(0.1))
                     .frame(width: 120, height: 120)
                     .scaleEffect(iconAppeared ? 1.0 : 0.5)
 
                 Image(systemName: permissionGranted ? "checkmark.shield.fill" : "hand.raised.fill")
                     .font(.system(size: 48, weight: .medium))
-                    .foregroundStyle(.green)
+                    .foregroundStyle(Color(.systemGreen))
                     .scaleEffect(iconAppeared ? 1.0 : 0.3)
                     .contentTransition(.symbolEffect(.replace))
             }
@@ -171,11 +172,12 @@ private struct PermissionPage: View {
 
             VStack(spacing: 12) {
                 Text("Your Data Stays Private")
-                    .font(.system(.title, design: .rounded).weight(.bold))
+                    .font(.title.weight(.bold))
+                    .foregroundStyle(Color(.label))
 
                 Text("All data stays on your device. We need permission to read health data — we never write or share it.")
                     .font(.body)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Color(.secondaryLabel))
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 40)
             }
@@ -189,7 +191,7 @@ private struct PermissionPage: View {
                 } label: {
                     Text("Get Started")
                 }
-                .buttonStyle(PrimaryButtonStyle(color: .blue))
+                .buttonStyle(PrimaryButtonStyle(color: Color(.systemBlue)))
                 .padding(.horizontal, 24)
                 .transition(.scale.combined(with: .opacity))
             } else {
@@ -215,7 +217,7 @@ private struct PermissionPage: View {
                             Text("Allow Health Access")
                         }
                     }
-                    .buttonStyle(PrimaryButtonStyle(color: .green))
+                    .buttonStyle(PrimaryButtonStyle(color: Color(.systemGreen)))
                     .disabled(isRequestingPermission)
                     .padding(.horizontal, 24)
 
@@ -231,6 +233,6 @@ private struct PermissionPage: View {
         }
         .onAppear { iconAppeared = true }
         .onDisappear { iconAppeared = false }
-        .animation(.spring(response: 0.4, dampingFraction: 0.8), value: permissionGranted)
+        .animation(.easeOut(duration: 0.4), value: permissionGranted)
     }
 }

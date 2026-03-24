@@ -16,7 +16,7 @@ struct FocusStopwatchView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                Color(.systemGroupedBackground).ignoresSafeArea()
+                Color(.systemBackground).ignoresSafeArea()
 
                 ScrollView {
                     VStack(spacing: 0) {
@@ -96,7 +96,7 @@ struct FocusStopwatchView: View {
     }
 
     private func colorFor(_ category: String) -> Color {
-        focusCategories.first(where: { $0.0 == category })?.2 ?? .gray
+        focusCategories.first(where: { $0.0 == category })?.2 ?? Color(.systemGray)
     }
 }
 
@@ -111,9 +111,9 @@ private struct TimerDisplay: View {
 
     var body: some View {
         ZStack {
-            // Outer ring (subtle background)
+            // Background track ring
             Circle()
-                .stroke(categoryColor.opacity(0.1), lineWidth: 6)
+                .stroke(Color(.separator), lineWidth: 6)
                 .frame(width: 240, height: 240)
 
             // Animated ring when running
@@ -121,7 +121,7 @@ private struct TimerDisplay: View {
                 Circle()
                     .trim(from: 0, to: ringProgress)
                     .stroke(
-                        categoryColor.opacity(0.4),
+                        categoryColor,
                         style: StrokeStyle(lineWidth: 6, lineCap: .round)
                     )
                     .frame(width: 240, height: 240)
@@ -136,7 +136,7 @@ private struct TimerDisplay: View {
 
             VStack(spacing: 8) {
                 Text(elapsed)
-                    .font(.system(size: 56, weight: .light, design: .rounded))
+                    .font(.system(size: 56, weight: .light))
                     .monospacedDigit()
                     .contentTransition(.numericText())
                     .animation(.linear(duration: 0.1), value: elapsed)
@@ -148,8 +148,8 @@ private struct TimerDisplay: View {
                             .frame(width: 6, height: 6)
 
                         Text(category)
-                            .font(.system(.subheadline, design: .rounded).weight(.medium))
-                            .foregroundStyle(.secondary)
+                            .font(.subheadline.weight(.medium))
+                            .foregroundStyle(Color(.secondaryLabel))
                     }
                     .transition(.scale.combined(with: .opacity))
                 }
@@ -167,8 +167,8 @@ private struct CategoryPicker: View {
     var body: some View {
         VStack(spacing: 14) {
             Text("What are you focusing on?")
-                .font(.system(.subheadline, design: .rounded).weight(.medium))
-                .foregroundStyle(.secondary)
+                .font(.subheadline.weight(.medium))
+                .foregroundStyle(Color(.secondaryLabel))
 
             LazyVGrid(columns: [
                 GridItem(.flexible(), spacing: 10),
@@ -182,18 +182,18 @@ private struct CategoryPicker: View {
                     } label: {
                         VStack(spacing: 6) {
                             ZStack {
-                                Circle()
-                                    .fill(selected == name ? color.opacity(0.15) : Color(.tertiarySystemGroupedBackground))
-                                    .frame(width: 48, height: 48)
+                                RoundedRectangle(cornerRadius: 11, style: .continuous)
+                                    .fill(selected == name ? color.opacity(0.15) : Color(.tertiarySystemBackground))
+                                    .frame(width: 38, height: 38)
 
                                 Image(systemName: icon)
                                     .font(.system(size: 20, weight: .medium))
-                                    .foregroundStyle(selected == name ? color : .secondary)
+                                    .foregroundStyle(selected == name ? color : Color(.secondaryLabel))
                             }
 
                             Text(name)
                                 .font(.caption2.weight(selected == name ? .semibold : .regular))
-                                .foregroundStyle(selected == name ? .primary : .secondary)
+                                .foregroundStyle(selected == name ? Color(.label) : Color(.secondaryLabel))
                         }
                         .padding(.vertical, 8)
                         .frame(maxWidth: .infinity)
@@ -229,8 +229,8 @@ private struct ControlButtons: View {
                     Image(systemName: "xmark")
                         .font(.system(size: 20, weight: .medium))
                 }
-                .buttonStyle(CircleButtonStyle(size: 56, color: Color(.tertiarySystemGroupedBackground)))
-                .foregroundStyle(.secondary)
+                .buttonStyle(CircleButtonStyle(size: 56, color: Color(.tertiarySystemBackground)))
+                .foregroundStyle(Color(.secondaryLabel))
                 .transition(.scale.combined(with: .opacity))
 
                 // Stop
@@ -238,7 +238,7 @@ private struct ControlButtons: View {
                     Image(systemName: "stop.fill")
                         .font(.system(size: 22, weight: .semibold))
                 }
-                .buttonStyle(CircleButtonStyle(size: 72, color: .red))
+                .buttonStyle(CircleButtonStyle(size: 72, color: Color(.systemRed)))
                 .transition(.scale.combined(with: .opacity))
             } else {
                 // Start
@@ -246,7 +246,7 @@ private struct ControlButtons: View {
                     Image(systemName: "play.fill")
                         .font(.system(size: 24, weight: .semibold))
                 }
-                .buttonStyle(CircleButtonStyle(size: 72, color: .green))
+                .buttonStyle(CircleButtonStyle(size: 72, color: Color(.systemGreen)))
                 .transition(.scale.combined(with: .opacity))
             }
         }
@@ -265,24 +265,25 @@ private struct RecentSessionsList: View {
                 .padding(.horizontal, 16)
 
             VStack(spacing: 0) {
-                ForEach(sessions, id: \.id) { session in
+                ForEach(Array(sessions.enumerated()), id: \.element.id) { index, session in
                     HStack(spacing: 12) {
                         RoundedRectangle(cornerRadius: 2, style: .continuous)
                             .fill(colorForCategory(session.categoryName))
                             .frame(width: 3, height: 28)
 
                         Text(session.categoryName)
-                            .font(.subheadline)
+                            .font(.system(size: 14, weight: .medium))
 
                         Spacer()
 
                         Text(session.durationFormatted)
-                            .font(.system(.subheadline, design: .rounded).weight(.medium))
-                            .foregroundStyle(.secondary)
+                            .font(.system(size: 12, weight: .medium))
+                            .monospacedDigit()
+                            .foregroundStyle(Color(.secondaryLabel))
 
                         Text(session.startDate.formatted(date: .abbreviated, time: .shortened))
-                            .font(.caption)
-                            .foregroundStyle(.tertiary)
+                            .font(.system(size: 12))
+                            .foregroundStyle(Color(.tertiaryLabel))
                     }
                     .padding(.horizontal, 16)
                     .padding(.vertical, 10)
@@ -292,8 +293,10 @@ private struct RecentSessionsList: View {
                     }
                 }
             }
-            .background(Color(.secondarySystemGroupedBackground))
-            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+            .padding(.vertical, 2)
+            .background(.regularMaterial)
+            .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+            .shadow(color: .black.opacity(0.05), radius: 10, y: 2)
             .padding(.horizontal, 16)
         }
     }

@@ -37,8 +37,8 @@ struct ContributionCalendarView: View {
                     Spacer().frame(width: labelWidth + spacing)
                     ForEach(months, id: \.offset) { month in
                         Text(month.label)
-                            .font(.system(size: 10, weight: .medium, design: .rounded))
-                            .foregroundStyle(.secondary)
+                            .font(.system(size: 10, weight: .medium))
+                            .foregroundStyle(Color(.secondaryLabel))
                             .frame(width: CGFloat(month.span) * (cellSize + spacing), alignment: .leading)
                     }
                     Spacer(minLength: 0)
@@ -49,8 +49,8 @@ struct ContributionCalendarView: View {
                     VStack(spacing: spacing) {
                         ForEach(0..<7, id: \.self) { day in
                             Text(dayLabels[day])
-                                .font(.system(size: 9, weight: .medium, design: .rounded))
-                                .foregroundStyle(.tertiary)
+                                .font(.system(size: 9, weight: .medium))
+                                .foregroundStyle(Color(.tertiaryLabel))
                                 .frame(width: labelWidth, height: cellSize)
                         }
                     }
@@ -72,8 +72,8 @@ struct ContributionCalendarView: View {
                 HStack(spacing: 5) {
                     Spacer()
                     Text("Less")
-                        .font(.system(size: 10, weight: .medium, design: .rounded))
-                        .foregroundStyle(.tertiary)
+                        .font(.system(size: 10, weight: .medium))
+                        .foregroundStyle(Color(.tertiaryLabel))
                     ForEach(0..<5, id: \.self) { i in
                         let intensity = Double(i) / 4.0
                         RoundedRectangle(cornerRadius: 3, style: .continuous)
@@ -81,8 +81,8 @@ struct ContributionCalendarView: View {
                             .frame(width: cellSize * 0.8, height: cellSize * 0.8)
                     }
                     Text("More")
-                        .font(.system(size: 10, weight: .medium, design: .rounded))
-                        .foregroundStyle(.tertiary)
+                        .font(.system(size: 10, weight: .medium))
+                        .foregroundStyle(Color(.tertiaryLabel))
                     Spacer()
                 }
             }

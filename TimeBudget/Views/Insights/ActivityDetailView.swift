@@ -14,7 +14,7 @@ struct ActivityDetailView: View {
 
     var body: some View {
         ZStack {
-            Color(.systemGroupedBackground).ignoresSafeArea()
+            Color(.systemBackground).ignoresSafeArea()
 
             ScrollView {
                 VStack(spacing: 16) {
@@ -24,9 +24,9 @@ struct ActivityDetailView: View {
                     } else {
                         // Summary stats
                         HStack(spacing: 0) {
-                            StatItem(value: "\(totalWorkouts)", label: "workouts", color: .green)
-                            StatItem(value: "\(avgDailyMinutes)m", label: "avg/day", color: .green)
-                            StatItem(value: "\(currentStreak)", label: "day streak", color: .green)
+                            StatItem(value: "\(totalWorkouts)", label: "workouts", color: Color(.systemGreen))
+                            StatItem(value: "\(avgDailyMinutes)m", label: "avg/day", color: Color(.systemGreen))
+                            StatItem(value: "\(currentStreak)", label: "day streak", color: Color(.systemGreen))
                         }
                         .card()
                         .padding(.horizontal, 16)
@@ -35,8 +35,8 @@ struct ActivityDetailView: View {
                         if !weeklyData.isEmpty {
                             VStack(alignment: .leading, spacing: 10) {
                                 Text("WEEKLY EXERCISE")
-                                    .font(.system(size: 11, weight: .bold, design: .rounded))
-                                    .foregroundStyle(.secondary)
+                                    .font(.system(size: 11, weight: .bold))
+                                    .foregroundStyle(Color(.secondaryLabel))
                                     .tracking(0.5)
 
                                 Chart(weeklyData, id: \.week) { item in
@@ -44,7 +44,7 @@ struct ActivityDetailView: View {
                                         x: .value("Week", item.week),
                                         y: .value("Hours", Double(item.minutes) / 60.0)
                                     )
-                                    .foregroundStyle(Color.green.gradient)
+                                    .foregroundStyle(Color(.systemGreen).gradient)
                                     .cornerRadius(4)
                                 }
                                 .chartYAxisLabel("Hours")
@@ -58,21 +58,21 @@ struct ActivityDetailView: View {
                         if !workoutBreakdown.isEmpty {
                             VStack(alignment: .leading, spacing: 10) {
                                 Text("WORKOUT TYPES")
-                                    .font(.system(size: 11, weight: .bold, design: .rounded))
-                                    .foregroundStyle(.secondary)
+                                    .font(.system(size: 11, weight: .bold))
+                                    .foregroundStyle(Color(.secondaryLabel))
                                     .tracking(0.5)
 
                                 ForEach(workoutBreakdown, id: \.type) { item in
                                     HStack {
                                         Circle()
-                                            .fill(.green)
+                                            .fill(Color(.systemGreen))
                                             .frame(width: 8, height: 8)
                                         Text(item.type)
-                                            .font(.system(.subheadline, design: .rounded))
+                                            .font(.system(.subheadline))
                                         Spacer()
                                         Text(formatMinutes(item.minutes))
-                                            .font(.system(.subheadline, design: .rounded).weight(.medium))
-                                            .foregroundStyle(.secondary)
+                                            .font(.system(.subheadline).weight(.medium))
+                                            .foregroundStyle(Color(.secondaryLabel))
                                     }
                                 }
                             }
@@ -84,8 +84,8 @@ struct ActivityDetailView: View {
                         if !dailySteps.isEmpty {
                             VStack(alignment: .leading, spacing: 10) {
                                 Text("DAILY STEPS (30 DAYS)")
-                                    .font(.system(size: 11, weight: .bold, design: .rounded))
-                                    .foregroundStyle(.secondary)
+                                    .font(.system(size: 11, weight: .bold))
+                                    .foregroundStyle(Color(.secondaryLabel))
                                     .tracking(0.5)
 
                                 Chart(dailySteps, id: \.date) { item in
@@ -93,7 +93,7 @@ struct ActivityDetailView: View {
                                         x: .value("Date", item.date, unit: .day),
                                         y: .value("Steps", item.steps)
                                     )
-                                    .foregroundStyle(Color.blue.gradient)
+                                    .foregroundStyle(Color(.systemTeal).gradient)
                                     .cornerRadius(2)
                                 }
                                 .chartXAxis {
@@ -198,11 +198,11 @@ private struct StatItem: View {
     var body: some View {
         VStack(spacing: 4) {
             Text(value)
-                .font(.system(.title3, design: .rounded).weight(.semibold))
+                .font(.system(.title3).weight(.semibold).monospacedDigit())
                 .foregroundStyle(color)
             Text(label)
-                .font(.system(size: 11, design: .rounded))
-                .foregroundStyle(.secondary)
+                .font(.system(size: 11))
+                .foregroundStyle(Color(.secondaryLabel))
         }
         .frame(maxWidth: .infinity)
     }

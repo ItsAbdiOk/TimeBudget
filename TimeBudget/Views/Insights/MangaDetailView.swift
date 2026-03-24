@@ -16,7 +16,7 @@ struct MangaDetailView: View {
 
     var body: some View {
         ZStack {
-            Color(.systemGroupedBackground).ignoresSafeArea()
+            Color(.systemBackground).ignoresSafeArea()
 
             ScrollView {
                 VStack(spacing: 16) {
@@ -38,8 +38,8 @@ struct MangaDetailView: View {
                         if !weeklyData.isEmpty {
                             VStack(alignment: .leading, spacing: 10) {
                                 Text("WEEKLY READING")
-                                    .font(.system(size: 11, weight: .bold, design: .rounded))
-                                    .foregroundStyle(.secondary)
+                                    .font(.system(size: 11, weight: .bold))
+                                    .foregroundStyle(Color(.secondaryLabel))
                                     .tracking(0.5)
 
                                 Chart(weeklyData, id: \.week) { item in
@@ -61,8 +61,8 @@ struct MangaDetailView: View {
                         if !mangaStats.isEmpty {
                             VStack(alignment: .leading, spacing: 10) {
                                 Text("SERIES BREAKDOWN")
-                                    .font(.system(size: 11, weight: .bold, design: .rounded))
-                                    .foregroundStyle(.secondary)
+                                    .font(.system(size: 11, weight: .bold))
+                                    .foregroundStyle(Color(.secondaryLabel))
                                     .tracking(0.5)
 
                                 ForEach(mangaStats.prefix(10), id: \.title) { manga in
@@ -72,18 +72,18 @@ struct MangaDetailView: View {
                                             .frame(width: 8, height: 8)
 
                                         Text(manga.title)
-                                            .font(.system(.subheadline, design: .rounded))
+                                            .font(.system(.subheadline))
                                             .lineLimit(1)
 
                                         Spacer()
 
                                         Text("\(manga.chapters) ch")
-                                            .font(.system(.caption, design: .rounded).weight(.medium))
-                                            .foregroundStyle(.secondary)
+                                            .font(.system(.caption).weight(.medium))
+                                            .foregroundStyle(Color(.secondaryLabel))
 
                                         Text(formatMinutes(manga.minutes))
-                                            .font(.system(.caption, design: .rounded).weight(.medium))
-                                            .foregroundStyle(.tertiary)
+                                            .font(.system(.caption).weight(.medium))
+                                            .foregroundStyle(Color(.tertiaryLabel))
                                             .frame(width: 50, alignment: .trailing)
                                     }
                                 }
@@ -193,10 +193,10 @@ private struct StatBadge: View {
     var body: some View {
         VStack(spacing: 4) {
             Text(value)
-                .font(.system(.title3, design: .rounded).weight(.semibold))
+                .font(.system(.title3).weight(.semibold).monospacedDigit())
             Text(label)
-                .font(.system(size: 11, design: .rounded))
-                .foregroundStyle(.secondary)
+                .font(.system(size: 11))
+                .foregroundStyle(Color(.secondaryLabel))
         }
         .frame(maxWidth: .infinity)
     }
