@@ -8,20 +8,29 @@ struct AWEvent: Identifiable {
     let duration: TimeInterval      // seconds
     let appName: String
     let windowTitle: String
+    var url: String?                 // from aw-watcher-web-chrome
 
     var durationMinutes: Int { Int(duration / 60) }
 
-    /// For browser events, extract the site name from the window title.
-    /// Chrome pattern: "Page Title - SiteName - Google Chrome – Profile"
-    /// Safari pattern: "Page Title — SiteName"
+    /// Extract the domain from a full URL (e.g., "https://github.com/foo" → "github.com")
+    var urlDomain: String? {
+        guard let url, let components = URLComponents(string: url) else { return nil }
+        return components.host?.replacingOccurrences(of: "www.", with: "")
+    }
+
+    /// For browser events, extract the site name — prefers URL domain over title heuristics.
     var siteName: String? {
+        // If we have a real URL from the Chrome extension, use its domain
+        if let domain = urlDomain {
+            return domain
+        }
+
         let browsers = ["Google Chrome", "Safari", "Firefox", "Arc", "Brave Browser", "Microsoft Edge", "Orion"]
         guard browsers.contains(appName) else { return nil }
 
         // Try "- SiteName - Google Chrome" pattern
         let parts = windowTitle.components(separatedBy: " - ")
         if parts.count >= 3 {
-            // Second-to-last part before "Google Chrome" is usually the site
             let candidate = parts[parts.count - 2].trimmingCharacters(in: .whitespaces)
             let browserSuffixes = ["Google Chrome", "Safari", "Firefox", "Arc", "Brave", "Edge", "Orion"]
             if !browserSuffixes.contains(where: { candidate.contains($0) }) && !candidate.isEmpty {
@@ -29,9 +38,7 @@ struct AWEvent: Identifiable {
             }
         }
 
-        // Try extracting from "Title - Site" (2 parts)
         if parts.count >= 2 {
-            // Last meaningful part (strip browser name and profile)
             for part in parts.reversed() {
                 let cleaned = part
                     .replacingOccurrences(of: "Google Chrome", with: "")
@@ -43,7 +50,6 @@ struct AWEvent: Identifiable {
             }
         }
 
-        // Fallback: use the full title trimmed
         let cleaned = windowTitle
             .replacingOccurrences(of: " - Google Chrome", with: "")
             .replacingOccurrences(of: " – Google Chrome", with: "")
@@ -61,6 +67,13 @@ struct AWActivityBlock: Identifiable {
     let topApp: String              // most-used app in this block
     let topSite: String?            // most-used website (if browser-heavy)
     let events: [AWEvent]
+    var aiCategory: String?         // set by Apple Intelligence when it refines the category
+
+    /// The effective category: AI-refined if available, otherwise the original
+    var effectiveCategory: String { aiCategory ?? category }
+
+    /// Whether this block was re-categorized by Apple Intelligence
+    var isAIRefined: Bool { aiCategory != nil && aiCategory != category }
 
     var durationMinutes: Int {
         Int(end.timeIntervalSince(start) / 60)
@@ -348,6 +361,139 @@ final class ActivityWatchService {
         return discoveredHostname
     }
 
+    // MARK: - Chrome Web Bucket
+
+    /// Fetch web events from the Chrome extension bucket, enrich matching window events with URLs,
+    /// and merge unmatched web events into the stream as standalone entries.
+    private func enrichWithWebEvents(_ windowEvents: [AWEvent], from start: Date, to end: Date) async -> [AWEvent] {
+        guard let webEvents = try? await fetchWebEventsInRange(from: start, to: end), !webEvents.isEmpty else {
+            return windowEvents
+        }
+
+        print("[ActivityWatch] Enriching \(windowEvents.count) window events with \(webEvents.count) web events")
+        for web in webEvents.prefix(5) {
+            print("[ActivityWatch]   Web: \(web.url ?? "nil") @ \(web.timestamp) dur=\(Int(web.duration))s")
+        }
+
+        var enriched = windowEvents
+        var enrichedCount = 0
+        var matchedWebIndices = Set<Int>()
+        let browsers = Set(["Google Chrome", "Brave Browser", "Microsoft Edge", "Arc"])
+
+        // Pass 1: Enrich browser window events with matching web URLs
+        for i in enriched.indices {
+            guard enriched[i].url == nil else { continue }
+            guard browsers.contains(enriched[i].appName) else { continue }
+
+            let evtStart = enriched[i].timestamp
+            let evtEnd = evtStart.addingTimeInterval(enriched[i].duration)
+
+            for (wi, web) in webEvents.enumerated() {
+                let webStart = web.timestamp
+                let webEnd = webStart.addingTimeInterval(web.duration)
+                let overlapStart = max(evtStart, webStart)
+                let overlapEnd = min(evtEnd, webEnd)
+                if overlapEnd.timeIntervalSince(overlapStart) >= 1 {
+                    enriched[i].url = web.url
+                    enrichedCount += 1
+                    matchedWebIndices.insert(wi)
+                    break
+                }
+            }
+        }
+
+        // Pass 2: Add unmatched web events as standalone entries (>= 30s duration)
+        // These represent Chrome activity that the window watcher missed
+        // (e.g., screen locked, different user session, or window title didn't match)
+        var addedCount = 0
+        for (wi, web) in webEvents.enumerated() {
+            guard !matchedWebIndices.contains(wi) else { continue }
+            guard web.duration >= 30 else { continue }
+            enriched.append(web)
+            addedCount += 1
+        }
+
+        let browserCount = windowEvents.filter { browsers.contains($0.appName) }.count
+        print("[ActivityWatch] Enriched \(enrichedCount)/\(browserCount) browser events with URLs, added \(addedCount) standalone web events")
+        return enriched
+    }
+
+    private func fetchWebEventsInRange(from start: Date, to end: Date) async throws -> [AWEvent] {
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime]
+
+        // Try both bucket name formats
+        let bucketNames = ["aw-watcher-web-chrome", "aw-watcher-web-chrome_\(hostname)"]
+
+        for bucketName in bucketNames {
+            let urlStr = "http://\(desktopIP):\(port)/api/0/buckets/\(bucketName)/events?start=\(formatter.string(from: start))&end=\(formatter.string(from: end))&limit=-1"
+            guard let url = URL(string: urlStr) else {
+                print("[ActivityWatch] Invalid URL for bucket \(bucketName)")
+                continue
+            }
+
+            var request = URLRequest(url: url)
+            request.setValue("application/json", forHTTPHeaderField: "Accept")
+            request.timeoutInterval = 5
+
+            do {
+                let (data, response) = try await session.data(for: request)
+                guard let httpResponse = response as? HTTPURLResponse else {
+                    print("[ActivityWatch] Non-HTTP response from \(bucketName)")
+                    continue
+                }
+                guard (200...299).contains(httpResponse.statusCode) else {
+                    print("[ActivityWatch] HTTP \(httpResponse.statusCode) from \(bucketName)")
+                    continue
+                }
+                let events = try parseWebEvents(data)
+                if !events.isEmpty {
+                    print("[ActivityWatch] Fetched \(events.count) Chrome web events from \(bucketName)")
+                    return events
+                } else {
+                    print("[ActivityWatch] No web events in \(bucketName) for this time range")
+                }
+            } catch {
+                print("[ActivityWatch] Failed to fetch \(bucketName): \(error.localizedDescription)")
+                continue
+            }
+        }
+
+        print("[ActivityWatch] No Chrome web events found from any bucket")
+        return []
+    }
+
+    private func parseWebEvents(_ data: Data) throws -> [AWEvent] {
+        guard let events = try JSONSerialization.jsonObject(with: data) as? [[String: Any]] else { return [] }
+
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        let fallbackFormatter = ISO8601DateFormatter()
+        fallbackFormatter.formatOptions = [.withInternetDateTime]
+
+        return events.compactMap { event -> AWEvent? in
+            guard let id = event["id"] as? Int,
+                  let timestampStr = event["timestamp"] as? String,
+                  let duration = event["duration"] as? Double,
+                  let eventData = event["data"] as? [String: Any] else { return nil }
+
+            guard let timestamp = formatter.date(from: timestampStr) ?? fallbackFormatter.date(from: timestampStr) else { return nil }
+
+            let title = (eventData["title"] as? String) ?? ""
+            let url = eventData["url"] as? String
+
+            return AWEvent(
+                id: "web-\(id)",
+                timestamp: timestamp,
+                duration: duration,
+                appName: "Google Chrome",
+                windowTitle: title,
+                url: url
+            )
+        }
+        .sorted { $0.timestamp < $1.timestamp }
+    }
+
     // MARK: - Private: Fetching
 
     private var bucketId: String {
@@ -397,7 +543,12 @@ final class ActivityWatchService {
             throw ActivityWatchError.invalidResponse
         }
 
-        return try parseEvents(data)
+        var windowEvents = try parseEvents(data)
+
+        // Enrich Chrome window events with URLs and merge standalone web events
+        windowEvents = await enrichWithWebEvents(windowEvents, from: start, to: end)
+
+        return windowEvents.sorted { $0.timestamp < $1.timestamp }
     }
 
     // MARK: - Private: Parsing
@@ -433,7 +584,8 @@ final class ActivityWatchService {
                 timestamp: timestamp,
                 duration: duration,
                 appName: app,
-                windowTitle: title
+                windowTitle: title,
+                url: nil
             )
         }
         .sorted { $0.timestamp < $1.timestamp }
