@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Today Tab — TimeBudget Mockup</title>
+<style>
+  :root {
+    --bg: #000;
+    --card: rgba(255,255,255,0.06);
+    --card-border: rgba(255,255,255,0.08);
+    --text: #fff;
+    --text2: rgba(255,255,255,0.55);
+    --text3: rgba(255,255,255,0.35);
+    --green: #34C759;
+    --teal: #5AC8FA;
+    --orange: #FF9F0A;
+    --red: #FF453A;
+    --purple: #BF5AF2;
+    --blue: #0A84FF;
+    --pink: #FF375F;
+    --gray: #8E8E93;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    max-width: 393px;
+    margin: 0 auto;
+    padding: 0 0 100px 0;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Status bar */
+  .status-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 20px 4px;
+    font-size: 15px;
+    font-weight: 600;
+  }
+  .status-bar .right { display: flex; gap: 6px; align-items: center; font-size: 12px; }
+
+  /* Cards */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 18px;
+    padding: 16px;
+    margin: 0 16px 12px;
+  }
+  .hero-card {
+    background: linear-gradient(135deg, rgba(10,132,255,0.12), rgba(52,199,89,0.08));
+    border: 1px solid rgba(10,132,255,0.18);
+  }
+
+  /* Section headers */
+  .section-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: var(--text2);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  /* Greeting */
+  .greeting {
+    padding: 8px 20px 4px;
+  }
+  .greeting .date {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 1.2px;
+    color: var(--text3);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .greeting .hello {
+    font-size: 34px;
+    font-weight: 700;
+    letter-spacing: -0.4px;
+    line-height: 1.15;
+  }
+  .greeting .hello .name { font-weight: 900; }
+  .greeting .subtitle {
+    font-size: 15px;
+    color: var(--text2);
+    margin-top: 6px;
+  }
+
+  /* Score hero */
+  .score-hero {
+    display: flex;
+    align-items: flex-start;
+    gap: 18px;
+  }
+  .score-ring-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+  .score-ring {
+    width: 68px; height: 68px;
+    position: relative;
+  }
+  .score-ring svg { transform: rotate(-90deg); }
+  .score-ring .value {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+  .score-tag {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    color: var(--green);
+  }
+  .score-meta .headline { font-size: 20px; font-weight: 600; }
+  .score-meta .desc { font-size: 13px; color: var(--text2); margin-top: 4px; line-height: 1.4; }
+  .score-meta .pills { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+  .cat-pill {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 4px 8px;
+    border-radius: 8px;
+  }
+  .cat-pill .dot { width: 6px; height: 6px; border-radius: 50%; }
+
+  /* Mini stats */
+  .mini-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+    margin: 0 16px 12px;
+  }
+  .mini-stat {
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 14px;
+    padding: 14px;
+  }
+  .mini-stat .label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    color: var(--text3);
+    text-transform: uppercase;
+  }
+  .mini-stat .val {
+    font-size: 24px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    margin-top: 6px;
+    display: flex;
+    align-items: baseline;
+    gap: 2px;
+  }
+  .mini-stat .val .unit { font-size: 13px; font-weight: 400; color: var(--text2); }
+  .mini-stat .delta {
+    font-size: 11px;
+    font-weight: 500;
+    margin-top: 4px;
+  }
+
+  /* Category summary bar */
+  .category-bar {
+    display: flex;
+    gap: 2px;
+    height: 10px;
+    border-radius: 5px;
+    overflow: hidden;
+    margin-bottom: 10px;
+  }
+  .category-bar .seg { border-radius: 3px; }
+  .category-summary {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px 16px;
+  }
+  .cat-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+  .cat-row .cdot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .cat-row .mins { margin-left: auto; font-variant-numeric: tabular-nums; color: var(--text2); }
+
+  /* Timeline */
+  .timeline-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0 16px 10px;
+  }
+  .timeline-header h2 { font-size: 20px; font-weight: 600; }
+  .timeline-header .see-all { font-size: 14px; font-weight: 500; color: var(--blue); }
+
+  .timeline-bar-wrap { margin: 0 16px 10px; }
+  .timeline-bar {
+    display: flex;
+    gap: 1px;
+    height: 8px;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .timeline-bar .seg { border-radius: 3px; }
+  .time-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 9px;
+    color: var(--text3);
+    margin-top: 4px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Timeline rows */
+  .timeline-card {
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 18px;
+    margin: 0 16px 12px;
+    overflow: hidden;
+  }
+  .tl-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+  }
+  .tl-row + .tl-row { border-top: 1px solid var(--card-border); }
+  .tl-row .stripe { width: 3px; height: 40px; border-radius: 2px; flex-shrink: 0; }
+  .tl-row .info { flex: 1; min-width: 0; }
+  .tl-row .info .top {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .tl-row .info .top .name { font-size: 14px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .tl-row .info .bottom {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 3px;
+  }
+  .tl-row .info .bottom .cat-label { font-size: 10px; font-weight: 600; }
+  .tl-row .info .bottom .time { font-size: 12px; color: var(--text2); }
+  .tl-row .dur {
+    font-size: 14px;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    flex-shrink: 0;
+  }
+
+  /* AI badge */
+  .ai-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 8px;
+    font-weight: 700;
+    color: var(--purple);
+  }
+
+  /* Source chip */
+  .source-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--text3);
+    background: rgba(255,255,255,0.06);
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+
+  /* Insight card */
+  .insight-card {
+    background: linear-gradient(135deg, rgba(10,132,255,0.09), rgba(52,199,89,0.06));
+    border: 1px solid rgba(10,132,255,0.16);
+    border-radius: 18px;
+    padding: 16px;
+    margin: 0 16px 12px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .insight-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: rgba(10,132,255,0.12);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+  .insight-card .insight-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    color: var(--blue);
+    text-transform: uppercase;
+  }
+  .insight-card .insight-text {
+    font-size: 13px;
+    color: var(--text);
+    margin-top: 4px;
+    line-height: 1.4;
+  }
+
+  /* Sources row */
+  .sources-row {
+    margin: 4px 16px 0;
+  }
+  .sources-row .label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text3);
+    margin-bottom: 8px;
+  }
+  .sources-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .source-badge {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text2);
+    padding: 6px 10px;
+    background: rgba(255,255,255,0.04);
+    border-radius: 10px;
+  }
+  .source-badge .sdot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); }
+
+  /* Tab bar */
+  .tab-bar {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 393px;
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0 28px;
+    background: rgba(0,0,0,0.92);
+    backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(255,255,255,0.08);
+  }
+  .tab-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--text3);
+  }
+  .tab-item.active { color: var(--blue); }
+  .tab-item .tab-icon { font-size: 20px; }
+</style>
+</head>
+<body>
+
+<!-- Status Bar -->
+<div class="status-bar">
+  <span>06:05</span>
+  <div class="right">
+    <span style="color: var(--green);">100%</span>
+  </div>
+</div>
+
+<!-- Greeting -->
+<div class="greeting">
+  <div class="date">TUESDAY, 25 MARCH</div>
+  <div class="hello">Good morning,<br><span class="name">Abdi.</span></div>
+  <div class="subtitle">You're in your peak focus window right now.</div>
+</div>
+
+<div style="height: 16px;"></div>
+
+<!-- Score Hero Card -->
+<div class="card hero-card">
+  <div class="score-hero">
+    <div class="score-ring-wrap">
+      <div class="score-ring">
+        <svg width="68" height="68" viewBox="0 0 68 68">
+          <circle cx="34" cy="34" r="28" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="8"/>
+          <circle cx="34" cy="34" r="28" fill="none" stroke="var(--green)" stroke-width="8"
+                  stroke-linecap="round" stroke-dasharray="176" stroke-dashoffset="30"/>
+        </svg>
+        <div class="value">83</div>
+      </div>
+      <div class="score-tag">ON TRACK</div>
+    </div>
+    <div class="score-meta">
+      <div class="headline">A <strong>solid day.</strong></div>
+      <div class="desc">You've tracked 4h 12m across 5 categories so far today.</div>
+      <div class="pills">
+        <div class="cat-pill" style="background: rgba(52,199,89,0.12);"><div class="dot" style="background: var(--green);"></div> Deep Work</div>
+        <div class="cat-pill" style="background: rgba(191,90,242,0.12);"><div class="dot" style="background: var(--purple);"></div> Reading</div>
+        <div class="cat-pill" style="background: rgba(255,69,58,0.12);"><div class="dot" style="background: var(--red);"></div> Podcast</div>
+        <div class="cat-pill" style="background: rgba(90,200,250,0.12);"><div class="dot" style="background: var(--teal);"></div> Exercise</div>
+        <div class="cat-pill" style="background: rgba(142,142,147,0.12);"><div class="dot" style="background: var(--gray);"></div> Sleep</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Mini Stats -->
+<div class="mini-stats">
+  <div class="mini-stat">
+    <div class="label">STEPS</div>
+    <div class="val">2,841</div>
+    <div class="delta" style="color: var(--green);">&uarr; 8%</div>
+  </div>
+  <div class="mini-stat">
+    <div class="label">SLEEP</div>
+    <div class="val">6<span class="unit">h 22m</span></div>
+    <div class="delta" style="color: var(--red);">&darr; 10m</div>
+  </div>
+  <div class="mini-stat">
+    <div class="label">EXERCISE</div>
+    <div class="val">45<span class="unit">min</span></div>
+    <div class="delta" style="color: var(--green);">&uarr; 12%</div>
+  </div>
+</div>
+
+<!-- Category Breakdown -->
+<div class="card">
+  <div class="section-label">TODAY'S BREAKDOWN</div>
+  <div class="category-bar">
+    <div class="seg" style="flex: 38; background: var(--green);"></div>
+    <div class="seg" style="flex: 25; background: var(--gray);"></div>
+    <div class="seg" style="flex: 15; background: var(--red);"></div>
+    <div class="seg" style="flex: 12; background: var(--purple);"></div>
+    <div class="seg" style="flex: 10; background: var(--teal);"></div>
+  </div>
+  <div class="category-summary">
+    <div class="cat-row"><div class="cdot" style="background: var(--green);"></div> Deep Work <span class="mins">1h 35m</span></div>
+    <div class="cat-row"><div class="cdot" style="background: var(--gray);"></div> Sleep <span class="mins">6h 22m</span></div>
+    <div class="cat-row"><div class="cdot" style="background: var(--red);"></div> Podcast <span class="mins">38m</span></div>
+    <div class="cat-row"><div class="cdot" style="background: var(--purple);"></div> Reading <span class="mins">28m</span></div>
+    <div class="cat-row"><div class="cdot" style="background: var(--teal);"></div> Exercise <span class="mins">45m</span></div>
+    <div class="cat-row"><div class="cdot" style="background: var(--orange);"></div> Meetings <span class="mins">24m</span></div>
+  </div>
+</div>
+
+<!-- Timeline -->
+<div class="timeline-header">
+  <h2>Timeline</h2>
+  <span class="see-all">See all</span>
+</div>
+
+<div class="timeline-bar-wrap">
+  <div class="timeline-bar">
+    <div class="seg" style="flex: 6; background: var(--gray);"></div>
+    <div class="seg" style="flex: 0.5; background: rgba(255,255,255,0.06);"></div>
+    <div class="seg" style="flex: 1.5; background: var(--teal);"></div>
+    <div class="seg" style="flex: 0.3; background: rgba(255,255,255,0.06);"></div>
+    <div class="seg" style="flex: 2; background: var(--green);"></div>
+    <div class="seg" style="flex: 0.5; background: var(--purple);"></div>
+    <div class="seg" style="flex: 1; background: var(--green);"></div>
+    <div class="seg" style="flex: 0.3; background: var(--red);"></div>
+    <div class="seg" style="flex: 1.5; background: var(--green);"></div>
+  </div>
+  <div class="time-labels">
+    <span>12 AM</span>
+    <span>6 AM</span>
+    <span>9 AM</span>
+    <span>12 PM</span>
+    <span>Now</span>
+  </div>
+</div>
+
+<div class="timeline-card">
+  <!-- Row 1: Deep Work -->
+  <div class="tl-row">
+    <div class="stripe" style="background: var(--green);"></div>
+    <div class="info">
+      <div class="top">
+        <span class="name">gemini.google.com</span>
+        <span class="ai-badge">&#x1F9E0;</span>
+      </div>
+      <div class="bottom">
+        <span class="cat-label" style="color: var(--purple);">Deep Work</span>
+        <span class="time">4:23–5:22 AM</span>
+      </div>
+    </div>
+    <span class="dur">59m</span>
+  </div>
+
+  <!-- Row 2: Reading -->
+  <div class="tl-row">
+    <div class="stripe" style="background: var(--purple);"></div>
+    <div class="info">
+      <div class="top">
+        <span class="name">Solo Leveling</span>
+      </div>
+      <div class="bottom">
+        <span class="cat-label" style="color: var(--purple);">Reading</span>
+        <span class="source-chip">AniList</span>
+        <span class="time">5:22–5:41 AM</span>
+      </div>
+    </div>
+    <span class="dur">19m</span>
+  </div>
+
+  <!-- Row 3: Deep Work -->
+  <div class="tl-row">
+    <div class="stripe" style="background: var(--green);"></div>
+    <div class="info">
+      <div class="top">
+        <span class="name">youtube.com</span>
+      </div>
+      <div class="bottom">
+        <span class="cat-label" style="color: var(--green);">Deep Work</span>
+        <span class="source-chip">ActivityWatch</span>
+        <span class="time">5:41–5:55 AM</span>
+      </div>
+    </div>
+    <span class="dur">14m</span>
+  </div>
+
+  <!-- Row 4: Exercise -->
+  <div class="tl-row">
+    <div class="stripe" style="background: var(--teal);"></div>
+    <div class="info">
+      <div class="top">
+        <span class="name">Walking</span>
+      </div>
+      <div class="bottom">
+        <span class="cat-label" style="color: var(--teal);">Exercise</span>
+        <span class="source-chip">HealthKit</span>
+        <span class="time">6:10–6:55 AM</span>
+      </div>
+    </div>
+    <span class="dur">45m</span>
+  </div>
+
+  <!-- Row 5: Meeting -->
+  <div class="tl-row">
+    <div class="stripe" style="background: var(--orange);"></div>
+    <div class="info">
+      <div class="top">
+        <span class="name">Sprint Planning</span>
+      </div>
+      <div class="bottom">
+        <span class="cat-label" style="color: var(--orange);">Meeting</span>
+        <span class="source-chip">Calendar</span>
+        <span class="time">9:00–9:30 AM</span>
+      </div>
+    </div>
+    <span class="dur">30m</span>
+  </div>
+
+  <!-- Row 6: Deep Work -->
+  <div class="tl-row">
+    <div class="stripe" style="background: var(--green);"></div>
+    <div class="info">
+      <div class="top">
+        <span class="name">github.com</span>
+        <span class="ai-badge">&#x1F9E0;</span>
+      </div>
+      <div class="bottom">
+        <span class="cat-label" style="color: var(--purple);">Deep Work</span>
+        <span class="source-chip">ActivityWatch</span>
+        <span class="time">9:35–11:05 AM</span>
+      </div>
+    </div>
+    <span class="dur">1h 30m</span>
+  </div>
+</div>
+
+<!-- Insight Card -->
+<div class="insight-card">
+  <div class="insight-icon">&#x1F4A1;</div>
+  <div>
+    <div class="insight-label">TODAY'S INSIGHT</div>
+    <div class="insight-text">You started deep work before 5 AM — that's your earliest this week. 1h 35m of focus already banked.</div>
+  </div>
+</div>
+
+<!-- Sources -->
+<div class="sources-row">
+  <div class="label">Sources</div>
+  <div class="sources-wrap">
+    <div class="source-badge"><div class="sdot"></div> HealthKit</div>
+    <div class="source-badge"><div class="sdot"></div> Calendar</div>
+    <div class="source-badge"><div class="sdot"></div> AniList</div>
+    <div class="source-badge"><div class="sdot"></div> ActivityWatch</div>
+    <div class="source-badge"><div class="sdot"></div> PocketCasts</div>
+  </div>
+</div>
+
+<!-- Tab Bar -->
+<div class="tab-bar">
+  <div class="tab-item active">
+    <span class="tab-icon">&#x25CB;</span>
+    Today
+  </div>
+  <div class="tab-item">
+    <span class="tab-icon">&#x23F1;</span>
+    Focus
+  </div>
+  <div class="tab-item">
+    <span class="tab-icon">&#x25A6;</span>
+    Budget
+  </div>
+  <div class="tab-item">
+    <span class="tab-icon">&#x25B2;</span>
+    Insights
+  </div>
+  <div class="tab-item">
+    <span class="tab-icon">&#x2699;</span>
+    Settings
+  </div>
+</div>
+
+</body>
+</html>

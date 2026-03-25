@@ -1,113 +1,137 @@
 # TimeBudget
 
-A passive time tracking app for iOS that helps you understand how you spend your day. Built with SwiftUI and SwiftData, TimeBudget automatically tracks your activities using Apple Watch sensors, HealthKit, Core Motion, Core Location, and EventKit — then lets you "budget" your time like you'd budget money.
+A passive time tracking app for iOS that automatically builds a complete picture of your day — from sleep and exercise to deep work and manga reading. No manual logging. Budget your time like you'd budget money.
 
-No backend. All data stays on your device.
+All data stays on-device. No backend. No accounts.
 
-## Features
+## What It Does
 
-### Passive Tracking
-- **Sleep** — Automatically detected from Apple Watch, with sleep stage merging and Fajr prayer detection
-- **Exercise** — Workouts synced from HealthKit (walking, running, cycling, etc.)
-- **Meetings** — Pulled from your calendar via EventKit
-- **Movement** — Core Motion activity detection (stationary, walking, driving)
-- **Location** — Significant location monitoring with saved places (home, work, gym)
+TimeBudget pulls data from 7+ sources in real time and stitches them into a single timeline:
 
-### Integrations
-- **AniList** — Track manga reading activity with chapter counts and estimated reading time
-- **LeetCode** — Track coding practice with problem stats, topic tags, and submission history
-- **Pocket Casts** — Track podcast listening history (bearer token stored in Keychain)
-- **ActivityWatch** — Track desktop computer usage over local network (IDE vs browser vs misc)
+| Source | What It Tracks |
+|--------|---------------|
+| **Apple Watch / HealthKit** | Sleep (with stages), steps, workouts, active calories |
+| **Core Motion** | Walking, running, cycling, driving, stationary detection |
+| **Core Location** | Saved places (home, work, gym) with geofencing |
+| **EventKit** | Calendar meetings with duration |
+| **ActivityWatch** | Mac + iPhone screen time — apps, websites, productivity tiers |
+| **AniList** | Manga reading (chapter counts, estimated reading time) |
+| **Pocket Casts** | Podcast listening history |
 
-### Dashboard
-- Today's health stats (steps, sleep, exercise, meetings)
-- 24-hour timeline ring showing your day color-coded by activity
-- Pie chart breakdown of time spent per category
-- Live activity detection with current location context
+### Multi-Device Screen Time
 
-### Insights
-- **30-day trends** — Rolling averages for sleep, steps, exercise, and reading
-- **Week vs week** — Side-by-side comparison of this week and last
-- **Contribution heatmaps** — GitHub-style calendars for activity, manga, and LeetCode
-- **Correlations** — Discover patterns like "more sleep → more steps" from 90 days of data
-- **Detail views** — Tap any section title for deeper analytics with charts and breakdowns
+The app bridges the iOS sandbox gap by reading iPhone Screen Time data through a Mac relay:
 
-### Focus Stopwatch
-Manual timer for activities that aren't automatically tracked:
+1. `aw-import-screentime` on your Mac reads iCloud Biome data (iOS Screen Time)
+2. Pushes it to your local ActivityWatch server
+3. The iOS app fetches both Mac and iPhone buckets concurrently
+4. Device filter pills let you view All Devices / Mac / iPhone separately
+
+Includes a setup script (`scripts/screentime-bridge-setup.sh`) that automates installation and creates a launchd plist for hourly imports.
+
+### On-Device AI Categorization
+
+On iOS 26+ devices with Apple Intelligence, the app uses the on-device foundation model to refine activity categories. Deep Work sessions get validated, ambiguous browser time gets properly classified, and AI-refined entries are marked with a brain badge in the timeline.
+
+## Tabs
+
+### Today
+- Personalized greeting with time-of-day context
+- Daily score (0-100) based on your ideal day targets
+- Mini stats: steps, sleep, exercise with trend deltas
+- Category breakdown bar showing time per activity type
+- Full timeline with app/site names, colored category labels, source chips, and AI badges
+- Contextual daily insight
+
+### Focus
+Manual stopwatch for activities that aren't auto-tracked:
 - Manga, LeetCode, Learning, Coding, Yoga
 - Sessions persist through app backgrounding
 
-### Time Budgets
-- Set daily time targets per category
-- Track actual vs. budgeted time
-- Daily score (0–100) based on how close you hit your ideal day
+### Budget
+- Set daily time targets per category (Deep Work: 4h, Exercise: 1h, etc.)
+- Track actual vs. budgeted time with progress bars
+- Daily score computed from how close you hit your ideal day
+
+### Insights
+- **Desk Time** — Productivity score, daily/weekly toggle, visual timeline bar, device-aware app and website breakdowns, session list with AI refinement badges, 84-day heatmap
+- **30-day trends** — Rolling averages for sleep, steps, exercise, reading
+- **Week vs week** — Side-by-side comparison with deltas
+- **Contribution heatmaps** — GitHub-style calendars for activity, manga, LeetCode, podcasts, and desk time
+- **Correlations** — Patterns like "more sleep = more steps" from 90 days of data
+- **Detail views** — Tap any section for deeper analytics with charts
 
 ### Settings
-- Save and label frequent places on a map
+- Save and label places on a map
 - Configure your ideal day with per-category targets
-- Connect AniList, LeetCode, Pocket Casts, and ActivityWatch accounts
+- Connect integrations (AniList, Pocket Casts, ActivityWatch)
+- Apple Intelligence categorization toggle
 - Manage permissions (Health, Location, Calendar, Motion)
-
-## Requirements
-
-- iPhone running iOS 17+
-- Apple Watch (for automatic sleep and workout tracking)
-- Xcode 15+ (to build and deploy)
-
-## Setup
-
-1. Clone the repo:
-   ```bash
-   git clone https://github.com/ItsAbdiOk/TimeBudget.git
-   ```
-
-2. Open `TimeBudget.xcodeproj` in Xcode
-
-3. Select your development team under **Signing & Capabilities**
-
-4. Build and run on your iPhone (Simulator won't have HealthKit data)
-
-5. Grant permissions when prompted (Health, Location, Calendar, Motion)
-
-6. Optionally, connect your accounts in **Settings**:
-   - **AniList** — Enter your username to track manga reading
-   - **LeetCode** — Enter your username to track coding practice
-   - **Pocket Casts** — Paste your bearer token from the web player
-   - **ActivityWatch** — Enter your desktop's local IP and hostname
-
-> **Note:** With a free Apple Developer account, the app expires every 7 days and needs to be re-deployed from Xcode.
 
 ## Architecture
 
 ```
 TimeBudget/
 ├── Models/           # SwiftData @Model classes (TimeEntry, HealthSnapshot, etc.)
-├── Services/         # One per data source (HealthKit, AniList, LeetCode, etc.)
+├── Services/         # One per data source (HealthKit, AniList, ActivityWatch, etc.)
 ├── ViewModels/       # @Observable classes for each tab
 ├── Views/
-│   ├── Dashboard/    # Today tab — stats, timeline, pie chart
+│   ├── Dashboard/    # Today tab — score, stats, timeline
 │   ├── Focus/        # Focus stopwatch
 │   ├── Budget/       # Time budget management
-│   ├── Insights/     # Trends, heatmaps, correlations, detail views
-│   ├── Settings/     # Places, ideal day, accounts, permissions
+│   ├── Insights/     # Trends, heatmaps, correlations, desk time
+│   ├── Settings/     # Places, ideal day, integrations, permissions
 │   └── Onboarding/   # First-launch flow
-└── Utilities/        # Extensions, design system, color helpers
+└── Utilities/        # Extensions, design system, Keychain manager
 ```
 
 **Pattern:** MVVM with a Services layer
 
-**Data flow:** Apple Frameworks → Services → SwiftData → ViewModels → Views
+**Data flow:** Apple Frameworks / APIs -> Services -> SwiftData -> ViewModels -> Views
 
 ## Battery
 
-The app is designed to minimize battery impact:
+Designed to minimize battery impact:
 - All HealthKit queries run in parallel using `async let`
-- Dashboard reloads are throttled to once per 30 seconds
-- Historical backfill uses batch range queries (3 queries instead of 120+)
-- All external API syncs (AniList, LeetCode, Pocket Casts) throttled to once per hour
-- ActivityWatch uses 5-second timeout so the app never freezes when away from home WiFi
+- Dashboard reloads throttled to once per 30 seconds
+- External API syncs (AniList, Pocket Casts) throttled to once per hour
+- ActivityWatch uses 5-second timeout — never freezes when away from home WiFi
+- ActivityWatch bucket discovery cached for 1 hour
 - Location uses significant change monitoring and geofencing — no continuous GPS
 - Background refresh via `BGAppRefreshTask` for overnight syncs
+
+## Requirements
+
+- iPhone running iOS 17+ (iOS 26+ for on-device AI)
+- Apple Watch (for sleep and workout tracking)
+- Xcode 15+
+- Mac with ActivityWatch (optional, for desktop tracking)
+
+## Setup
+
+1. Clone and open in Xcode:
+   ```bash
+   git clone https://github.com/ItsAbdiOk/TimeBudget.git
+   ```
+
+2. Select your development team under **Signing & Capabilities**
+
+3. Build and run on your iPhone (Simulator won't have HealthKit data)
+
+4. Grant permissions when prompted (Health, Location, Calendar, Motion)
+
+5. Optionally connect integrations in **Settings**:
+   - **AniList** — Enter your username
+   - **Pocket Casts** — Log in with your account
+   - **ActivityWatch** — Enter your Mac's local IP address
+
+6. For iPhone Screen Time on your Mac (optional):
+   ```bash
+   ./scripts/screentime-bridge-setup.sh
+   ```
+   Requires Full Disk Access for Terminal and ActivityWatch running on the Mac.
+
+> **Note:** With a free Apple Developer account, the app expires every 7 days and needs to be re-deployed from Xcode.
 
 ## License
 
