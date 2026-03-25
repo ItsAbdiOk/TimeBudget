@@ -34,6 +34,19 @@ struct TimeBudgetApp: App {
 
         // Register background tasks for overnight AniList sync
         BackgroundTaskService.shared.registerTasks()
+
+        // Register UserDefaults for Apple Intelligence (so bool(forKey:) returns true by default)
+        UserDefaults.standard.register(defaults: [
+            "intelligence_categorization_enabled": true,
+            "intelligence_conflicts_enabled": true
+        ])
+
+        // Warm up Apple Intelligence model in background
+        if #available(iOS 26, *) {
+            Task.detached(priority: .background) {
+                await IntelligenceService.shared.warmUp()
+            }
+        }
     }
 
     var body: some Scene {

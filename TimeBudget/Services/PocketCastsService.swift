@@ -1,5 +1,4 @@
 import Foundation
-import Security
 
 // MARK: - Models
 
@@ -13,9 +12,9 @@ struct PocketCastsEpisode: Identifiable {
     let publishedDate: Date
     let lastPlayedAt: Date?
 
-    /// Whether this episode was meaningfully listened to (completed or >50% played)
+    /// Whether this episode was meaningfully listened to (completed or >5 min played)
     var wasListened: Bool {
-        playingStatus == 3 || (duration > 0 && playedUpTo / duration > 0.5)
+        playingStatus == 3 || playedUpTo >= 300 || (duration > 0 && playedUpTo / duration > 0.25)
     }
 
     /// Actual listening time in minutes
@@ -47,59 +46,6 @@ enum PocketCastsError: LocalizedError {
     }
 }
 
-// MARK: - Keychain Helper
-
-private enum KeychainHelper {
-    static let service = "com.timebudget.pocketcasts"
-    static let account = "bearer_token"
-
-    static func save(token: String) -> Bool {
-        guard let data = token.data(using: .utf8) else { return false }
-
-        // Delete existing first
-        let deleteQuery: [String: Any] = [
-            kSecClass as String: kSecClassGenericPassword,
-            kSecAttrService as String: service,
-            kSecAttrAccount as String: account,
-        ]
-        SecItemDelete(deleteQuery as CFDictionary)
-
-        // Insert new
-        let addQuery: [String: Any] = [
-            kSecClass as String: kSecClassGenericPassword,
-            kSecAttrService as String: service,
-            kSecAttrAccount as String: account,
-            kSecValueData as String: data,
-            kSecAttrAccessible as String: kSecAttrAccessibleAfterFirstUnlock,
-        ]
-        let status = SecItemAdd(addQuery as CFDictionary, nil)
-        return status == errSecSuccess
-    }
-
-    static func load() -> String? {
-        let query: [String: Any] = [
-            kSecClass as String: kSecClassGenericPassword,
-            kSecAttrService as String: service,
-            kSecAttrAccount as String: account,
-            kSecReturnData as String: true,
-            kSecMatchLimit as String: kSecMatchLimitOne,
-        ]
-        var result: AnyObject?
-        let status = SecItemCopyMatching(query as CFDictionary, &result)
-        guard status == errSecSuccess, let data = result as? Data else { return nil }
-        return String(data: data, encoding: .utf8)
-    }
-
-    static func delete() {
-        let query: [String: Any] = [
-            kSecClass as String: kSecClassGenericPassword,
-            kSecAttrService as String: service,
-            kSecAttrAccount as String: account,
-        ]
-        SecItemDelete(query as CFDictionary)
-    }
-}
-
 // MARK: - Service
 
 final class PocketCastsService {
@@ -122,22 +68,22 @@ final class PocketCastsService {
     // MARK: - Token Management (Keychain-backed)
 
     var isConfigured: Bool {
-        KeychainHelper.load() != nil
+        KeychainManager.load() != nil
     }
 
     var token: String? {
-        KeychainHelper.load()
+        KeychainManager.load()
     }
 
     @discardableResult
     func saveToken(_ token: String) -> Bool {
         cachedEpisodes = [] // Clear cache when token changes
         lastSyncDate = nil
-        return KeychainHelper.save(token: token)
+        return KeychainManager.save(token: token)
     }
 
     func clearToken() {
-        KeychainHelper.delete()
+        KeychainManager.delete()
         cachedEpisodes = []
         lastSyncDate = nil
     }
@@ -272,8 +218,19 @@ final class PocketCastsService {
     private func parseHistory(_ data: Data) throws -> [PocketCastsEpisode] {
         guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
               let episodes = json["episodes"] as? [[String: Any]] else {
+            // Log raw response for debugging
+            if let raw = String(data: data.prefix(500), encoding: .utf8) {
+                print("[PocketCasts] Unexpected response format: \(raw)")
+            }
             throw PocketCastsError.invalidResponse
         }
+
+        // Debug: log first episode's raw fields
+        if let first = episodes.first {
+            print("[PocketCasts] Sample episode keys: \(first.keys.sorted())")
+            print("[PocketCasts] Sample episode: title=\(first["title"] ?? "nil"), lastPlayingTime=\(first["lastPlayingTime"] ?? "nil"), playedUpTo=\(first["playedUpTo"] ?? "nil"), duration=\(first["duration"] ?? "nil"), playingStatus=\(first["playingStatus"] ?? "nil")")
+        }
+        print("[PocketCasts] Total episodes in response: \(episodes.count)")
 
         return episodes.compactMap { ep -> PocketCastsEpisode? in
             guard let uuid = ep["uuid"] as? String,
@@ -294,10 +251,19 @@ final class PocketCastsService {
                 publishedDate = Date.distantPast
             }
 
+            // Try multiple field names and formats for last played date
             let lastPlayedAt: Date?
             if let playStr = ep["lastPlayingTime"] as? String {
                 lastPlayedAt = Self.parseDate(playStr)
+            } else if let playStr = ep["lastPlayedAt"] as? String {
+                lastPlayedAt = Self.parseDate(playStr)
+            } else if let epochMs = ep["lastPlayingTime"] as? Double {
+                lastPlayedAt = Date(timeIntervalSince1970: epochMs / 1000.0)
+            } else if let epochMs = ep["lastPlayingTime"] as? Int {
+                lastPlayedAt = Date(timeIntervalSince1970: Double(epochMs) / 1000.0)
             } else {
+                // No played timestamp — don't fabricate one with Date(),
+                // as that makes old episodes appear as "played today" on every sync
                 lastPlayedAt = nil
             }
 
@@ -337,6 +303,16 @@ final class PocketCastsService {
     }()
 
     private static func parseDate(_ string: String) -> Date? {
-        iso8601.date(from: string) ?? iso8601NoFraction.date(from: string)
+        if let d = iso8601.date(from: string) { return d }
+        if let d = iso8601NoFraction.date(from: string) { return d }
+        // Fallback: epoch milliseconds as string (e.g. "1711324800000")
+        if let ms = Double(string), ms > 1_000_000_000_000 {
+            return Date(timeIntervalSince1970: ms / 1000.0)
+        }
+        // Fallback: epoch seconds as string
+        if let s = Double(string), s > 1_000_000_000 {
+            return Date(timeIntervalSince1970: s)
+        }
+        return nil
     }
 }

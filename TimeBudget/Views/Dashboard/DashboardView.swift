@@ -465,7 +465,9 @@ private struct TimelineSection: View {
     let entries: [TimeEntry]
 
     private var sortedEntries: [TimeEntry] {
-        entries.sorted { $0.startDate < $1.startDate }
+        entries
+            .filter { $0.category?.name != "Stationary" }
+            .sorted { $0.startDate < $1.startDate }
     }
 
     private var totalDuration: Double {
@@ -526,28 +528,39 @@ private struct TimelineRow: View {
         return "\(start)\u{2013}\(end)"
     }
 
-    private var metaText: String {
-        let source = entry.metadata["source"] ?? ""
-        if source.isEmpty {
-            return timeRange
-        }
-        return "\(timeRange) \u{00B7} \(source)"
-    }
+    private var isAW: Bool { entry.sourceRaw == "activityWatch" }
+    private var isAIRefined: Bool { entry.metadata["aiRefined"] == "true" }
 
     var body: some View {
         HStack(spacing: 10) {
             // Color stripe
             RoundedRectangle(cornerRadius: 1.5, style: .continuous)
                 .fill(entry.category?.color ?? Color(.systemGray))
-                .frame(width: 3, height: 32)
+                .frame(width: 3, height: 40)
 
             // Name + meta
-            VStack(alignment: .leading, spacing: 2) {
-                Text(entry.displayName)
-                    .font(.system(size: 14, weight: .medium))
-                Text(metaText)
-                    .font(.system(size: 12))
-                    .foregroundStyle(Color(.secondaryLabel))
+            VStack(alignment: .leading, spacing: 3) {
+                HStack(spacing: 4) {
+                    Text(entry.displayName)
+                        .font(.system(size: 14, weight: .medium))
+                        .lineLimit(1)
+                    if isAIRefined {
+                        Image(systemName: "brain")
+                            .font(.system(size: 8, weight: .bold))
+                            .foregroundStyle(Color(.systemPurple))
+                    }
+                }
+                HStack(spacing: 5) {
+                    // Category badge for all entries
+                    if let categoryName = entry.category?.name {
+                        Text(categoryName)
+                            .font(.system(size: 10, weight: .semibold))
+                            .foregroundStyle(isAIRefined ? Color(.systemPurple) : (entry.category?.color ?? Color(.secondaryLabel)))
+                    }
+                    Text(timeRange)
+                        .font(.system(size: 12))
+                        .foregroundStyle(Color(.secondaryLabel))
+                }
             }
 
             Spacer()

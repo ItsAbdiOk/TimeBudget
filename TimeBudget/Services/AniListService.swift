@@ -183,10 +183,13 @@ final class AniListService {
                 let isManga = mediaType == "MANGA"
                 guard isManga else { return nil }
 
+                // Filter out non-reading activities (dropped, completed, plans to read, paused, etc.)
+                let status = activity["status"] as? String ?? ""
+                let readingStatuses: Set<String> = ["read chapter", "reread chapter"]
+                guard readingStatuses.contains(status.lowercased()) else { return nil }
+
                 // Prefer English title, fall back to userPreferred
                 let mediaTitle = (title["english"] as? String) ?? (title["userPreferred"] as? String) ?? "Unknown"
-
-                let status = activity["status"] as? String ?? ""
                 let progress = activity["progress"] as? String ?? ""
                 let chapters = parseChapters(progress: progress, status: status)
 

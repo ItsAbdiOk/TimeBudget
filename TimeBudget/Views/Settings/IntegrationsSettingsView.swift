@@ -3,11 +3,9 @@ import SwiftUI
 // MARK: - Pocket Casts Settings
 
 struct PocketCastsSettingsView: View {
-    @State private var email = ""
-    @State private var password = ""
-    @State private var isLoggingIn = false
-    @State private var statusResult: TestResult?
     @State private var hasToken: Bool
+    @State private var showingLogin = false
+    @State private var statusResult: TestResult?
 
     private let service = PocketCastsService.shared
 
@@ -74,88 +72,39 @@ struct PocketCastsSettingsView: View {
                         .padding(.horizontal, 16)
 
                     } else {
-                        // Login form
+                        // Not connected — show sign in button
                         VStack(spacing: 0) {
-                            // Email row
                             HStack(spacing: 12) {
                                 ZStack {
                                     RoundedRectangle(cornerRadius: 7, style: .continuous)
                                         .fill(Color(hex: "#F43F5E"))
                                         .frame(width: 30, height: 30)
-                                    Image(systemName: "envelope.fill")
+                                    Image(systemName: "headphones")
                                         .font(.system(size: 14, weight: .semibold))
                                         .foregroundStyle(.white)
                                 }
 
-                                Text("Email")
-                                    .font(.subheadline.weight(.medium))
-
-                                Spacer()
-
-                                TextField("you@example.com", text: $email)
-                                    .font(.subheadline)
-                                    .foregroundStyle(Color(.secondaryLabel))
-                                    .multilineTextAlignment(.trailing)
-                                    .frame(width: 180)
-                                    .keyboardType(.emailAddress)
-                                    .autocorrectionDisabled()
-                                    .textInputAutocapitalization(.never)
-                            }
-                            .padding(14)
-
-                            Divider().padding(.leading, 52)
-
-                            // Password row
-                            HStack(spacing: 12) {
-                                ZStack {
-                                    RoundedRectangle(cornerRadius: 7, style: .continuous)
-                                        .fill(Color(hex: "#F43F5E"))
-                                        .frame(width: 30, height: 30)
-                                    Image(systemName: "lock.fill")
-                                        .font(.system(size: 14, weight: .semibold))
-                                        .foregroundStyle(.white)
+                                VStack(alignment: .leading, spacing: 1) {
+                                    Text("Not Connected")
+                                        .font(.subheadline.weight(.medium))
+                                    Text("Sign in to track podcast listening")
+                                        .font(.caption)
+                                        .foregroundStyle(Color(.secondaryLabel))
                                 }
 
-                                Text("Password")
-                                    .font(.subheadline.weight(.medium))
-
-                                Spacer()
-
-                                SecureField("Password", text: $password)
-                                    .font(.subheadline)
-                                    .foregroundStyle(Color(.secondaryLabel))
-                                    .multilineTextAlignment(.trailing)
-                                    .frame(width: 180)
-                                    .autocorrectionDisabled()
-                                    .textInputAutocapitalization(.never)
-                            }
-                            .padding(14)
-
-                            Divider().padding(.leading, 52)
-
-                            // Sign in button
-                            HStack {
                                 Spacer()
 
                                 Button {
-                                    Task { await login() }
+                                    showingLogin = true
                                 } label: {
-                                    HStack(spacing: 6) {
-                                        if isLoggingIn {
-                                            ProgressView()
-                                                .controlSize(.mini)
-                                                .tint(.white)
-                                        }
-                                        Text("Sign In")
-                                            .font(.caption.weight(.semibold))
-                                    }
-                                    .foregroundStyle(.white)
-                                    .padding(.horizontal, 20)
-                                    .padding(.vertical, 8)
-                                    .background(canLogin ? Color(hex: "#F43F5E") : Color(.systemGray))
-                                    .clipShape(Capsule())
+                                    Text("Sign In")
+                                        .font(.caption.weight(.semibold))
+                                        .foregroundStyle(.white)
+                                        .padding(.horizontal, 16)
+                                        .padding(.vertical, 8)
+                                        .background(Color(hex: "#F43F5E"))
+                                        .clipShape(Capsule())
                                 }
-                                .disabled(!canLogin || isLoggingIn)
                             }
                             .padding(14)
                         }
@@ -177,13 +126,6 @@ struct PocketCastsSettingsView: View {
                         .transition(.opacity.combined(with: .move(edge: .top)))
                     }
 
-                    if !hasToken {
-                        Text("Sign in with your Pocket Casts account to track podcast listening")
-                            .font(.caption)
-                            .foregroundStyle(Color(.tertiaryLabel))
-                            .multilineTextAlignment(.center)
-                            .padding(.horizontal, 32)
-                    }
                 }
                 .padding(.top, 8)
             }
@@ -191,41 +133,10 @@ struct PocketCastsSettingsView: View {
         .navigationTitle("Pocket Casts")
         .animation(.easeInOut(duration: 0.2), value: statusResult?.message)
         .animation(.easeInOut(duration: 0.3), value: hasToken)
-    }
-
-    private var canLogin: Bool {
-        !email.trimmingCharacters(in: .whitespaces).isEmpty &&
-        !password.isEmpty
-    }
-
-    private func login() async {
-        isLoggingIn = true
-        statusResult = nil
-
-        do {
-            let loggedInEmail = try await service.login(
-                email: email.trimmingCharacters(in: .whitespaces),
-                password: password
-            )
-            await MainActor.run {
-                hasToken = true
-                email = ""
-                password = ""
-                statusResult = TestResult(success: true, message: "Signed in as \(loggedInEmail)")
-                isLoggingIn = false
-                Haptics.success()
-            }
-        } catch {
-            await MainActor.run {
-                let message: String
-                if case PocketCastsError.unauthorized = error {
-                    message = "Incorrect email or password"
-                } else {
-                    message = error.localizedDescription
-                }
-                statusResult = TestResult(success: false, message: message)
-                isLoggingIn = false
-            }
+        .sheet(isPresented: $showingLogin) {
+            hasToken = service.isConfigured
+        } content: {
+            PocketCastsLoginView()
         }
     }
 }

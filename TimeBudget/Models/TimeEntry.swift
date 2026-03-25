@@ -42,6 +42,15 @@ final class TimeEntry {
         if let title = metadata["title"], !title.isEmpty {
             return title
         }
+        // For ActivityWatch: show the top site or top app instead of just the category
+        if sourceRaw == "activityWatch" {
+            if let site = metadata["topSite"], !site.isEmpty {
+                return site
+            }
+            if let app = metadata["topApp"], !app.isEmpty {
+                return app
+            }
+        }
         return category?.name ?? "Unknown"
     }
 

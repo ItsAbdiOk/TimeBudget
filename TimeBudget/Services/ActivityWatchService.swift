@@ -1,5 +1,13 @@
 import Foundation
 
+// MARK: - Device Source
+
+enum AWSourceDevice: String, Codable {
+    case mac
+    case iphone
+    case unknown
+}
+
 // MARK: - Models
 
 struct AWEvent: Identifiable {
@@ -9,6 +17,7 @@ struct AWEvent: Identifiable {
     let appName: String
     let windowTitle: String
     var url: String?                 // from aw-watcher-web-chrome
+    var sourceDevice: AWSourceDevice = .unknown
 
     var durationMinutes: Int { Int(duration / 60) }
 
@@ -18,43 +27,73 @@ struct AWEvent: Identifiable {
         return components.host?.replacingOccurrences(of: "www.", with: "")
     }
 
-    /// For browser events, extract the site name — prefers URL domain over title heuristics.
+    /// Site name: real URL domain preferred, then known-site matching from window titles.
     var siteName: String? {
-        // If we have a real URL from the Chrome extension, use its domain
-        if let domain = urlDomain {
-            return domain
-        }
+        // Best: real URL from Chrome extension
+        if let domain = urlDomain { return domain }
 
-        let browsers = ["Google Chrome", "Safari", "Firefox", "Arc", "Brave Browser", "Microsoft Edge", "Orion"]
+        // Fallback: match known sites from browser window titles
+        let browsers: Set<String> = ["Google Chrome", "Safari", "Firefox", "Arc", "Brave Browser", "Microsoft Edge", "Orion"]
         guard browsers.contains(appName) else { return nil }
 
-        // Try "- SiteName - Google Chrome" pattern
-        let parts = windowTitle.components(separatedBy: " - ")
-        if parts.count >= 3 {
-            let candidate = parts[parts.count - 2].trimmingCharacters(in: .whitespaces)
-            let browserSuffixes = ["Google Chrome", "Safari", "Firefox", "Arc", "Brave", "Edge", "Orion"]
-            if !browserSuffixes.contains(where: { candidate.contains($0) }) && !candidate.isEmpty {
-                return candidate
-            }
-        }
+        let titleLower = windowTitle.lowercased()
 
-        if parts.count >= 2 {
-            for part in parts.reversed() {
-                let cleaned = part
-                    .replacingOccurrences(of: "Google Chrome", with: "")
-                    .replacingOccurrences(of: "– ", with: "")
-                    .trimmingCharacters(in: .whitespaces)
-                if !cleaned.isEmpty && cleaned.count > 1 {
-                    return cleaned
+        // Map of title keywords → clean domain names
+        // Only match known sites to avoid garbage like "1.2 GB" or profile names
+        let knownSites: [(keywords: [String], domain: String)] = [
+            // Dev / Deep Work
+            (["github.com", "github"], "github.com"),
+            (["gitlab"], "gitlab.com"),
+            (["stack overflow", "stackoverflow"], "stackoverflow.com"),
+            (["claude.ai", "claude"], "claude.ai"),
+            (["chatgpt"], "chatgpt.com"),
+            (["perplexity"], "perplexity.ai"),
+            (["notion.so", "notion"], "notion.so"),
+            (["linear"], "linear.app"),
+            (["figma"], "figma.com"),
+            (["vercel"], "vercel.com"),
+            (["netlify"], "netlify.com"),
+            (["localhost", "127.0.0.1"], "localhost"),
+            (["developer.apple"], "developer.apple.com"),
+            (["swift.org"], "swift.org"),
+            // Docs / Productive
+            (["docs.google"], "docs.google.com"),
+            (["sheets.google"], "sheets.google.com"),
+            (["slides.google"], "slides.google.com"),
+            (["drive.google"], "drive.google.com"),
+            (["wikipedia"], "wikipedia.org"),
+            (["medium.com"], "medium.com"),
+            (["coursera"], "coursera.org"),
+            (["udemy"], "udemy.com"),
+            // Distraction
+            (["youtube.com", "youtube"], "youtube.com"),
+            (["twitter.com", "x.com"], "x.com"),
+            (["reddit.com", "reddit"], "reddit.com"),
+            (["instagram"], "instagram.com"),
+            (["facebook"], "facebook.com"),
+            (["tiktok"], "tiktok.com"),
+            (["netflix"], "netflix.com"),
+            (["twitch.tv", "twitch"], "twitch.tv"),
+            (["discord.com"], "discord.com"),
+            (["amazon"], "amazon.com"),
+            // Communication
+            (["gmail"], "gmail.com"),
+            (["outlook"], "outlook.com"),
+            (["slack"], "slack.com"),
+            (["zoom"], "zoom.us"),
+            (["meet.google"], "meet.google.com"),
+            (["teams.microsoft"], "teams.microsoft.com"),
+        ]
+
+        for site in knownSites {
+            for keyword in site.keywords {
+                if titleLower.contains(keyword) {
+                    return site.domain
                 }
             }
         }
 
-        let cleaned = windowTitle
-            .replacingOccurrences(of: " - Google Chrome", with: "")
-            .replacingOccurrences(of: " – Google Chrome", with: "")
-            .trimmingCharacters(in: .whitespaces)
-        return cleaned.isEmpty ? nil : String(cleaned.prefix(50))
+        return nil
     }
 }
 
@@ -77,6 +116,15 @@ struct AWActivityBlock: Identifiable {
 
     var durationMinutes: Int {
         Int(end.timeIntervalSince(start) / 60)
+    }
+
+    /// The dominant device in this block (most events from which device)
+    var dominantDevice: AWSourceDevice {
+        var counts: [AWSourceDevice: TimeInterval] = [:]
+        for event in events {
+            counts[event.sourceDevice, default: 0] += event.duration
+        }
+        return counts.max(by: { $0.value < $1.value })?.key ?? .mac
     }
 }
 
@@ -105,6 +153,7 @@ struct ProductivityClassifier {
         "IntelliJ IDEA", "PyCharm", "WebStorm", "Sublime Text", "Vim",
         "Neovim", "Cursor", "Android Studio", "CLion", "DataGrip",
         "Ghostty", "Warp", "Alacritty", "Kitty",
+        "Claude",
     ]
 
     static let productiveApps: Set<String> = [
@@ -115,36 +164,42 @@ struct ProductivityClassifier {
         "Simulator", "Instruments", "FileMerge",
         "Preview", "Finder", "Calendar", "Mail", "Reminders",
         "System Settings", "Activity Monitor",
+        // iOS apps (resolved display names from bundle IDs)
+        "Gmail", "Google Maps", "Slack", "Teams", "Zoom",
+        "Photos", "Weather", "Maps", "Health", "Books",
+        "Podcasts", "Music", "LinkedIn",
     ]
 
     static let distractionApps: Set<String> = [
         "Messages", "WhatsApp", "Telegram", "Discord",
+        "Instagram", "TikTok", "Snapchat", "Facebook",
+        "YouTube", "Netflix", "Twitch", "Reddit",
     ]
 
-    // Websites that are productive
+    // Websites that are productive (matches against domain substrings)
     static let productiveSites: Set<String> = [
-        "GitHub", "Stack Overflow", "GitLab", "Bitbucket",
-        "Claude", "ChatGPT", "Perplexity",
-        "Notion", "Linear", "Jira", "Asana", "Trello",
-        "Google Docs", "Google Sheets", "Google Slides",
-        "Figma", "Miro", "Confluence",
-        "LeetCode", "HackerRank", "Codewars",
-        "MDN Web Docs", "Apple Developer", "Swift.org",
-        "Coursera", "Udemy", "edX", "Khan Academy",
-        "Google Scholar", "arXiv", "ResearchGate",
-        "Wikipedia", "Wolfram",
+        "github", "stackoverflow", "gitlab", "bitbucket",
+        "claude", "chatgpt", "perplexity",
+        "notion", "linear", "jira", "asana", "trello",
+        "docs.google", "sheets.google", "slides.google",
+        "figma", "miro", "confluence",
+        "leetcode", "hackerrank", "codewars",
+        "developer.mozilla", "developer.apple", "swift.org",
+        "coursera", "udemy", "edx", "khanacademy",
+        "scholar.google", "arxiv", "researchgate",
+        "wikipedia", "wolfram",
         "localhost", "127.0.0.1", "192.168",
-        "AWS", "Google Cloud", "Azure", "Vercel", "Netlify",
-        "Docker Hub", "npm",
+        "aws.amazon", "cloud.google", "azure", "vercel", "netlify",
+        "hub.docker", "npmjs",
     ]
 
-    // Websites that are distracting
+    // Websites that are distracting (matches against domain substrings)
     static let distractionSites: Set<String> = [
-        "YouTube", "Twitter", "X.com", "Reddit",
-        "Instagram", "Facebook", "TikTok", "Snapchat",
-        "Netflix", "Twitch", "Disney+", "Hulu",
-        "9GAG", "Imgur", "BuzzFeed",
-        "Amazon", "eBay", "AliExpress",
+        "youtube", "twitter", "x.com", "reddit",
+        "instagram", "facebook", "tiktok", "snapchat",
+        "netflix", "twitch", "disneyplus", "hulu",
+        "9gag", "imgur", "buzzfeed",
+        "amazon", "ebay", "aliexpress",
     ]
 
     static func classify(app: String, site: String?) -> ProductivityTier {
@@ -220,6 +275,12 @@ enum ActivityWatchError: LocalizedError {
 final class ActivityWatchService {
     static let shared = ActivityWatchService()
 
+    /// System apps that represent the Mac being locked/asleep — not real desk time.
+    private static let systemIgnoreList: Set<String> = [
+        "loginwindow", "WindowServer", "ScreenSaverEngine",
+        "MacUserGenerator", "UserNotificationCenter", "Spotlight", "SecurityAgent",
+    ]
+
     // MARK: - Configuration (UserDefaults-backed)
 
     var desktopIP: String {
@@ -235,6 +296,17 @@ final class ActivityWatchService {
     }
 
     private let port = 5600
+
+    // MARK: - Discovered Buckets
+
+    struct DiscoveredBuckets {
+        var windowBucket: String?
+        var webChromeBuckets: [String] = []
+        var screenTimeBuckets: [String] = []
+        var hostname: String?
+    }
+
+    private(set) var discoveredBuckets: DiscoveredBuckets?
 
     // MARK: - Cache
 
@@ -257,11 +329,33 @@ final class ActivityWatchService {
         return URLSession(configuration: config)
     }()
 
+    // MARK: - Bucket Discovery Cache
+
+    /// Ensure buckets are discovered at least once per app session.
+    /// Re-discovers if not yet done or if it's been over an hour.
+    private var lastBucketDiscovery: Date?
+
+    private func ensureBucketsDiscovered() async {
+        // Skip if discovered recently (within 1 hour)
+        if let last = lastBucketDiscovery, Date().timeIntervalSince(last) < 3600,
+           discoveredBuckets != nil {
+            return
+        }
+
+        do {
+            try await discoverHostname()
+            lastBucketDiscovery = Date()
+        } catch {
+            print("[ActivityWatch] Bucket re-discovery failed: \(error.localizedDescription)")
+        }
+    }
+
     // MARK: - Public API
 
     /// Fetch today's desktop activity blocks
     func fetchTodayBlocks() async throws -> [AWActivityBlock] {
         guard isConfigured else { throw ActivityWatchError.notConfigured }
+        await ensureBucketsDiscovered()
 
         let today = Calendar.current.startOfDay(for: Date())
         if let cached = cachedDate, Calendar.current.isDate(cached, inSameDayAs: today), !shouldSync {
@@ -291,6 +385,7 @@ final class ActivityWatchService {
     /// Fetch blocks for a date range (for trends / heatmaps)
     func fetchBlocks(from start: Date, to end: Date) async throws -> [AWActivityBlock] {
         guard isConfigured else { throw ActivityWatchError.notConfigured }
+        await ensureBucketsDiscovered()
 
         let events = try await fetchEventsInRange(from: start, to: end)
         let meaningful = events.filter { $0.duration >= 120 }
@@ -325,7 +420,7 @@ final class ActivityWatchService {
         return (200...299).contains(httpResponse.statusCode)
     }
 
-    /// Auto-discover the hostname by scanning available buckets on the server.
+    /// Auto-discover the hostname and all available buckets on the server.
     @discardableResult
     func discoverHostname() async throws -> String {
         guard !desktopIP.isEmpty else { throw ActivityWatchError.notConfigured }
@@ -351,13 +446,30 @@ final class ActivityWatchService {
             throw ActivityWatchError.invalidResponse
         }
 
-        let prefix = "aw-watcher-window_"
-        guard let windowBucket = buckets.keys.first(where: { $0.hasPrefix(prefix) }) else {
+        // Discover all bucket types
+        var discovered = DiscoveredBuckets()
+
+        for key in buckets.keys {
+            if key.hasPrefix("aw-watcher-window_") {
+                discovered.windowBucket = key
+                discovered.hostname = String(key.dropFirst("aw-watcher-window_".count))
+            } else if key.hasPrefix("aw-watcher-web-chrome") {
+                discovered.webChromeBuckets.append(key)
+            } else if key.hasPrefix("aw-import-screentime") {
+                discovered.screenTimeBuckets.append(key)
+                print("[ActivityWatch] Found screen time bucket: \(key)")
+            }
+        }
+
+        guard let windowBucket = discovered.windowBucket,
+              let discoveredHostname = discovered.hostname else {
             throw ActivityWatchError.noBucket
         }
 
-        let discoveredHostname = String(windowBucket.dropFirst(prefix.count))
+        self.discoveredBuckets = discovered
         UserDefaults.standard.set(discoveredHostname, forKey: "activitywatch_hostname")
+
+        print("[ActivityWatch] Discovered buckets — window: \(windowBucket), chrome: \(discovered.webChromeBuckets), screenTime: \(discovered.screenTimeBuckets)")
         return discoveredHostname
     }
 
@@ -380,9 +492,10 @@ final class ActivityWatchService {
         var matchedWebIndices = Set<Int>()
         let browsers = Set(["Google Chrome", "Brave Browser", "Microsoft Edge", "Arc"])
 
-        // Pass 1: Enrich browser window events with matching web URLs
+        // Pass 1: Enrich Mac browser window events with matching web URLs
         for i in enriched.indices {
             guard enriched[i].url == nil else { continue }
+            guard enriched[i].sourceDevice != .iphone else { continue }
             guard browsers.contains(enriched[i].appName) else { continue }
 
             let evtStart = enriched[i].timestamp
@@ -488,7 +601,141 @@ final class ActivityWatchService {
                 duration: duration,
                 appName: "Google Chrome",
                 windowTitle: title,
-                url: url
+                url: url,
+                sourceDevice: .mac
+            )
+        }
+        .sorted { $0.timestamp < $1.timestamp }
+    }
+
+    // MARK: - Screen Time Bucket (aw-import-screentime)
+
+    /// Common iOS bundle ID → display name mapping
+    private static let iosAppNames: [String: String] = [
+        "com.apple.MobileSafari": "Safari",
+        "com.apple.mobilenotes": "Notes",
+        "com.apple.mobilemail": "Mail",
+        "com.apple.mobilecal": "Calendar",
+        "com.apple.reminders": "Reminders",
+        "com.apple.mobileslideshow": "Photos",
+        "com.apple.weather": "Weather",
+        "com.apple.Maps": "Maps",
+        "com.apple.Health": "Health",
+        "com.apple.Music": "Music",
+        "com.apple.Podcasts": "Podcasts",
+        "com.apple.news": "News",
+        "com.apple.AppStore": "App Store",
+        "com.apple.iBooks": "Books",
+        "com.apple.mobiletimer": "Clock",
+        "com.apple.calculator": "Calculator",
+        "com.apple.camera": "Camera",
+        "com.apple.facetime": "FaceTime",
+        "com.apple.MobileStore": "Apple Store",
+        "com.apple.Preferences": "Settings",
+        "com.burbn.instagram": "Instagram",
+        "com.google.chrome.ios": "Chrome",
+        "com.atebits.Tweetie2": "Twitter",
+        "com.zhiliaoapp.musically": "TikTok",
+        "com.facebook.Facebook": "Facebook",
+        "com.toyopagroup.picaboo": "Snapchat",
+        "com.google.ios.youtube": "YouTube",
+        "net.whatsapp.WhatsApp": "WhatsApp",
+        "com.spotify.client": "Spotify",
+        "org.telegram.Telegram": "Telegram",
+        "com.reddit.Reddit": "Reddit",
+        "com.linkedin.LinkedIn": "LinkedIn",
+        "com.discord.Discord": "Discord",
+        "com.netflix.Netflix": "Netflix",
+        "com.amazon.Amazon": "Amazon",
+        "com.google.Gmail": "Gmail",
+        "com.google.Maps": "Google Maps",
+        "com.slack.Slack": "Slack",
+        "com.microsoft.teams": "Teams",
+        "us.zoom.videomeetings": "Zoom",
+    ]
+
+    /// Resolve an iOS bundle ID or app name to a clean display name.
+    private static func resolveAppName(_ raw: String) -> String {
+        if let mapped = iosAppNames[raw] { return mapped }
+        // If it looks like a bundle ID (contains dots), use last component
+        if raw.contains(".") {
+            return raw.components(separatedBy: ".").last?.capitalized ?? raw
+        }
+        return raw
+    }
+
+    private func fetchScreenTimeEvents(from start: Date, to end: Date) async -> [AWEvent] {
+        guard let buckets = discoveredBuckets?.screenTimeBuckets, !buckets.isEmpty else { return [] }
+
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime]
+
+        var allEvents: [AWEvent] = []
+
+        // Fetch from all screen time buckets (one per iOS device)
+        for bucket in buckets {
+            let urlStr = "http://\(desktopIP):\(port)/api/0/buckets/\(bucket)/events?start=\(formatter.string(from: start))&end=\(formatter.string(from: end))&limit=-1"
+            guard let url = URL(string: urlStr) else { continue }
+
+            var request = URLRequest(url: url)
+            request.setValue("application/json", forHTTPHeaderField: "Accept")
+            request.timeoutInterval = 10
+
+            do {
+                let (data, response) = try await session.data(for: request)
+                guard let httpResponse = response as? HTTPURLResponse,
+                      (200...299).contains(httpResponse.statusCode) else { continue }
+
+                let events = try parseScreenTimeEvents(data)
+                if !events.isEmpty {
+                    print("[ActivityWatch] Fetched \(events.count) screen time events from \(bucket)")
+                    allEvents.append(contentsOf: events)
+                }
+            } catch {
+                print("[ActivityWatch] Failed to fetch screen time from \(bucket): \(error.localizedDescription)")
+            }
+        }
+
+        print("[ActivityWatch] Total screen time events: \(allEvents.count)")
+        return allEvents.sorted { $0.timestamp < $1.timestamp }
+    }
+
+    private func parseScreenTimeEvents(_ data: Data) throws -> [AWEvent] {
+        guard let events = try JSONSerialization.jsonObject(with: data) as? [[String: Any]] else { return [] }
+
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        let fallbackFormatter = ISO8601DateFormatter()
+        fallbackFormatter.formatOptions = [.withInternetDateTime]
+
+        return events.compactMap { event -> AWEvent? in
+            guard let id = event["id"] as? Int,
+                  let timestampStr = event["timestamp"] as? String,
+                  let duration = event["duration"] as? Double,
+                  let eventData = event["data"] as? [String: Any] else { return nil }
+
+            guard let timestamp = formatter.date(from: timestampStr) ?? fallbackFormatter.date(from: timestampStr) else { return nil }
+
+            let rawApp = (eventData["app"] as? String) ?? "Unknown"
+
+            // Filter out iOS system noise (lock screen, springboard, screenshots, etc.)
+            let systemPrefixes = ["com.apple.springboard", "com.apple.SleepLockScreen",
+                                  "com.apple.ScreenshotServicesService", "com.apple.ClockAngel",
+                                  "com.apple.CarPlayTemplateUIHost", "com.apple.Spotlight",
+                                  "com.apple.InCallService", "com.apple.TelephonyUtilities"]
+            if systemPrefixes.contains(where: { rawApp.hasPrefix($0) }) { return nil }
+
+            let app = Self.resolveAppName(rawApp)
+            let title = (eventData["title"] as? String) ?? ""
+
+            return AWEvent(
+                id: "st-\(id)",
+                timestamp: timestamp,
+                duration: duration,
+                appName: app,
+                windowTitle: title,
+                url: nil,
+                sourceDevice: .iphone
             )
         }
         .sorted { $0.timestamp < $1.timestamp }
@@ -507,7 +754,8 @@ final class ActivityWatchService {
         return try await fetchEventsInRange(from: start, to: end)
     }
 
-    private func fetchEventsInRange(from start: Date, to end: Date) async throws -> [AWEvent] {
+    /// Fetch window events from the aw-watcher-window bucket only.
+    private func fetchWindowEvents(from start: Date, to end: Date) async throws -> [AWEvent] {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime]
 
@@ -543,12 +791,26 @@ final class ActivityWatchService {
             throw ActivityWatchError.invalidResponse
         }
 
-        var windowEvents = try parseEvents(data)
+        return try parseEvents(data)
+    }
 
-        // Enrich Chrome window events with URLs and merge standalone web events
+    /// Concurrently fetch from all buckets: window, web-chrome, and screen time.
+    private func fetchEventsInRange(from start: Date, to end: Date) async throws -> [AWEvent] {
+        // Concurrent fetch: window events + screen time events
+        async let windowTask = fetchWindowEvents(from: start, to: end)
+        async let screenTimeTask = fetchScreenTimeEvents(from: start, to: end)
+
+        var windowEvents = try await windowTask
+        let screenTimeEvents = await screenTimeTask
+
+        // Enrich Mac browser events with Chrome extension URLs
         windowEvents = await enrichWithWebEvents(windowEvents, from: start, to: end)
 
-        return windowEvents.sorted { $0.timestamp < $1.timestamp }
+        // Merge all event streams
+        let allEvents = (windowEvents + screenTimeEvents)
+            .sorted { $0.timestamp < $1.timestamp }
+
+        return allEvents
     }
 
     // MARK: - Private: Parsing
@@ -577,6 +839,10 @@ final class ActivityWatchService {
             }
 
             let app = (eventData["app"] as? String) ?? "Unknown"
+
+            // Filter out system apps (loginwindow, WindowServer, etc.)
+            if Self.systemIgnoreList.contains(app) { return nil }
+
             let title = (eventData["title"] as? String) ?? ""
 
             return AWEvent(
@@ -585,7 +851,8 @@ final class ActivityWatchService {
                 duration: duration,
                 appName: app,
                 windowTitle: title,
-                url: nil
+                url: nil,
+                sourceDevice: .mac
             )
         }
         .sorted { $0.timestamp < $1.timestamp }

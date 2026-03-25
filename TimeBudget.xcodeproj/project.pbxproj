@@ -47,6 +47,7 @@
 		A10001000000000000000038 /* HeatmapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002000000000000000038 /* HeatmapView.swift */; };
 		A10001000000000000000039 /* AniListService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002000000000000000039 /* AniListService.swift */; };
 		A1000100000000000000003A /* DesignSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000200000000000000003A /* DesignSystem.swift */; };
+		A10001000000000000000080 /* KeychainManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002000000000000000080 /* KeychainManager.swift */; };
 		A1000100000000000000003B /* BackgroundTaskService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000200000000000000003B /* BackgroundTaskService.swift */; };
 		A1000100000000000000003C /* AniListHeatmapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000200000000000000003C /* AniListHeatmapView.swift */; };
 		A1000100000000000000003D /* LeetCodeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000200000000000000003D /* LeetCodeService.swift */; };
@@ -56,8 +57,11 @@
 		A10001000000000000000041 /* MangaDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002000000000000000041 /* MangaDetailView.swift */; };
 		A10001000000000000000042 /* LeetCodeDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002000000000000000042 /* LeetCodeDetailView.swift */; };
 		A10001000000000000000050 /* PocketCastsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002000000000000000050 /* PocketCastsService.swift */; };
+		A10001000000000000000082 /* IntelligenceService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002000000000000000082 /* IntelligenceService.swift */; };
 		A10001000000000000000051 /* ActivityWatchService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002000000000000000051 /* ActivityWatchService.swift */; };
 		A10001000000000000000052 /* IntegrationsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002000000000000000052 /* IntegrationsSettingsView.swift */; };
+		A10001000000000000000081 /* PocketCastsLoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002000000000000000081 /* PocketCastsLoginView.swift */; };
+		A10001000000000000000083 /* IntelligenceSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002000000000000000083 /* IntelligenceSettingsView.swift */; };
 		A10001000000000000000060 /* PodcastHeatmapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002000000000000000060 /* PodcastHeatmapView.swift */; };
 		A10001000000000000000061 /* PodcastDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002000000000000000061 /* PodcastDetailView.swift */; };
 		A10001000000000000000062 /* DeskTimeHeatmapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002000000000000000062 /* DeskTimeHeatmapView.swift */; };
@@ -108,6 +112,7 @@
 		A10002000000000000000038 /* HeatmapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeatmapView.swift; sourceTree = "<group>"; };
 		A10002000000000000000039 /* AniListService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AniListService.swift; sourceTree = "<group>"; };
 		A1000200000000000000003A /* DesignSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesignSystem.swift; sourceTree = "<group>"; };
+		A10002000000000000000080 /* KeychainManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainManager.swift; sourceTree = "<group>"; };
 		A1000200000000000000003B /* BackgroundTaskService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundTaskService.swift; sourceTree = "<group>"; };
 		A1000200000000000000003C /* AniListHeatmapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AniListHeatmapView.swift; sourceTree = "<group>"; };
 		A1000200000000000000003D /* LeetCodeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeetCodeService.swift; sourceTree = "<group>"; };
@@ -117,8 +122,11 @@
 		A10002000000000000000041 /* MangaDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MangaDetailView.swift; sourceTree = "<group>"; };
 		A10002000000000000000042 /* LeetCodeDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeetCodeDetailView.swift; sourceTree = "<group>"; };
 		A10002000000000000000050 /* PocketCastsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PocketCastsService.swift; sourceTree = "<group>"; };
+		A10002000000000000000082 /* IntelligenceService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntelligenceService.swift; sourceTree = "<group>"; };
 		A10002000000000000000051 /* ActivityWatchService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityWatchService.swift; sourceTree = "<group>"; };
 		A10002000000000000000052 /* IntegrationsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntegrationsSettingsView.swift; sourceTree = "<group>"; };
+		A10002000000000000000081 /* PocketCastsLoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PocketCastsLoginView.swift; sourceTree = "<group>"; };
+		A10002000000000000000083 /* IntelligenceSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntelligenceSettingsView.swift; sourceTree = "<group>"; };
 		A10002000000000000000060 /* PodcastHeatmapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PodcastHeatmapView.swift; sourceTree = "<group>"; };
 		A10002000000000000000061 /* PodcastDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PodcastDetailView.swift; sourceTree = "<group>"; };
 		A10002000000000000000062 /* DeskTimeHeatmapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeskTimeHeatmapView.swift; sourceTree = "<group>"; };
@@ -191,6 +199,7 @@
 				A1000200000000000000003D /* LeetCodeService.swift */,
 				A1000200000000000000003B /* BackgroundTaskService.swift */,
 				A10002000000000000000050 /* PocketCastsService.swift */,
+				A10002000000000000000082 /* IntelligenceService.swift */,
 				A10002000000000000000051 /* ActivityWatchService.swift */,
 			);
 			path = Services;
@@ -265,6 +274,8 @@
 				A10002000000000000000015 /* PlaceManagementView.swift */,
 				A1000200000000000000001B /* IdealDaySetupView.swift */,
 				A10002000000000000000052 /* IntegrationsSettingsView.swift */,
+				A10002000000000000000081 /* PocketCastsLoginView.swift */,
+				A10002000000000000000083 /* IntelligenceSettingsView.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -293,6 +304,7 @@
 				A1000200000000000000000B /* ColorExtensions.swift */,
 				A1000200000000000000000C /* DateExtensions.swift */,
 				A1000200000000000000003A /* DesignSystem.swift */,
+				A10002000000000000000080 /* KeychainManager.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -420,6 +432,7 @@
 				A10001000000000000000038 /* HeatmapView.swift in Sources */,
 				A10001000000000000000039 /* AniListService.swift in Sources */,
 				A1000100000000000000003A /* DesignSystem.swift in Sources */,
+				A10001000000000000000080 /* KeychainManager.swift in Sources */,
 				A1000100000000000000003B /* BackgroundTaskService.swift in Sources */,
 				A1000100000000000000003C /* AniListHeatmapView.swift in Sources */,
 				A1000100000000000000003D /* LeetCodeService.swift in Sources */,
@@ -429,8 +442,11 @@
 				A10001000000000000000041 /* MangaDetailView.swift in Sources */,
 				A10001000000000000000042 /* LeetCodeDetailView.swift in Sources */,
 				A10001000000000000000050 /* PocketCastsService.swift in Sources */,
+				A10001000000000000000082 /* IntelligenceService.swift in Sources */,
 				A10001000000000000000051 /* ActivityWatchService.swift in Sources */,
 				A10001000000000000000052 /* IntegrationsSettingsView.swift in Sources */,
+				A10001000000000000000081 /* PocketCastsLoginView.swift in Sources */,
+				A10001000000000000000083 /* IntelligenceSettingsView.swift in Sources */,
 				A10001000000000000000060 /* PodcastHeatmapView.swift in Sources */,
 				A10001000000000000000061 /* PodcastDetailView.swift in Sources */,
 				A10001000000000000000062 /* DeskTimeHeatmapView.swift in Sources */,

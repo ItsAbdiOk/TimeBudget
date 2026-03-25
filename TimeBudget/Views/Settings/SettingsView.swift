@@ -84,6 +84,22 @@ struct SettingsView: View {
                         .shadow(color: .black.opacity(0.05), radius: 10, y: 2)
                         .padding(.horizontal, 16)
 
+                        // Intelligence
+                        if #available(iOS 26, *) {
+                            VStack(spacing: 0) {
+                                SettingsRow(
+                                    icon: "brain",
+                                    iconColor: Color(.systemPurple),
+                                    title: "Apple Intelligence",
+                                    destination: AnyView(IntelligenceSettingsView())
+                                )
+                            }
+                            .background(.regularMaterial)
+                            .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+                            .shadow(color: .black.opacity(0.05), radius: 10, y: 2)
+                            .padding(.horizontal, 16)
+                        }
+
                         // Data section
                         VStack(spacing: 0) {
                             SettingsRow(
