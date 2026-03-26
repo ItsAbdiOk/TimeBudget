@@ -96,7 +96,7 @@ final class ActivityWatchService {
         let end = calendar.date(byAdding: .day, value: 1, to: start)!
 
         let events = try await fetchEventsInRange(from: start, to: end)
-        let meaningful = events.filter { $0.duration >= 120 }
+        let meaningful = filterMeaningfulEvents(events)
         return bundleIntoBlocks(meaningful)
     }
 
@@ -105,8 +105,19 @@ final class ActivityWatchService {
         await ensureBucketsDiscovered()
 
         let events = try await fetchEventsInRange(from: start, to: end)
-        let meaningful = events.filter { $0.duration >= 120 }
+        let meaningful = filterMeaningfulEvents(events)
         return bundleIntoBlocks(meaningful)
+    }
+
+    /// Mac events need 2-minute minimum (window watcher generates noise).
+    /// iPhone events only need 10-second minimum (Apple pre-filters Screen Time).
+    private func filterMeaningfulEvents(_ events: [AWEvent]) -> [AWEvent] {
+        events.filter { event in
+            switch event.sourceDevice {
+            case .iphone: return event.duration >= 10
+            case .mac, .unknown: return event.duration >= 120
+            }
+        }
     }
 
     func fetchRawEvents(for date: Date) async throws -> [AWEvent] {
