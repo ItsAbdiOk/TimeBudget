@@ -41,9 +41,9 @@ struct DeskTimeDetailView: View {
                         if vm.hasIPhoneData {
                             DeskTimeDeviceFilterPills(
                                 selectedDevice: $vm.selectedDevice,
-                                totalMinutes: vm.scopedTotalMinutes,
-                                macMinutes: vm.scopedMacMinutes,
-                                iphoneMinutes: vm.scopedIPhoneMinutes
+                                totalMinutes: vm.pillTotalMinutes,
+                                macMinutes: vm.pillMacMinutes,
+                                iphoneMinutes: vm.pillIPhoneMinutes
                             )
                             .padding(.horizontal, 16)
                         }

@@ -104,21 +104,37 @@ final class DeskTimeViewModel {
 
     var scopedSiteStats: [(site: String, minutes: Int, tier: ProductivityTier)] {
         var siteDurations: [String: TimeInterval] = [:]
+        var unmatchedBrowserTime: TimeInterval = 0
+        let browsers: Set<String> = [
+            "Google Chrome", "Safari", "Firefox", "Arc",
+            "Brave Browser", "Microsoft Edge", "Orion",
+        ]
+
         for block in scopedBlocks {
             for event in block.events {
                 if let device = selectedDevice, event.sourceDevice != device { continue }
                 if let site = event.siteName {
                     siteDurations[site, default: 0] += event.duration
+                } else if browsers.contains(event.appName) {
+                    unmatchedBrowserTime += event.duration
                 }
             }
         }
-        return siteDurations.map { site, duration in
+
+        var results = siteDurations.map { site, duration in
             let mins = Int(duration / 60)
             let tier = ProductivityClassifier.classify(app: "Google Chrome", site: site)
             return (site: site, minutes: mins, tier: tier)
         }
         .filter { $0.minutes > 0 }
         .sorted { $0.minutes > $1.minutes }
+
+        let unmatchedMins = Int(unmatchedBrowserTime / 60)
+        if unmatchedMins >= 1 {
+            results.append((site: "Other sites", minutes: unmatchedMins, tier: .neutral))
+        }
+
+        return results
     }
 
     var scopedProductivityScore: Int {
@@ -137,6 +153,28 @@ final class DeskTimeViewModel {
 
     var scopedIPhoneMinutes: Int {
         scopedBlocks.filter { $0.dominantDevice == .iphone }.reduce(0) { $0 + $1.durationMinutes }
+    }
+
+    // MARK: - Pill Minutes (unfiltered by device — always show both device totals)
+
+    private var timeScopedBlocks: [AWActivityBlock] {
+        let cal = Calendar.current
+        if viewMode == .daily {
+            return blocks.filter { cal.isDateInToday($0.start) }
+        } else {
+            let weekAgo = cal.date(byAdding: .day, value: -7, to: cal.startOfDay(for: Date()))!
+            return blocks.filter { $0.start >= weekAgo }
+        }
+    }
+
+    var pillTotalMinutes: Int {
+        timeScopedBlocks.reduce(0) { $0 + $1.durationMinutes }
+    }
+    var pillMacMinutes: Int {
+        timeScopedBlocks.filter { $0.dominantDevice == .mac }.reduce(0) { $0 + $1.durationMinutes }
+    }
+    var pillIPhoneMinutes: Int {
+        timeScopedBlocks.filter { $0.dominantDevice == .iphone }.reduce(0) { $0 + $1.durationMinutes }
     }
     var scoreLabel: String {
         let score = scopedProductivityScore

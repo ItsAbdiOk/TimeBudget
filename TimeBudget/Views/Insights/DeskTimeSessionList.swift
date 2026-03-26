@@ -6,12 +6,43 @@ struct DeskTimeSessionList: View {
     let viewMode: DeskTimeViewModel.ViewMode
     let hasIPhoneData: Bool
 
-    private var sessionBlocks: [AWActivityBlock] {
-        blocks.sorted { $0.start > $1.start }
+    /// Merge consecutive blocks with the same top app within 15 minutes of each other,
+    /// then filter out very short sessions (< 3 minutes) to reduce clutter.
+    private var mergedBlocks: [AWActivityBlock] {
+        let sorted = blocks.sorted { $0.start < $1.start }
+        guard !sorted.isEmpty else { return [] }
+
+        var merged: [AWActivityBlock] = []
+        var current = sorted[0]
+
+        for next in sorted.dropFirst() {
+            let sameApp = current.topApp == next.topApp
+            let gap = next.start.timeIntervalSince(current.end)
+
+            if sameApp && gap < 15 * 60 {
+                current = AWActivityBlock(
+                    start: current.start,
+                    end: next.end,
+                    category: current.category,
+                    topApp: current.topApp,
+                    topSite: current.topSite ?? next.topSite,
+                    events: current.events + next.events,
+                    aiCategory: current.aiCategory
+                )
+            } else {
+                merged.append(current)
+                current = next
+            }
+        }
+        merged.append(current)
+
+        return merged
+            .filter { $0.durationMinutes >= 3 }
+            .sorted { $0.start > $1.start }
     }
 
     var body: some View {
-        let sorted = sessionBlocks
+        let sorted = mergedBlocks
         if !sorted.isEmpty {
             VStack(alignment: .leading, spacing: 0) {
                 HStack {
