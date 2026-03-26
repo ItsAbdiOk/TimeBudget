@@ -66,6 +66,34 @@
 		A10001000000000000000061 /* PodcastDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002000000000000000061 /* PodcastDetailView.swift */; };
 		A10001000000000000000062 /* DeskTimeHeatmapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002000000000000000062 /* DeskTimeHeatmapView.swift */; };
 		A10001000000000000000063 /* DeskTimeDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002000000000000000063 /* DeskTimeDetailView.swift */; };
+		A10001000000000000000084 /* DeskTimeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002000000000000000084 /* DeskTimeViewModel.swift */; };
+		A10001000000000000000085 /* DeskTimeViewModel+Loading.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002000000000000000085 /* DeskTimeViewModel+Loading.swift */; };
+		A10001000000000000000086 /* DeskTimeHeroCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002000000000000000086 /* DeskTimeHeroCard.swift */; };
+		A10001000000000000000087 /* DeskTimeSessionList.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002000000000000000087 /* DeskTimeSessionList.swift */; };
+		A10001000000000000000088 /* DeskTimeBreakdownCards.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002000000000000000088 /* DeskTimeBreakdownCards.swift */; };
+		A10001000000000000000089 /* DeskTimeControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002000000000000000089 /* DeskTimeControls.swift */; };
+		A10001000000000000000090 /* DeskTimeTimelineBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002000000000000000090 /* DeskTimeTimelineBar.swift */; };
+		A10001000000000000000091 /* DeskTimeMockData.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002000000000000000091 /* DeskTimeMockData.swift */; };
+		A10001000000000000000092 /* ActivityWatchModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002000000000000000092 /* ActivityWatchModels.swift */; };
+		A10001000000000000000093 /* ActivityWatchDiscovery.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002000000000000000093 /* ActivityWatchDiscovery.swift */; };
+		A10001000000000000000094 /* ActivityWatchFetching.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002000000000000000094 /* ActivityWatchFetching.swift */; };
+		A10001000000000000000095 /* ActivityWatchParsing.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002000000000000000095 /* ActivityWatchParsing.swift */; };
+		A10001000000000000000096 /* ProductivityClassifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002000000000000000096 /* ProductivityClassifier.swift */; };
+		A10001000000000000000097 /* SettingsRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002000000000000000097 /* SettingsRow.swift */; };
+		A10001000000000000000098 /* PermissionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002000000000000000098 /* PermissionsView.swift */; };
+		A10001000000000000000099 /* AniListSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002000000000000000099 /* AniListSettingsView.swift */; };
+		A1000100000000000000009A /* LeetCodeSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000200000000000000009A /* LeetCodeSettingsView.swift */; };
+		A1000100000000000000009B /* OverlapResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000200000000000000009B /* OverlapResolver.swift */; };
+		A1000100000000000000009C /* TimeClassifierAI.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000200000000000000009C /* TimeClassifierAI.swift */; };
+		A1000100000000000000009D /* TimeClassifierHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000200000000000000009D /* TimeClassifierHelpers.swift */; };
+		A1000100000000000000009E /* TimeClassifierDataSources.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000200000000000000009E /* TimeClassifierDataSources.swift */; };
+		A1000100000000000000009F /* DashboardHeroSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000200000000000000009F /* DashboardHeroSection.swift */; };
+		A100010000000000000000A0 /* DashboardInsightCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100020000000000000000A0 /* DashboardInsightCard.swift */; };
+		A100010000000000000000A1 /* DashboardStatsGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100020000000000000000A1 /* DashboardStatsGrid.swift */; };
+		A100010000000000000000A2 /* DashboardSupportViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100020000000000000000A2 /* DashboardSupportViews.swift */; };
+		A100010000000000000000A3 /* DayRingCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100020000000000000000A3 /* DayRingCard.swift */; };
+		A100010000000000000000A4 /* TimelineRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100020000000000000000A4 /* TimelineRow.swift */; };
+		A100010000000000000000A5 /* TimelineSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100020000000000000000A5 /* TimelineSection.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -131,6 +159,34 @@
 		A10002000000000000000061 /* PodcastDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PodcastDetailView.swift; sourceTree = "<group>"; };
 		A10002000000000000000062 /* DeskTimeHeatmapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeskTimeHeatmapView.swift; sourceTree = "<group>"; };
 		A10002000000000000000063 /* DeskTimeDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeskTimeDetailView.swift; sourceTree = "<group>"; };
+		A10002000000000000000084 /* DeskTimeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeskTimeViewModel.swift; sourceTree = "<group>"; };
+		A10002000000000000000085 /* DeskTimeViewModel+Loading.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DeskTimeViewModel+Loading.swift"; sourceTree = "<group>"; };
+		A10002000000000000000086 /* DeskTimeHeroCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeskTimeHeroCard.swift; sourceTree = "<group>"; };
+		A10002000000000000000087 /* DeskTimeSessionList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeskTimeSessionList.swift; sourceTree = "<group>"; };
+		A10002000000000000000088 /* DeskTimeBreakdownCards.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeskTimeBreakdownCards.swift; sourceTree = "<group>"; };
+		A10002000000000000000089 /* DeskTimeControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeskTimeControls.swift; sourceTree = "<group>"; };
+		A10002000000000000000090 /* DeskTimeTimelineBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeskTimeTimelineBar.swift; sourceTree = "<group>"; };
+		A10002000000000000000091 /* DeskTimeMockData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeskTimeMockData.swift; sourceTree = "<group>"; };
+		A10002000000000000000092 /* ActivityWatchModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityWatchModels.swift; sourceTree = "<group>"; };
+		A10002000000000000000093 /* ActivityWatchDiscovery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityWatchDiscovery.swift; sourceTree = "<group>"; };
+		A10002000000000000000094 /* ActivityWatchFetching.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityWatchFetching.swift; sourceTree = "<group>"; };
+		A10002000000000000000095 /* ActivityWatchParsing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityWatchParsing.swift; sourceTree = "<group>"; };
+		A10002000000000000000096 /* ProductivityClassifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductivityClassifier.swift; sourceTree = "<group>"; };
+		A10002000000000000000097 /* SettingsRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsRow.swift; sourceTree = "<group>"; };
+		A10002000000000000000098 /* PermissionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionsView.swift; sourceTree = "<group>"; };
+		A10002000000000000000099 /* AniListSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AniListSettingsView.swift; sourceTree = "<group>"; };
+		A1000200000000000000009A /* LeetCodeSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeetCodeSettingsView.swift; sourceTree = "<group>"; };
+		A1000200000000000000009B /* OverlapResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlapResolver.swift; sourceTree = "<group>"; };
+		A1000200000000000000009C /* TimeClassifierAI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeClassifierAI.swift; sourceTree = "<group>"; };
+		A1000200000000000000009D /* TimeClassifierHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeClassifierHelpers.swift; sourceTree = "<group>"; };
+		A1000200000000000000009E /* TimeClassifierDataSources.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeClassifierDataSources.swift; sourceTree = "<group>"; };
+		A1000200000000000000009F /* DashboardHeroSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardHeroSection.swift; sourceTree = "<group>"; };
+		A100020000000000000000A0 /* DashboardInsightCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardInsightCard.swift; sourceTree = "<group>"; };
+		A100020000000000000000A1 /* DashboardStatsGrid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardStatsGrid.swift; sourceTree = "<group>"; };
+		A100020000000000000000A2 /* DashboardSupportViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardSupportViews.swift; sourceTree = "<group>"; };
+		A100020000000000000000A3 /* DayRingCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DayRingCard.swift; sourceTree = "<group>"; };
+		A100020000000000000000A4 /* TimelineRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineRow.swift; sourceTree = "<group>"; };
+		A100020000000000000000A5 /* TimelineSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineSection.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -190,6 +246,10 @@
 			children = (
 				A10002000000000000000006 /* HealthKitService.swift */,
 				A10002000000000000000007 /* TimeClassifier.swift */,
+				A1000200000000000000009E /* TimeClassifierDataSources.swift */,
+				A1000200000000000000009B /* OverlapResolver.swift */,
+				A1000200000000000000009C /* TimeClassifierAI.swift */,
+				A1000200000000000000009D /* TimeClassifierHelpers.swift */,
 				A1000200000000000000000D /* MotionService.swift */,
 				A1000200000000000000000E /* LocationService.swift */,
 				A1000200000000000000000F /* CalendarService.swift */,
@@ -201,6 +261,11 @@
 				A10002000000000000000050 /* PocketCastsService.swift */,
 				A10002000000000000000082 /* IntelligenceService.swift */,
 				A10002000000000000000051 /* ActivityWatchService.swift */,
+				A10002000000000000000092 /* ActivityWatchModels.swift */,
+				A10002000000000000000093 /* ActivityWatchDiscovery.swift */,
+				A10002000000000000000094 /* ActivityWatchFetching.swift */,
+				A10002000000000000000095 /* ActivityWatchParsing.swift */,
+				A10002000000000000000096 /* ProductivityClassifier.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -212,6 +277,8 @@
 				A10002000000000000000019 /* FocusViewModel.swift */,
 				A10002000000000000000033 /* BudgetViewModel.swift */,
 				A10002000000000000000034 /* InsightsViewModel.swift */,
+				A10002000000000000000084 /* DeskTimeViewModel.swift */,
+				A10002000000000000000085 /* DeskTimeViewModel+Loading.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -263,6 +330,12 @@
 				A10002000000000000000061 /* PodcastDetailView.swift */,
 				A10002000000000000000062 /* DeskTimeHeatmapView.swift */,
 				A10002000000000000000063 /* DeskTimeDetailView.swift */,
+				A10002000000000000000086 /* DeskTimeHeroCard.swift */,
+				A10002000000000000000087 /* DeskTimeSessionList.swift */,
+				A10002000000000000000088 /* DeskTimeBreakdownCards.swift */,
+				A10002000000000000000089 /* DeskTimeControls.swift */,
+				A10002000000000000000090 /* DeskTimeTimelineBar.swift */,
+				A10002000000000000000091 /* DeskTimeMockData.swift */,
 			);
 			path = Insights;
 			sourceTree = "<group>";
@@ -271,6 +344,10 @@
 			isa = PBXGroup;
 			children = (
 				A10002000000000000000014 /* SettingsView.swift */,
+				A10002000000000000000097 /* SettingsRow.swift */,
+				A10002000000000000000098 /* PermissionsView.swift */,
+				A10002000000000000000099 /* AniListSettingsView.swift */,
+				A1000200000000000000009A /* LeetCodeSettingsView.swift */,
 				A10002000000000000000015 /* PlaceManagementView.swift */,
 				A1000200000000000000001B /* IdealDaySetupView.swift */,
 				A10002000000000000000052 /* IntegrationsSettingsView.swift */,
@@ -284,6 +361,13 @@
 			isa = PBXGroup;
 			children = (
 				A10002000000000000000009 /* DashboardView.swift */,
+				A1000200000000000000009F /* DashboardHeroSection.swift */,
+				A100020000000000000000A0 /* DashboardInsightCard.swift */,
+				A100020000000000000000A1 /* DashboardStatsGrid.swift */,
+				A100020000000000000000A2 /* DashboardSupportViews.swift */,
+				A100020000000000000000A3 /* DayRingCard.swift */,
+				A100020000000000000000A4 /* TimelineRow.swift */,
+				A100020000000000000000A5 /* TimelineSection.swift */,
 				A1000200000000000000001C /* TimelineRingView.swift */,
 				A1000200000000000000001D /* PieChartView.swift */,
 			);
@@ -410,6 +494,10 @@
 				A1000100000000000000000F /* CalendarService.swift in Sources */,
 				A10001000000000000000013 /* LocationPlace.swift in Sources */,
 				A10001000000000000000014 /* SettingsView.swift in Sources */,
+				A10001000000000000000097 /* SettingsRow.swift in Sources */,
+				A10001000000000000000098 /* PermissionsView.swift in Sources */,
+				A10001000000000000000099 /* AniListSettingsView.swift in Sources */,
+				A1000100000000000000009A /* LeetCodeSettingsView.swift in Sources */,
 				A10001000000000000000015 /* PlaceManagementView.swift in Sources */,
 				A10001000000000000000016 /* FocusSession.swift in Sources */,
 				A10001000000000000000017 /* IdealDay.swift in Sources */,
@@ -451,6 +539,30 @@
 				A10001000000000000000061 /* PodcastDetailView.swift in Sources */,
 				A10001000000000000000062 /* DeskTimeHeatmapView.swift in Sources */,
 				A10001000000000000000063 /* DeskTimeDetailView.swift in Sources */,
+				A10001000000000000000084 /* DeskTimeViewModel.swift in Sources */,
+				A10001000000000000000085 /* DeskTimeViewModel+Loading.swift in Sources */,
+				A10001000000000000000086 /* DeskTimeHeroCard.swift in Sources */,
+				A10001000000000000000087 /* DeskTimeSessionList.swift in Sources */,
+				A10001000000000000000088 /* DeskTimeBreakdownCards.swift in Sources */,
+				A10001000000000000000089 /* DeskTimeControls.swift in Sources */,
+				A10001000000000000000090 /* DeskTimeTimelineBar.swift in Sources */,
+				A10001000000000000000091 /* DeskTimeMockData.swift in Sources */,
+				A10001000000000000000092 /* ActivityWatchModels.swift in Sources */,
+				A10001000000000000000093 /* ActivityWatchDiscovery.swift in Sources */,
+				A10001000000000000000094 /* ActivityWatchFetching.swift in Sources */,
+				A10001000000000000000095 /* ActivityWatchParsing.swift in Sources */,
+				A10001000000000000000096 /* ProductivityClassifier.swift in Sources */,
+				A1000100000000000000009B /* OverlapResolver.swift in Sources */,
+				A1000100000000000000009C /* TimeClassifierAI.swift in Sources */,
+				A1000100000000000000009D /* TimeClassifierHelpers.swift in Sources */,
+				A1000100000000000000009E /* TimeClassifierDataSources.swift in Sources */,
+				A1000100000000000000009F /* DashboardHeroSection.swift in Sources */,
+				A100010000000000000000A0 /* DashboardInsightCard.swift in Sources */,
+				A100010000000000000000A1 /* DashboardStatsGrid.swift in Sources */,
+				A100010000000000000000A2 /* DashboardSupportViews.swift in Sources */,
+				A100010000000000000000A3 /* DayRingCard.swift in Sources */,
+				A100010000000000000000A4 /* TimelineRow.swift in Sources */,
+				A100010000000000000000A5 /* TimelineSection.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

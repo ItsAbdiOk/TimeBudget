@@ -125,9 +125,15 @@ actor IntelligenceService {
             - Documentation, Stack Overflow, GitHub → "Deep Work"
             - Notion, Google Docs, writing tools → "Work"
             - Meetings, Zoom, Google Meet → "Meetings"
-            - YouTube, Reddit, social media → "Other"
-            - News sites, casual browsing → "Other"
+            - Reddit, social media feeds, TikTok, Instagram → "Distraction"
+            - News sites, casual browsing → "Neutral"
             - If unsure, use "Desk Time" as the safe default
+
+            YouTube rules (use the video TITLE to decide):
+            - Tutorials, coding videos, conference talks, lectures, documentation → "Deep Work"
+            - Productivity, educational, how-to, tech reviews → "Productive"
+            - Music, lo-fi, ambient (background while working) → "Neutral"
+            - Entertainment, vlogs, shorts, gaming, reaction videos, drama → "Distraction"
 
             Respond with ONLY a JSON object matching this schema:
             {"items": [{"id": "<same id from input>", "category": "<one of the valid categories>", "confidence": <0.0 to 1.0>}]}

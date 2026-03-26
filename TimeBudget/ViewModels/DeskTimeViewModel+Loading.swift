@@ -161,10 +161,18 @@ extension DeskTimeViewModel {
         let items = todayBlocks.prefix(50).map { block in
             let urls = block.events.compactMap { $0.url }.prefix(3)
             let urlString = urls.isEmpty ? nil : urls.joined(separator: ", ")
+
+            // Collect distinct page/video titles for richer AI context
+            let titles = block.events
+                .map { $0.windowTitle }
+                .filter { !$0.isEmpty }
+            let uniqueTitles = Array(NSOrderedSet(array: titles)) as? [String] ?? titles
+            let titleSummary = uniqueTitles.prefix(5).joined(separator: " | ")
+
             return UncategorizedItem(
                 id: block.id.uuidString,
                 app: block.topApp,
-                title: block.events.first?.windowTitle ?? "",
+                title: titleSummary.isEmpty ? (block.events.first?.windowTitle ?? "") : titleSummary,
                 site: urlString ?? block.topSite,
                 durationMinutes: block.durationMinutes
             )

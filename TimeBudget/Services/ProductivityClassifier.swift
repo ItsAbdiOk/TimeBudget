@@ -46,7 +46,7 @@ struct ProductivityClassifier {
     static let distractionApps: Set<String> = [
         "Messages", "WhatsApp", "Telegram", "Discord",
         "Instagram", "TikTok", "Snapchat", "Facebook",
-        "YouTube", "Netflix", "Twitch", "Reddit",
+        "Netflix", "Twitch", "Reddit",
     ]
 
     static let productiveSites: Set<String> = [
@@ -65,8 +65,12 @@ struct ProductivityClassifier {
         "hub.docker", "npmjs",
     ]
 
+    static let neutralSites: Set<String> = [
+        "youtube",  // AI decides based on video content
+    ]
+
     static let distractionSites: Set<String> = [
-        "youtube", "twitter", "x.com", "reddit",
+        "twitter", "x.com", "reddit",
         "instagram", "facebook", "tiktok", "snapchat",
         "netflix", "twitch", "disneyplus", "hulu",
         "9gag", "imgur", "buzzfeed",
@@ -86,6 +90,10 @@ struct ProductivityClassifier {
             let siteLower = site.lowercased()
             for productive in productiveSites {
                 if siteLower.contains(productive.lowercased()) { return .productive }
+            }
+            // YouTube etc. default to neutral — AI refines based on content
+            for neutral in neutralSites {
+                if siteLower.contains(neutral.lowercased()) { return .neutral }
             }
             for distraction in distractionSites {
                 if siteLower.contains(distraction.lowercased()) { return .distraction }

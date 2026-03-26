@@ -78,15 +78,37 @@ struct DeskTimeSessionList: View {
         }
     }
 
+    /// Extract the most-watched video/page title from a block's events (for YouTube, etc.)
+    private func topContentTitle(for block: AWActivityBlock) -> String? {
+        let videoSites: Set<String> = ["youtube.com", "twitch.tv", "netflix.com"]
+        guard let site = block.topSite, videoSites.contains(site) else { return nil }
+
+        // Find the longest-duration event with a meaningful title
+        let candidates = block.events
+            .filter { $0.siteName == site && !$0.windowTitle.isEmpty }
+            .sorted { $0.duration > $1.duration }
+
+        guard let top = candidates.first else { return nil }
+        // Strip common suffixes like " - YouTube", " - Twitch"
+        let title = top.windowTitle
+            .replacingOccurrences(of: " - YouTube", with: "")
+            .replacingOccurrences(of: " - Twitch", with: "")
+            .replacingOccurrences(of: " - Netflix", with: "")
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        return title.isEmpty ? nil : title
+    }
+
     private func sessionRow(block: AWActivityBlock) -> some View {
-        HStack(spacing: 10) {
+        let contentTitle = topContentTitle(for: block)
+
+        return HStack(spacing: 10) {
             RoundedRectangle(cornerRadius: 1.5, style: .continuous)
                 .fill(DeskTimeViewModel.colorForTier(ProductivityTier(rawValue: block.effectiveCategory) ?? .neutral))
                 .frame(width: 3, height: 44)
 
             VStack(alignment: .leading, spacing: 3) {
                 HStack(spacing: 4) {
-                    Text(block.topSite ?? block.topApp)
+                    Text(contentTitle ?? block.topSite ?? block.topApp)
                         .font(.system(size: 14, weight: .medium))
                         .lineLimit(1)
                     if block.isAIRefined {
@@ -96,8 +118,8 @@ struct DeskTimeSessionList: View {
                     }
                 }
                 HStack(spacing: 5) {
-                    if block.topSite != nil {
-                        Text(block.topApp)
+                    if contentTitle != nil || block.topSite != nil {
+                        Text(contentTitle != nil ? (block.topSite ?? block.topApp) : block.topApp)
                             .font(.system(size: 12))
                             .foregroundStyle(Color(.tertiaryLabel))
                     }
